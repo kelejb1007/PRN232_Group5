@@ -10,9 +10,6 @@
     <Folder Include="DAOs\" />
     <Folder Include="DTOs\" />
     <Folder Include="Models\" />
-    <Folder Include="Repositories\Admin\Interfaces\" />
-    <Folder Include="Repositories\Admin\" />
-    <Folder Include="Repositories\User\Interfaces\" />
   </ItemGroup>
 
 </Project>
