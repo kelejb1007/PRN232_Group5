@@ -1,20 +1,42 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using BLL.Services.User;
+using BLL.Services.User.Interfaces;
 using DAL.Data;
+using DAL.Repositories.User;
+using DAL.Repositories.User.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// ================= DB =================
 builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Intelligence_Book_APIContext") ?? throw new InvalidOperationException("Connection string 'Intelligence_Book_APIContext' not found.")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("Intelligence_Book_APIContext")
+        ?? throw new InvalidOperationException("Connection string not found.")
+    ));
 
-// Add services to the container.
+// ================= CORS =================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
 
+// ================= SERVICES =================
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IBookRepositoryH, BookRepositoryH>();
+builder.Services.AddScoped<IBookServiceH, BookServiceH>();
+builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
+builder.Services.AddScoped<ICartServiceH, CartServiceH>();
+builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
+builder.Services.AddScoped<ICartServiceH, CartServiceH>();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ================= PIPELINE =================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -22,6 +44,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ⚠ CORS phải nằm trước MapControllers
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 

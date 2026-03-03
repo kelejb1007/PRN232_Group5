@@ -1,8 +1,160 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+
+    <!-- ===== CAROUSEL ===== -->
+    <div id="mainCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+        <div class="carousel-inner">
+
+            <div class="carousel-item active">
+                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794"
+                     class="d-block w-100"
+                     style="height:400px;object-fit:cover;">
+            </div>
+
+            <div class="carousel-item">
+                <img src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d"
+                     class="d-block w-100"
+                     style="height:400px;object-fit:cover;">
+            </div>
+
+            <div class="carousel-item">
+                <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
+                     class="d-block w-100"
+                     style="height:400px;object-fit:cover;">
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== DANH MỤC ===== -->
+    <h3 class="mb-3">Danh mục nổi bật</h3>
+    <div class="row mb-5 text-center">
+        <div class="col-md-3"><div class="p-3 border rounded">📘 Lập trình</div></div>
+        <div class="col-md-3"><div class="p-3 border rounded">📕 Kinh tế</div></div>
+        <div class="col-md-3"><div class="p-3 border rounded">📗 Kỹ năng</div></div>
+        <div class="col-md-3"><div class="p-3 border rounded">📙 Tiểu thuyết</div></div>
+    </div>
+
+    <!-- ===== SÁCH NỔI BẬT ===== -->
+    <h3 class="mb-3">Sách nổi bật</h3>
+    <div id="featured-books" class="row mb-5"></div>
+
+    <!-- ===== SÁCH BÁN CHẠY ===== -->
+    <h3 class="mb-3">Sách bán chạy</h3>
+    <div id="best-seller-books" class="row"></div>
+
 </div>
+
+@section Scripts {
+    <script>
+
+        const API_BASE = "https://localhost:7287/api";
+        const USER_ID = 1; // ⚠ tạm hardcode, sau này dùng session/login
+
+        document.addEventListener("DOMContentLoaded", function () {
+            loadFeaturedBooks();
+            loadBestSellerBooks();
+        });
+
+        // ===== LOAD FEATURED =====
+        async function loadFeaturedBooks() {
+            try {
+                const response = await fetch(`${API_BASE}/home/featured-books`);
+                const books = await response.json();
+                renderBooks(books, "featured-books");
+            } catch (error) {
+                console.error("Lỗi load featured:", error);
+            }
+        }
+
+        // ===== LOAD BEST SELLER =====
+        async function loadBestSellerBooks() {
+            try {
+                const response = await fetch(`${API_BASE}/home/featured-books`);
+                const books = await response.json();
+                renderBooks(books, "best-seller-books");
+            } catch (error) {
+                console.error("Lỗi load best seller:", error);
+            }
+        }
+
+        // ===== RENDER BOOKS =====
+        function renderBooks(books, containerId) {
+
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+
+            if (!books || books.length === 0) {
+                container.innerHTML = "<p>Không có sách.</p>";
+                return;
+            }
+
+            books.forEach(book => {
+
+                container.innerHTML += `
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <img src="${book.coverImageUrl ?? 'https://via.placeholder.com/300x200'}"
+                                 class="card-img-top"
+                                 style="height:200px;object-fit:cover;">
+                            <div class="card-body d-flex flex-column">
+                                <h6 class="card-title">${book.title}</h6>
+
+                                <p class="text-danger fw-bold mb-2">
+                                    ${book.price.toLocaleString()} VND
+                                </p>
+
+                                <div class="mt-auto">
+                                    <button class="btn btn-outline-primary w-100 mb-2">
+                                        Xem chi tiết
+                                    </button>
+
+                                    <button class="btn btn-warning w-100"
+                                            onclick="addToCart(${book.bookId})">
+                                        🛒 Thêm vào giỏ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // ===== ADD TO CART =====
+                       async function addToCart(bookId) {
+
+            try {
+
+                const response = await fetch(`${API_BASE}/cart/add`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: USER_ID,
+                        bookId: bookId,
+                        quantity: 1
+                    })
+                });
+
+                const text = await response.text(); // đọc dạng text trước
+
+                if (!response.ok) {
+                    console.error("SERVER ERROR:", text);
+                    alert("❌ Lỗi server, xem Console");
+                    return;
+                }
+
+                alert("✅ Đã thêm vào giỏ hàng!");
+
+            } catch (error) {
+                console.error("Lỗi thêm cart:", error);
+            }
+        }
+
+    </script>
+}

@@ -21,7 +21,7 @@ namespace DAL.Models
         public string? CoverImageUrl { get; set; }
         public string? Description { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
+        public bool IsRemove { get; set; }
         public int? AuthorId { get; set; }
         public Author? Author { get; set; }
         public List<Category> Categories { get; set; } = new();

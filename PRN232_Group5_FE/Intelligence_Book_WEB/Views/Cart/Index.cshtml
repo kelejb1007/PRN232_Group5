@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4">🛒 Giỏ hàng của bạn</h3>
+
+    <div id="cart-container"></div>
+
+    <div class="text-end mt-4">
+        <h4>Tổng tiền: <span id="total-price" class="text-danger">0</span> VND</h4>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        const API_BASE = "https://localhost:7287/api";
+        const USER_ID = 1; // ⚠ đổi thành id có thật trong DB
+
+        document.addEventListener("DOMContentLoaded", function () {
+            loadCart();
+        });
+
+        async function loadCart() {
+            try {
+                const response = await fetch(`${API_BASE}/cart/${USER_ID}`);
+                const carts = await response.json();
+
+                renderCart(carts);
+
+            } catch (error) {
+                console.error("Lỗi load cart:", error);
+            }
+        }
+
+        function renderCart(carts) {
+
+            const container = document.getElementById("cart-container");
+            container.innerHTML = "";
+
+            if (!carts || carts.length === 0) {
+                container.innerHTML = "<p>Giỏ hàng trống.</p>";
+                return;
+            }
+
+            let total = 0;
+
+            carts.forEach(item => {
+
+                const price = item.book.price;
+                const quantity = item.quantity;
+                const subTotal = price * quantity;
+
+                total += subTotal;
+
+                container.innerHTML += `
+                    <div class="card mb-3 shadow-sm">
+                        <div class="row g-0">
+                            <div class="col-md-2">
+                                <img src="${item.book.coverImageUrl ?? 'https://via.placeholder.com/100'}"
+                                     class="img-fluid rounded-start"
+                                     style="height:120px;object-fit:cover;">
+                            </div>
+
+                            <div class="col-md-6 p-3">
+                                <h6>${item.book.title}</h6>
+                                <p class="text-danger">${price.toLocaleString()} VND</p>
+                            </div>
+
+                            <div class="col-md-2 d-flex align-items-center">
+                                <input type="number"
+                                       min="1"
+                                       value="${quantity}"
+                                       class="form-control"
+                                       onchange="updateQuantity(${item.cartId}, this.value)">
+                            </div>
+
+                            <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                <button class="btn btn-danger"
+                                        onclick="deleteCart(${item.cartId})">
+                                    Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("total-price").innerText = total.toLocaleString();
+        }
+
+               async function updateQuantity(cartId, quantity) {
+
+            const response = await fetch(`${API_BASE}/cart/update`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    cartId: cartId,
+                    quantity: parseInt(quantity)
+                })
+            });
+
+            if (response.ok) {
+                loadCart();
+            } else {
+                alert("Update failed");
+            }
+        }
+
+        async function deleteCart(cartId) {
+
+            await fetch(`${API_BASE}/cart/${cartId}`, {
+                method: "DELETE"
+            });
+
+            loadCart();
+        }
+
+    </script>
+}
