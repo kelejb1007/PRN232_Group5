@@ -12,70 +12,63 @@ namespace DAL.Repositories.Admin
 {
     public class CouponRepository : ICouponRepository
     {
-        private readonly Intelligence_Book_APIContext _context;
+        private readonly Intelligence_Book_APIContext _db;
 
-        public CouponRepository(Intelligence_Book_APIContext context)
+        public CouponRepository(Intelligence_Book_APIContext db)
         {
-            _context = context;
+            _db = db;
         }
 
-        public async Task<(List<Coupon>, int)> GetPagedAsync(string? search, int page, int pageSize)
+        public async Task<(List<Coupon> items, int totalItems)> GetPagedAsync(string? search, int page, int pageSize)
         {
-            var query = _context.Coupons.AsQueryable();
+            // ✅ Ẩn soft delete: quantity == 0
+            var q = _db.Coupons.AsNoTracking().Where(x => x.quantity > 0);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(c =>
-                    c.Code.Contains(search) ||
-                    c.CouponId.ToString().Contains(search) ||
-                    c.DiscountPercent.ToString().Contains(search));
+                var s = search.Trim();
+                q = q.Where(x =>
+                    x.Code.Contains(s) ||
+                    x.CouponId.ToString().Contains(s) ||
+                    x.DiscountPercent.ToString().Contains(s) ||
+                    x.quantity.ToString().Contains(s)
+                );
             }
 
-            int totalItems = await query.CountAsync();
+            var total = await q.CountAsync();
 
-            var items = await query
-                .OrderByDescending(c => c.CouponId)
+            var items = await q
+                .OrderByDescending(x => x.CouponId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            return (items, totalItems);
+            return (items, total);
         }
 
-        public async Task<Coupon?> GetByIdAsync(int id)
+        public Task<Coupon?> GetByIdAsync(int id)
+            => _db.Coupons.FirstOrDefaultAsync(x => x.CouponId == id);
+
+        public Task<bool> CodeExistsAsync(string code, int? ignoreId = null)
         {
-            return await _context.Coupons.FindAsync(id);
+            code = (code ?? "").Trim();
+            return _db.Coupons.AnyAsync(x => x.Code == code && (!ignoreId.HasValue || x.CouponId != ignoreId.Value));
         }
 
-        public async Task<Coupon> CreateAsync(Coupon coupon)
+        public async Task<Coupon> AddAsync(Coupon coupon)
         {
-            _context.Coupons.Add(coupon);
-            await _context.SaveChangesAsync();
+            _db.Coupons.Add(coupon);
+            await _db.SaveChangesAsync();
             return coupon;
         }
 
         public async Task<bool> UpdateAsync(Coupon coupon)
         {
-            var existing = await _context.Coupons.FindAsync(coupon.CouponId);
-            if (existing == null) return false;
-
-            existing.Code = coupon.Code;
-            existing.DiscountPercent = coupon.DiscountPercent;
-            existing.ExpiryDate = coupon.ExpiryDate;
-            existing.quantity = coupon.quantity;
-
-            await _context.SaveChangesAsync();
-            return true;
+            _db.Coupons.Update(coupon);
+            return await _db.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var coupon = await _context.Coupons.FindAsync(id);
-            if (coupon == null) return false;
-
-            _context.Coupons.Remove(coupon);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        public async Task<bool> SaveChangesAsync()
+            => await _db.SaveChangesAsync() > 0;
     }
 }

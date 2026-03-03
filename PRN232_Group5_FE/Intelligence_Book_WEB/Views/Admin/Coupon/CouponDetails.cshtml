@@ -1,4 +1,4 @@
-﻿@model Intelligence_Book_WEB.Models.CouponVm
+﻿@model Intelligence_Book_WEB.Models.Dto.CouponVm
 @{
     ViewData["Title"] = "Coupon Details";
     var isExpired = Model.ExpiryDate.HasValue && Model.ExpiryDate.Value.Date < DateTime.Today;

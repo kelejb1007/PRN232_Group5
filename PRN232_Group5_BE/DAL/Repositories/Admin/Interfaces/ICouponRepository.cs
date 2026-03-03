@@ -9,10 +9,13 @@ namespace DAL.Repositories.Admin.Interfaces
 {
     public interface ICouponRepository
     {
-        Task<(List<Coupon>, int)> GetPagedAsync(string? search, int page, int pageSize);
+        Task<(List<Coupon> items, int totalItems)> GetPagedAsync(string? search, int page, int pageSize);
         Task<Coupon?> GetByIdAsync(int id);
-        Task<Coupon> CreateAsync(Coupon coupon);
+
+        Task<bool> CodeExistsAsync(string code, int? ignoreId = null);
+
+        Task<Coupon> AddAsync(Coupon coupon);
         Task<bool> UpdateAsync(Coupon coupon);
-        Task<bool> DeleteAsync(int id);
+        Task<bool> SaveChangesAsync();
     }
 }

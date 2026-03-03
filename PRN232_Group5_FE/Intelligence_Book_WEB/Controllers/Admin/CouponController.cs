@@ -1,4 +1,6 @@
-﻿using Intelligence_Book_WEB.Models;
+﻿using Intelligence_Book_WEB.Mapper;
+using Intelligence_Book_WEB.Models;
+using Intelligence_Book_WEB.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Json;
 
@@ -14,107 +16,142 @@ namespace Intelligence_Book_WEB.Controllers.Admin
             _http = http;
         }
 
-        // LIST: /Admin/Coupon/CouponList?search=...&page=1
+        // GET: /Admin/Coupon/CouponList?search=...&page=1&pageSize=5
         [HttpGet("CouponList")]
         public async Task<IActionResult> CouponList(string? search, int page = 1, int pageSize = 5)
         {
             var client = _http.CreateClient("Api");
 
-            var qs = new List<string> { $"page={page}", $"pageSize={pageSize}" };
+            var qs = new List<string>
+            {
+                $"page={page}",
+                $"pageSize={pageSize}"
+            };
             if (!string.IsNullOrWhiteSpace(search))
                 qs.Add($"search={Uri.EscapeDataString(search)}");
 
             var url = $"api/admin/coupons?{string.Join("&", qs)}";
 
-            var data = await client.GetFromJsonAsync<PagedResultVm<CouponVm>>(url)
-                       ?? new PagedResultVm<CouponVm>();
+            var dto = await client.GetFromJsonAsync<PagedResultDto<CouponDto>>(url)
+                     ?? new PagedResultDto<CouponDto>();
+
+            var vm = new PagedResultVm<CouponVm>
+            {
+                Page = dto.Page,
+                PageSize = dto.PageSize,
+                TotalItems = dto.TotalItems,
+                TotalPages = dto.TotalPages,
+                Items = (dto.Items ?? new List<CouponDto>()).Select(x => x.ToVm()).ToList()
+            };
 
             ViewBag.Search = search;
-
-            return View("~/Views/Admin/Coupon/CouponList.cshtml", data);
+            return View("~/Views/Admin/Coupon/CouponList.cshtml", vm);
         }
 
-        // DETAILS: /Admin/Coupon/CouponDetails?id=1
+        // GET: /Admin/Coupon/CouponDetails?id=1
         [HttpGet("CouponDetails")]
         public async Task<IActionResult> CouponDetails(int id)
         {
             var client = _http.CreateClient("Api");
-            var coupon = await client.GetFromJsonAsync<CouponVm>($"api/admin/coupons/{id}");
+            var dto = await client.GetFromJsonAsync<CouponDto>($"api/admin/coupons/{id}");
 
-            if (coupon == null)
+            if (dto == null)
             {
                 TempData["Message"] = "Coupon not found!";
                 return RedirectToAction(nameof(CouponList));
             }
 
-            return View("~/Views/Admin/Coupon/CouponDetails.cshtml", coupon);
+            return View("~/Views/Admin/Coupon/CouponDetails.cshtml", dto.ToVm());
         }
 
-        // FORM ADD
+        // GET: /Admin/Coupon/CouponCreate
         [HttpGet("CouponCreate")]
         public IActionResult CouponCreate()
         {
+            // Create: được phép nhập code/discount/expiry/quantity (JS sẽ random code + validate)
             return View("~/Views/Admin/Coupon/CouponForm.cshtml", new CouponVm());
         }
 
-        // FORM UPDATE
+        // GET: /Admin/Coupon/CouponUpdate?id=1
         [HttpGet("CouponUpdate")]
         public async Task<IActionResult> CouponUpdate(int id)
         {
             var client = _http.CreateClient("Api");
-            var coupon = await client.GetFromJsonAsync<CouponVm>($"api/admin/coupons/{id}");
+            var dto = await client.GetFromJsonAsync<CouponDto>($"api/admin/coupons/{id}");
 
-            if (coupon == null)
+            if (dto == null)
             {
                 TempData["Message"] = "Coupon not found!";
                 return RedirectToAction(nameof(CouponList));
             }
 
-            return View("~/Views/Admin/Coupon/CouponForm.cshtml", coupon);
+            // FE lock nếu expired
+            if (dto.IsExpired)
+            {
+                TempData["Message"] = "Expired coupon cannot be updated.";
+                return RedirectToAction(nameof(CouponDetails), new { id });
+            }
+
+            return View("~/Views/Admin/Coupon/CouponForm.cshtml", dto.ToVm());
         }
 
-        // POST SAVE (Create / Update)
+        // POST: /Admin/Coupon/CouponSave
         [HttpPost("CouponSave")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CouponSave(CouponVm model)
         {
             var client = _http.CreateClient("Api");
 
+            // Normalize
             model.Code = (model.Code ?? "").Trim();
 
-            // ✅ Body đúng model BE mới: có quantity, không IsActive
-            var payload = new
+            // ===================== CREATE =====================
+            if (model.CouponId == 0)
             {
-                couponId = model.CouponId,
-                code = model.Code,
-                discountPercent = model.DiscountPercent,
+                // Create payload: đúng model BE (Code, DiscountPercent, ExpiryDate, quantity)
+                var payload = new
+                {
+                    code = model.Code,
+                    discountPercent = model.DiscountPercent,
+                    expiryDate = model.ExpiryDate,
+                    quantity = model.quantity
+                };
+
+                var res = await client.PostAsJsonAsync("api/admin/coupons", payload);
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    var err = await SafeReadApiMessage(res);
+                    ViewBag.Error = err ?? "Create failed!";
+                    return View("~/Views/Admin/Coupon/CouponForm.cshtml", model);
+                }
+
+                TempData["Message"] = "Created successfully!";
+                return RedirectToAction(nameof(CouponList));
+            }
+
+            // ===================== UPDATE =====================
+            // Update rule: chỉ cho sửa expiryDate + quantity
+            var updatePayload = new
+            {
                 expiryDate = model.ExpiryDate,
                 quantity = model.quantity
             };
 
-            HttpResponseMessage res;
+            var up = await client.PutAsJsonAsync($"api/admin/coupons/{model.CouponId}", updatePayload);
 
-            if (model.CouponId == 0)
+            if (!up.IsSuccessStatusCode)
             {
-                res = await client.PostAsJsonAsync("api/admin/coupons", payload);
-            }
-            else
-            {
-                res = await client.PutAsJsonAsync($"api/admin/coupons/{model.CouponId}", payload);
-            }
-
-            if (!res.IsSuccessStatusCode)
-            {
-                var err = await res.Content.ReadFromJsonAsync<ApiMessageVm>();
-                ViewBag.Error = err?.Message ?? "Save failed!";
+                var err = await SafeReadApiMessage(up);
+                ViewBag.Error = err ?? "Update failed!";
                 return View("~/Views/Admin/Coupon/CouponForm.cshtml", model);
             }
 
-            TempData["Message"] = model.CouponId == 0 ? "Created successfully!" : "Updated successfully!";
-            return RedirectToAction(nameof(CouponList));
+            TempData["Message"] = "Updated successfully!";
+            return RedirectToAction(nameof(CouponDetails), new { id = model.CouponId });
         }
 
-        // DELETE
+        // POST: /Admin/Coupon/CouponDelete
         [HttpPost("CouponDelete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CouponDelete(int id)
@@ -124,18 +161,33 @@ namespace Intelligence_Book_WEB.Controllers.Admin
 
             if (!res.IsSuccessStatusCode)
             {
-                TempData["Message"] = "Delete failed!";
+                var err = await SafeReadApiMessage(res);
+                TempData["Message"] = err ?? "Delete failed!";
                 return RedirectToAction(nameof(CouponDetails), new { id });
             }
 
-            TempData["Message"] = "Deleted successfully!";
+            TempData["Message"] = "Deleted (soft delete)!";
             return RedirectToAction(nameof(CouponList));
         }
-    }
 
-    // helper đọc message từ API
-    public class ApiMessageVm
-    {
-        public string? Message { get; set; }
+        // ===================== Helpers =====================
+
+        private async Task<string?> SafeReadApiMessage(HttpResponseMessage res)
+        {
+            try
+            {
+                var msg = await res.Content.ReadFromJsonAsync<ApiMessage>();
+                if (!string.IsNullOrWhiteSpace(msg?.message)) return msg!.message;
+                if (!string.IsNullOrWhiteSpace(msg?.Message)) return msg!.Message;
+            }
+            catch { /* ignore */ }
+            return null;
+        }
+
+        private class ApiMessage
+        {
+            public string? message { get; set; } // some API use lower
+            public string? Message { get; set; } // some API use upper
+        }
     }
 }

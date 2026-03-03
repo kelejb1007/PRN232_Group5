@@ -1,32 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using DAL.Data;
-
-using DAL.Repositories.Admin;
-using DAL.Repositories.Admin.Interfaces;
+﻿using AutoMapper;
+using BLL.Mapper;
 using BLL.Services.Admin;
 using BLL.Services.Admin.Interfaces;
-using BLL.Services;
+using DAL.Data;
+using DAL.Repositories.Admin;
+using DAL.Repositories.Admin.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Intelligence_Book_APIContext") ?? throw new InvalidOperationException("Connection string 'Intelligence_Book_APIContext' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Intelligence_Book_APIContext")
+        ?? throw new InvalidOperationException("Connection string 'Intelligence_Book_APIContext' not found.")));
 
-
-// Đăng ký Repository và Service cho Coupon
+// DI Repo + Service
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 
-// Add services to the container.
+// AutoMapper (scan profile)
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<CouponProfile>());
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -34,9 +34,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

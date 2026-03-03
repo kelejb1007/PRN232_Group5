@@ -3,15 +3,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// ? ??NG KÝ HTTPCLIENT CALL API
 builder.Services.AddHttpClient("Api", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7287/");
-    // ?? s?a ?úng port API c?a b?n
 })
 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
 {
-    // ? DEV ONLY (b? validate SSL self-signed)
     ServerCertificateCustomValidationCallback =
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
