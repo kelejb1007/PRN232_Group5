@@ -1,83 +1,8 @@
-﻿@model List<Intelligence_Book_WEB.Models.BookViewModel>
-<style>
-    body {
-        background-color: #fff3e0; /* Cam nhạt */
-    }
-</style>
-<div class="container mt-4">
+﻿﻿@{
+    ViewData["Title"] = "Home Page";
+}
 
-    <h2 class="text-center mb-4"> Book Store</h2>
-    <!-- Search books-->
-    <form method="get" class="row mb-4">
-        <div class="col-md-3">
-            <input name="search"
-                   class="form-control"
-                   placeholder="Search book..." />
-        </div>
-        <div class="col-md-3">
-            <select name="categoryId" class="form-select">
-                <option value="">All Categories</option>
-
-                @foreach (var cate in ViewBag.Categories ?? new List<Intelligence_Book_WEB.Models.CategoryViewModel>())
-                {
-                    <option value="@cate.CategoryId"
-                            selected="@(ViewBag.SelectedCategory != null &&
-                                ViewBag.SelectedCategory == cate.CategoryId ? "selected" : null)">
-                        @cate.CategoryName
-                    </option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-2">
-            <input name="minPrice"
-                   type="number"
-                   class="form-control"
-                   placeholder="Min Price" />
-        </div>
-
-        <div class="col-md-2">
-            <input name="maxPrice"
-                   type="number"
-                   class="form-control"
-                   placeholder="Max Price" />
-        </div>
-
-        <div class="col-md-2">
-            <button class="btn btn-primary w-100">
-                Search
-            </button>
-        </div>
-    </form>
-
-    <div class="row">
-        @foreach (var item in Model ?? new List<Intelligence_Book_WEB.Models.BookViewModel>())
-        {
-            <div class="col-md-3 mb-4">
-                <div class="card shadow">
-                    <img src="@item.CoverImageUrl"
-                         class="card-img-top"
-                         height="250" />
-
-                    <div class="card-body">
-                        <h5>@item.Title</h5>
-
-                        <p class="text-danger fw-bold">
-                            @item.Price.ToString("N0") đ
-                        </p>
-
-                        <a href="/Home/Details/@item.BookId"
-                           class="btn btn-outline-primary w-100 mb-2">
-                            View Details
-                        </a>
-
-                        <a href="/Cart/Add/@item.BookId"
-                           class="btn btn-warning w-100 text-white">
-                            Add To Cart
-                        </a>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>

@@ -8,11 +8,11 @@ using DAL.Repositories.User.Interfaces;
 
 namespace BLL.Services.User.Interfaces
 {
-    public class BookService : IBookService
+    public class BookService_Anh : IBookService_Anh
     {
-        private readonly IBookRepository _repository;
+        private readonly IBookRepository_Anh _repository;
 
-        public BookService(IBookRepository repository)
+        public BookService_Anh(IBookRepository_Anh repository)
         {
             _repository = repository;
         }

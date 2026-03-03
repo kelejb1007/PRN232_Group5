@@ -11,10 +11,10 @@ builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
 
 // Add services to the container.
 // Repository
-builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookRepository_Anh, BookRepository_Anh>();
 
 // Service
-builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookService_Anh, BookService_Anh>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

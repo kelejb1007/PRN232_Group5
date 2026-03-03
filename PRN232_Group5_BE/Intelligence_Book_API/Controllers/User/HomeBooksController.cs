@@ -16,9 +16,9 @@ namespace Intelligence_Book_API.Controllers.User
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly IBookService _service;
+        private readonly IBookService_Anh _service;
 
-        public BooksController(IBookService service)
+        public BooksController(IBookService_Anh service)
         {
             _service = service;
         }

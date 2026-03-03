@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories.User
 {
-    public class BookRepository : IBookRepository
+    public class BookRepository_Anh : IBookRepository_Anh
     {
         private readonly Intelligence_Book_APIContext _context;
 
-        public BookRepository(Intelligence_Book_APIContext context)
+        public BookRepository_Anh(Intelligence_Book_APIContext context)
         {
             _context = context;
         }

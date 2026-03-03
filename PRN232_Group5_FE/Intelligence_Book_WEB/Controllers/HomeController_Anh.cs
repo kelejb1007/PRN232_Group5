@@ -5,29 +5,38 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Intelligence_Book_WEB.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController_Anh : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController_Anh> _logger;
         private readonly IHttpClientFactory _factory;
 
-        public HomeController(
-            ILogger<HomeController> logger,
+        public HomeController_Anh(
+            ILogger<HomeController_Anh> logger,
             IHttpClientFactory factory)
         {
             _logger = logger;
             _factory = factory;
         }
 
-        // HIỂN THỊ DANH SÁCH + SEARCH + FILTER
-        public async Task<IActionResult> Index(
-         string? search,
-         decimal? minPrice,
-         decimal? maxPrice,
-         int? categoryId)
+        // =========================
+        // TRANG CHỦ (WELCOME)  /
+        // =========================
+        public IActionResult Index()
+        {
+            return View("~/Views/Home/Index.cshtml");
+        }
+
+        // =========================
+        // TRANG SEARCH  /HomeController_Anh/Search
+        // =========================
+        public async Task<IActionResult> Search(
+            string? search,
+            decimal? minPrice,
+            decimal? maxPrice,
+            int? categoryId)
         {
             var client = _factory.CreateClient("BookAPI");
 
-            // 🔹 Load books
             var url =
                 $"books?search={search}&categoryId={categoryId}&minPrice={minPrice}&maxPrice={maxPrice}";
 
@@ -40,7 +49,6 @@ namespace Intelligence_Book_WEB.Controllers
                     PropertyNameCaseInsensitive = true
                 });
 
-            // 🔹 Load categories
             var cateResponse = await client.GetAsync("categories");
             var cateJson = await cateResponse.Content.ReadAsStringAsync();
 
@@ -53,16 +61,14 @@ namespace Intelligence_Book_WEB.Controllers
             ViewBag.Categories = categories;
             ViewBag.SelectedCategory = categoryId;
 
-            return View(books);
+            return View("~/Views/Home/Search.cshtml", books);
         }
 
-        // XEM CHI TIẾT
         public async Task<IActionResult> Details(int id)
         {
             var client = _factory.CreateClient("BookAPI");
 
             var response = await client.GetAsync($"books/{id}");
-
             var json = await response.Content.ReadAsStringAsync();
 
             var book = JsonSerializer.Deserialize<BookViewModel>(json,
@@ -71,25 +77,7 @@ namespace Intelligence_Book_WEB.Controllers
                     PropertyNameCaseInsensitive = true
                 });
 
-            return View("BookDetails", book);
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0,
-            Location = ResponseCacheLocation.None,
-            NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel
-            {
-                RequestId = Activity.Current?.Id ??
-                            HttpContext.TraceIdentifier
-            });
+            return View("~/Views/Home/BookDetails.cshtml", book);
         }
     }
-
 }

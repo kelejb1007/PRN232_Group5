@@ -7,7 +7,7 @@ using DAL.Models;
 
 namespace DAL.Repositories.User.Interfaces
 {
-    public interface IBookRepository
+    public interface IBookRepository_Anh
     {
         Task<List<Book>> GetBooks(
             string? search,

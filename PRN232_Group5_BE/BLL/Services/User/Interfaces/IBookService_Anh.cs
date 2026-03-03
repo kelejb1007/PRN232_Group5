@@ -7,7 +7,7 @@ using DAL.Models;
 
 namespace BLL.Services.User.Interfaces
 {
-    public interface IBookService
+    public interface IBookService_Anh
     {
         Task<List<Book>> GetBooks(
             string? search,
