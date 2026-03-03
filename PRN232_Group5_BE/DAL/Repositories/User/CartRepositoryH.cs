@@ -54,9 +54,10 @@ namespace DAL.Repositories.User
             }
         }
 
-        public Task<Cart> GetByIdAsync(int cartId)
+        public async Task<Cart?> GetByIdAsync(int cartId)
         {
-            throw new NotImplementedException();
+            return await _context.Carts
+                .FirstOrDefaultAsync(x => x.CartId == cartId);
         }
     }
 }
