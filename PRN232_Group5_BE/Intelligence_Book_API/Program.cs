@@ -1,4 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using DAL.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Intelligence_Book_APIContext") ?? throw new InvalidOperationException("Connection string 'Intelligence_Book_APIContext' not found.")));
 
 // Add services to the container.
 
