@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Models
+namespace DAL.DTOs.CategoryDTOs
 {
-    public class Category
-    {
-        [Key]
+    public class CategoryUpdate
+    {   
         public int CategoryId { get; set; }
-        [Required, StringLength(100)]
         public string CategoryName { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public bool IsRemove { get; set; }
-        public List<Book> Books { get; set; } = new();
     }
 }
