@@ -15,6 +15,6 @@ namespace DAL.Models
         public string Code { get; set; } = string.Empty;
         public int DiscountPercent { get; set; }
         public DateTime? ExpiryDate { get; set; }
-        public bool IsActive { get; set; } = true;
+        public int quantity { get; set; }
     }
 }

@@ -1,0 +1,179 @@
+﻿@model Intelligence_Book_WEB.Models.CouponVm
+@{
+    ViewData["Title"] = "Coupon Details";
+    var isExpired = Model.ExpiryDate.HasValue && Model.ExpiryDate.Value.Date < DateTime.Today;
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f6f8;
+    }
+
+    .wrap {
+        padding: 24px;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 18px rgba(0,0,0,.08);
+        padding: 22px;
+        max-width: 980px;
+        margin: 0 auto;
+    }
+
+    .title {
+        font-size: 26px;
+        font-weight: 900;
+        margin: 0 0 12px;
+    }
+
+    .code {
+        font-size: 40px;
+        font-weight: 900;
+        text-align: center;
+        margin: 10px 0 18px;
+        letter-spacing: 2px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 22px;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px 14px;
+    }
+
+    .badge {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+        display: inline-block;
+    }
+
+    .ok {
+        color: #16a34a;
+        background: #dcfce7;
+    }
+
+    .bad {
+        color: #dc2626;
+        background: #fee2e2;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        font-weight: 900;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-green {
+        background: #16a34a;
+        color: #fff;
+    }
+
+    .btn-red {
+        background: #dc2626;
+        color: #fff;
+    }
+
+    .btn-blue {
+        background: #2563eb;
+        color: #fff;
+    }
+
+    .btn-disabled {
+        background: #9ca3af;
+        color: #fff;
+        cursor: not-allowed;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .msg {
+        margin: 12px auto;
+        max-width: 980px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: #ecfeff;
+        color: #075985;
+        font-weight: 700;
+    }
+</style>
+
+<div class="wrap">
+    <div class="topbar" style="max-width:980px;margin:0 auto 12px;">
+        <h2 class="title">📌 Coupon Details</h2>
+        <a class="btn btn-blue" href="/Admin/Coupon/CouponList">← Back</a>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="msg">@TempData["Message"]</div>
+    }
+
+    <div class="card">
+        <div class="code">@Model.Code</div>
+
+        <div class="grid">
+            <div class="row"><strong>ID</strong><span>@Model.CouponId</span></div>
+            <div class="row"><strong>Discount</strong><span>@Model.DiscountPercent %</span></div>
+            <div class="row"><strong>Expiry Date</strong><span>@(Model.ExpiryDate?.ToString("yyyy-MM-dd") ?? "-")</span></div>
+            <div class="row">
+                <strong>Status</strong>
+                <span>
+                    @if (isExpired)
+                    {
+                        <span class="badge bad">Expired</span>
+                    }
+                    else
+                    {
+                        <span class="badge ok">Available</span>
+                    }
+                </span>
+            </div>
+            <div class="row"><strong>Quantity</strong><span>@Model.quantity</span></div>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:center; margin-top:18px;">
+
+            @if (!isExpired)
+            {
+                <!-- CHỈ khi chưa expired mới cho update/delete -->
+                <a class="btn btn-green" href="/Admin/Coupon/CouponUpdate?id=@Model.CouponId">
+                    Update
+                </a>
+
+                <form method="post" action="/Admin/Coupon/CouponDelete"
+                      onsubmit="return confirm('Bạn chắc chắn muốn XÓA coupon này?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.CouponId" />
+                    <button class="btn btn-red" type="submit">Delete</button>
+                </form>
+            }
+            else
+            {
+                <!-- Expired: chỉ xem -->
+                <button class="btn btn-disabled" disabled>
+                    Locked (Expired)
+                </button>
+            }
+        </div>
+    </div>
+</div>
