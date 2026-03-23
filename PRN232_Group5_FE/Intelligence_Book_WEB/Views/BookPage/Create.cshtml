@@ -1,0 +1,103 @@
+@model Intelligence_Book_WEB.Models.BookCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Book";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="book-page">
+    <div class="edit-category-header" style="background: linear-gradient(135deg, #F79356 0%, #f57c00 100%); padding: 20px; color: white; margin-bottom: 20px;">
+        <h1>Create New Book</h1>
+    </div>
+
+    <div class="container bg-white p-4 shadow rounded">
+        <form asp-controller="BookPage" asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Title" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                    <input asp-for="Title" class="form-control" placeholder="Enter book title" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="AuthorName" class="form-label fw-bold">Author Name</label>
+                    <input asp-for="AuthorName" class="form-control" placeholder="Enter author name" />
+                    <span asp-validation-for="AuthorName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Price" class="form-label fw-bold">Price (VND) <span class="text-danger">*</span></label>
+                    <input asp-for="Price" class="form-control" type="number" step="any" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="StockQuantity" class="form-label fw-bold">Stock Quantity</label>
+                    <input asp-for="StockQuantity" class="form-control" type="number" />
+                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ISBN" class="form-label fw-bold">ISBN</label>
+                    <input asp-for="ISBN" class="form-control" placeholder="Optional ISBN" />
+                    <span asp-validation-for="ISBN" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Publisher" class="form-label fw-bold">Publisher</label>
+                    <input asp-for="Publisher" class="form-control" placeholder="Optional Publisher" />
+                    <span asp-validation-for="Publisher" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="PublishDate" class="form-label fw-bold">Publish Date</label>
+                    <input asp-for="PublishDate" class="form-control" type="date" />
+                    <span asp-validation-for="PublishDate" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="CoverImageUrl" class="form-label fw-bold">Cover Image <span class="text-danger">*</span></label>
+                    <input asp-for="CoverImageUrl" class="form-control" type="file" accept="image/*" />
+                    <span asp-validation-for="CoverImageUrl" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label class="form-label fw-bold">Categories</label>
+                    <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+                        @if(Model.AvailableCategories != null)
+                        {
+                            foreach (var cat in Model.AvailableCategories)
+                            {
+                                <div class="form-check form-check-inline me-3 mb-2">
+                                    <input class="form-check-input" type="checkbox" name="CategoryIds" value="@cat.CategoryId" id="cat_@cat.CategoryId">
+                                    <label class="form-check-label" for="cat_@cat.CategoryId">
+                                        @cat.CategoryName
+                                    </label>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <span asp-validation-for="CategoryIds" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label asp-for="Description" class="form-label fw-bold">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Book description"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success px-4 me-2">Save Book</button>
+                <a asp-action="Index" class="btn btn-secondary px-4">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

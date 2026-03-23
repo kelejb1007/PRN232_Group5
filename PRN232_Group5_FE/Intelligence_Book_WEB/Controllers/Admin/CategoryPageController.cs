@@ -1,4 +1,4 @@
-﻿using Intelligence_Book_WEB.Models;
+using Intelligence_Book_WEB.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -85,6 +85,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
                 return RedirectToAction("Index");
             }
 
+            TempData["ErrorMessage"] = "Failed to create category.";
             ModelState.AddModelError("", "Failed to create category.");
             return View(model);
         }
@@ -116,6 +117,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
                 return RedirectToAction("Index");
             }
 
+            TempData["ErrorMessage"] = "Update failed.";
             ModelState.AddModelError("", "Update failed.");
             return View(model);
         }

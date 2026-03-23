@@ -82,5 +82,10 @@ namespace DAL.Repositories.Admin
             }
             return false;
         }
+
+        public async Task<List<Category>?> GetListByIdAsync(List<int> id)
+        {
+            return await _context.Categories.Where(c => !c.IsRemove && id.Contains(c.CategoryId)).ToListAsync();
+        }
     }
 }

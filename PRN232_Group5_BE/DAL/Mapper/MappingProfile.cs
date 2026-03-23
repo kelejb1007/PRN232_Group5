@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DAL.DTOs.CategoryDTOs;
 using DAL.Models;
 using AutoMapper;
+using DAL.DTOs.BookDTO;
 namespace DAL.Mapper
 {
     public class MappingProfile : Profile
@@ -17,6 +18,14 @@ namespace DAL.Mapper
             CreateMap<Category, CategoryResponseDto>();
             //updateDTO qua model
             CreateMap<CategoryUpdate, Category>();
+
+            //model qua BookDTO
+            CreateMap<Book, BookResponeDTO>();
+            //BookDTO qua model 
+            CreateMap<BookResponeDTO, Book>();
+            //CreateDTO qua model
+            CreateMap<BookCreateDTO, Book>();
+
         }
     }
 }
