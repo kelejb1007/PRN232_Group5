@@ -6,6 +6,12 @@ using DAL.Repositories.Admin.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using DAL.Data;
+using DAL.Repositories.Admin;
+using DAL.Repositories.Admin.Interfaces;
+using BLL.Services.Admin.Interfaces;
+using BLL.Services.Admin;
+using DAL.Mapper;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -16,6 +22,10 @@ builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
