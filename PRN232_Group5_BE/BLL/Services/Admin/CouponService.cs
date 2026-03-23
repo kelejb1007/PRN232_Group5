@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Services.Admin.Interfaces;
 using DAL.DTOs.Admin.Coupons;
 using DAL.Models;
@@ -47,8 +47,8 @@ namespace BLL.Services.Admin
             // ✅ Validate BE (bắt buộc)
             if (string.IsNullOrWhiteSpace(dto.Code)) throw new ArgumentException("Code is required.");
             if (dto.Code.Length > 50) throw new ArgumentException("Code max length is 50.");
-            if (dto.DiscountPercent < 1 || dto.DiscountPercent > 50) throw new ArgumentException("Discount must be 1..50.");
-            if (dto.quantity < 0 || dto.quantity > 1000) throw new ArgumentException("Quantity must be 0..1000.");
+            if (dto.DiscountPercent < 1 || dto.DiscountPercent > 100) throw new ArgumentException("Discount must be 1..100.");
+            if (dto.quantity < 0 || dto.quantity > 10000) throw new ArgumentException("Quantity must be 0..10000.");
             if (dto.ExpiryDate.HasValue && dto.ExpiryDate.Value.Date < DateTime.Today) throw new ArgumentException("ExpiryDate cannot be in the past.");
 
             // ✅ Code unique
@@ -65,11 +65,11 @@ namespace BLL.Services.Admin
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return false;
 
-            // ❌ expired => lock
-            if (IsExpired(entity)) return false;
+            // Cho phép cập nhật lại ngày hết hạn mới để "hồi sinh" coupon
+            // if (IsExpired(entity)) return false;
 
             // ✅ Validate
-            if (dto.quantity < 0 || dto.quantity > 1000) throw new ArgumentException("Quantity must be 0..1000.");
+            if (dto.quantity < 0 || dto.quantity > 10000) throw new ArgumentException("Quantity must be 0..10000.");
             if (dto.ExpiryDate.HasValue && dto.ExpiryDate.Value.Date < DateTime.Today) throw new ArgumentException("ExpiryDate cannot be in the past.");
 
             // chỉ update 2 field
