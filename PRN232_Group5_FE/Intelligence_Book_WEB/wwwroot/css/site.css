@@ -20,3 +20,53 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+/* Bookstore Theme Colors */
+:root {
+    --book-navy: #1a2a3a;
+    --book-gold: #c5a059;
+    --paper-white: #fdfdfd;
+}
+
+.auth-container {
+    background-color: var(--paper-white);
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.auth-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.auth-header {
+    background-color: var(--book-navy);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    padding: 2rem;
+    text-align: center;
+}
+
+.btn-bookstore {
+    background-color: var(--book-gold);
+    color: white;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    padding: 12px;
+    transition: all 0.3s;
+}
+
+    .btn-bookstore:hover {
+        background-color: #b38f4d;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+.form-control:focus {
+    border-color: var(--book-gold);
+    box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25);
+}

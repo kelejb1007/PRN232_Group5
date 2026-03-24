@@ -1,0 +1,117 @@
+﻿@* new - updated to match old structure *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - YUMMY Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/Admin_layout.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="~/img/logo.png" alt="logo" />
+        </div>
+
+        <div class="admin">
+            <img src="~/img/customer.png" alt="admin" />
+            <div id="dropdown-sidebar" class="dropdown">
+                <div>
+                    <p>
+                        <text>Admin</text>
+                        @* @{ *@
+                        @*     var username = Context.Session.GetString("StaffName"); *@
+                        @* } *@
+                        @* @if (!string.IsNullOrEmpty(username)) *@
+                        @* { *@
+                        @*     @username *@
+                        @* } *@
+                        @* else *@
+                        @* { *@
+                        @*     <text>Admin</text> *@
+                        @* } *@
+                    </p>
+                </div>
+
+                <div id="dropdown-menu-sidebar" class="dropdown-menu" style="border: none; box-shadow: none; width: auto">
+                    <div id="Logoutbutton" style="text-align: left">
+                        <a asp-controller="Auth" asp-action="Logout">Logout</a>
+                        <hr style="margin:0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="menu">
+            
+            <li class="manageOption">
+                <a asp-controller="CategoryPage" asp-action="Index">
+                    <img alt="Category" src="~/img/productmanagement.png" />
+                    <span>Category Management</span>
+                </a>
+            </li>
+            <hr>
+            <li class="manageOption">
+                <a asp-controller="ProductPage" asp-action="Index">
+                    <img alt="Product" src="~/img/productmanagement.png" />
+                    <span>Book Management</span>
+                </a>
+            </li>
+            @* <hr> *@
+            @* <li class="manageOption"> *@
+            @*     <a asp-controller="Staff" asp-action="Index"> *@
+            @*         <img alt="Staff" src="~/img/employee.png" /> *@
+            @*         <span>Staff Management</span> *@
+            @*     </a> *@
+            @* </li> *@
+            @* <hr> *@
+            @* <li class="manageOption"> *@
+            @*     <a asp-controller="Inventory" asp-action="Index"> *@
+            @*         <img alt="Inventory" src="~/img/supply-chain.png" /> *@
+            @*         <span>Inventory Management</span> *@
+            @*     </a> *@
+            @* </li> *@
+            @* <hr> *@
+            @* <li class="manageOption"> *@
+            @*     <a asp-controller="Promotion" asp-action="Index"> *@
+            @*         <img alt="Promotion" src="~/img/promotion.png" /> *@
+            @*         <span>Promotions and Discounts</span> *@
+            @*     </a> *@
+            @* </li> *@
+            @* <hr> *@
+            @* <li class="manageOption"> *@
+            @*     <a asp-controller="Account" asp-action="Index"> *@
+            @*         <img alt="Account" src="~/img/account.png" /> *@
+            @*         <span>Account Management</span> *@
+            @*     </a> *@
+            @* </li> *@
+            @* <hr> *@
+            @* <li class="manageOption"> *@
+            @*     <a asp-controller="Order" asp-action="Index"> *@
+            @*         <img alt="Order" src="~/img/track.png" /> *@
+            @*         <span>Order Management</span> *@
+            @*     </a> *@
+            @* </li> *@
+        </ul>
+    </div>
+
+    <div class="container">
+        <main role="main" class="p-0">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+@* <partial name="_PopupNotification" /> *@
+@* <script src="~/js/sidebar.js"></script> *@
+</html>
