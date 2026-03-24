@@ -11,17 +11,19 @@ public class CartServiceH : ICartServiceH
     private readonly IOrderRepositoryH _orderRepo;
     private readonly IAddressRepository _addressRepo;
     private readonly IBookRepositoryH _bookRepo;
-
+    private readonly ICouponRepository _couponRepo;
     public CartServiceH(
         ICartRepositoryH repo,
         IOrderRepositoryH orderRepo,
         IAddressRepository addressRepo,
-        IBookRepositoryH bookRepo)
+        IBookRepositoryH bookRepo,
+        ICouponRepository couponRepo) // 🔥 thêm
     {
         _repo = repo;
         _orderRepo = orderRepo;
         _addressRepo = addressRepo;
         _bookRepo = bookRepo;
+        _couponRepo = couponRepo; // 🔥 thêm
     }
 
     // =========================
@@ -118,25 +120,27 @@ public class CartServiceH : ICartServiceH
 
     // =========================
     // CREATE ORDER
-    // =========================
     public async Task<OrderResponseDto> CreateOrder(
-        int userId,
-        string shippingAddress,
-        string receiverName,
-        string phoneNumber)
+     int userId,
+     string shippingAddress,
+     string receiverName,
+     string phoneNumber,
+     string? couponCode)
     {
         var carts = await _repo.GetByUserIdAsync(userId);
 
         if (carts == null || !carts.Any())
             throw new Exception("Giỏ hàng trống");
 
-        // 🔥 đảm bảo có Book
         foreach (var c in carts)
         {
             if (c.Book == null)
                 throw new Exception("Lỗi dữ liệu sách");
         }
 
+        // =========================
+        // SAVE ADDRESS
+        // =========================
         var newAddress = new DeliveryAddress
         {
             UserId = userId,
@@ -150,6 +154,54 @@ public class CartServiceH : ICartServiceH
 
         decimal total = carts.Sum(x => x.Quantity * x.Book.Price);
 
+        // =========================
+        // 🔥 HANDLE COUPON (FIX)
+        // =========================
+        Coupon? coupon = null;
+
+        // 👉 CASE 1: user nhập mã
+        if (!string.IsNullOrWhiteSpace(couponCode))
+        {
+            coupon = await _couponRepo.GetByCode(couponCode);
+
+            if (coupon == null)
+                throw new Exception("Mã giảm giá không tồn tại");
+
+            if (coupon.ExpiryDate.HasValue && coupon.ExpiryDate < DateTime.Now)
+                throw new Exception("Mã đã hết hạn");
+
+            if (coupon.quantity <= 0)
+                throw new Exception("Mã đã hết lượt");
+        }
+        else
+        {
+            // 👉 CASE 2: auto apply
+            var allCoupons = await _couponRepo.GetAllValidCoupons();
+
+            coupon = allCoupons
+                .Where(c =>
+                    (!c.ExpiryDate.HasValue || c.ExpiryDate > DateTime.Now) &&
+                    c.quantity > 0)
+                .OrderByDescending(c => c.DiscountPercent)
+                .FirstOrDefault();
+        }
+
+        // 👉 APPLY nếu có coupon
+        if (coupon != null)
+        {
+            var discount = total * coupon.DiscountPercent / 100;
+            total -= discount;
+
+            if (total < 0) total = 0;
+
+            // giảm số lượng
+            coupon.quantity--;
+            await _couponRepo.Update(coupon);
+        }
+
+        // =========================
+        // CREATE ORDER
+        // =========================
         var order = new Order
         {
             UserId = userId,
@@ -157,6 +209,7 @@ public class CartServiceH : ICartServiceH
             ShippingAddress = shippingAddress,
             TotalAmount = total,
             Status = OrderStatus.Pending,
+            CouponId = coupon?.CouponId,
             OrderItems = carts.Select(c => new OrderItem
             {
                 BookId = c.BookId,
@@ -167,7 +220,7 @@ public class CartServiceH : ICartServiceH
 
         await _orderRepo.AddAsync(order);
 
-        // 🔥 CLEAR CART SAU KHI ORDER
+        // clear cart
         await _repo.DeleteRangeAsync(carts);
 
         return new OrderResponseDto
@@ -176,7 +229,6 @@ public class CartServiceH : ICartServiceH
             TotalAmount = order.TotalAmount
         };
     }
-
     // =========================
     // ORDER DETAIL
     // =========================
@@ -231,4 +283,5 @@ public class CartServiceH : ICartServiceH
     {
         return await _orderRepo.GetOrdersByUser(userId);
     }
+
 }

@@ -12,5 +12,6 @@ namespace DAL.DTOs
         public string ShippingAddress { get; set; }
         public string ReceiverName { get; set; }
         public string PhoneNumber { get; set; }
+        public string? CouponCode { get; set; }
     }
 }

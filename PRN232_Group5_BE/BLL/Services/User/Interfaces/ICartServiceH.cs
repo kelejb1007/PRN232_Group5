@@ -16,12 +16,12 @@ namespace BLL.Services.User.Interfaces
         Task ClearCart(int userId);
 
         Task<OrderResponseDto> CreateOrder(
-            int userId,
-            string shippingAddress,
-            string receiverName,
-            string phoneNumber
-        );
-
+           int userId,
+           string shippingAddress,
+           string receiverName,
+           string phoneNumber,
+           string? couponCode // 🔥 thêm
+       );
         Task<OrderDetailDto?> GetOrderDetail(int orderId);
 
         Task MarkOrderAsPaid(int orderId);

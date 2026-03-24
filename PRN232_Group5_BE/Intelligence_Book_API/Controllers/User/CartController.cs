@@ -79,11 +79,12 @@ namespace Intelligence_Book_API.Controllers.User
                 var userId = GetUserId();
 
                 var order = await _service.CreateOrder(
-                    userId,
-                    req.ShippingAddress,
-                    req.ReceiverName,
-                    req.PhoneNumber
-                );
+      userId,
+      req.ShippingAddress,
+      req.ReceiverName,
+      req.PhoneNumber,
+      req.CouponCode
+  );
 
                 var url = await _payOS.CreatePayment(order.OrderId, order.TotalAmount);
 

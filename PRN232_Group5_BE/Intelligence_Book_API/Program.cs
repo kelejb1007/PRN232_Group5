@@ -31,7 +31,7 @@ builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
         ?? throw new InvalidOperationException("Connection string 'Intelligence_Book_APIContext' not found.")));
 
 // DI Repo + Service
-builder.Services.AddScoped<ICouponRepository, CouponRepository>();
+builder.Services.AddScoped<DAL.Repositories.User.Interfaces.ICouponRepository, DAL.Repositories.User.CouponRepository>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<DAL.Repositories.Admin.Interfaces.IOrderRepository, DAL.Repositories.Admin.OrderRepository>();
 builder.Services.AddScoped<BLL.Services.Admin.Interfaces.IOrderService, BLL.Services.Admin.OrderService>();
@@ -112,7 +112,8 @@ builder.Services.AddScoped<IOrderRepositoryH, OrderRepositoryH>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IBookRepositoryH, BookRepositoryH>();
 builder.Services.AddScoped<IBookServiceH, BookServiceH>();
-
+builder.Services.AddScoped<DAL.Repositories.User.Interfaces.ICouponRepository, DAL.Repositories.User.CouponRepository>();
+builder.Services.AddScoped<DAL.Repositories.Admin.Interfaces.ICouponRepository, DAL.Repositories.Admin.CouponRepository>();
 // AutoMapper (MappingProfile for User-side)
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

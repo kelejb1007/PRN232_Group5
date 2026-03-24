@@ -77,7 +77,7 @@ public async Task UpdateAsync(Order order)
                     OrderId = o.OrderId,
                     OrderDate = o.OrderDate,
                     TotalAmount = o.TotalAmount,
-                    Status = o.Status.ToString(), // ✅ FIX
+                    Status = o.Status.ToString(), 
                     ShippingAddress = o.ShippingAddress,
                     TotalItems = o.OrderItems.Sum(d => d.Quantity)
                 })
