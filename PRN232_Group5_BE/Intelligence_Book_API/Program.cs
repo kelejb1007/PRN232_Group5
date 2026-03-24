@@ -26,9 +26,11 @@ builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Intelligence_Book_APIContext") ?? throw new InvalidOperationException("Connection string 'Intelligence_Book_APIContext' not found.")));
 
 // Add services to the container.
+// Repository
+builder.Services.AddScoped<IBookRepository_Anh, BookRepository_Anh>();
 
-builder.Services.AddControllers();
-
+// Service
+builder.Services.AddScoped<IBookService_Anh, BookService_Anh>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -41,6 +43,7 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

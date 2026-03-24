@@ -1,0 +1,139 @@
+﻿<style>
+    :root {
+        --primary-color: #192432;
+        --accent-color: #f39c12; /* Màu vàng cam để kích thích mua hàng */
+        --text-muted: #6c757d;
+        --bg-light: #f8f9fa;
+    }
+
+    .detail-wrapper {
+        padding: 60px 0;
+        background-color: var(--bg-light);
+    }
+
+    .detail-card {
+        background: #ffffff;
+        border-radius: 15px;
+        border: none;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .book-cover-wrapper {
+        padding: 30px;
+        background: #f1f3f5; /* Nền nhẹ cho ảnh sản phẩm */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .book-cover {
+        max-height: 450px;
+        transition: transform 0.3s ease;
+    }
+
+        .book-cover:hover {
+            transform: scale(1.03);
+        }
+
+    .product-info {
+        padding: 40px;
+    }
+
+    .product-title {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    .product-price {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #d9534f; /* Giữ màu đỏ nhẹ cho giá để gây chú ý */
+        margin-bottom: 20px;
+    }
+
+    .product-description {
+        color: #555;
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+
+    /* Tùy chỉnh Nút bấm */
+    .btn-custom-primary {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: 2px solid var(--primary-color);
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+        .btn-custom-primary:hover {
+            background-color: transparent;
+            color: var(--primary-color);
+        }
+
+    .btn-custom-outline {
+        border: 2px solid #dee2e6;
+        color: var(--text-muted);
+        padding: 12px 30px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-custom-outline:hover {
+            background-color: #dee2e6;
+            color: var(--primary-color);
+        }
+</style>
+
+<div class="detail-wrapper">
+    <div class="container">
+        <div class="detail-card shadow-lg">
+            <div class="row g-0">
+                <div class="col-md-5 book-cover-wrapper">
+                    <img src="@Model.CoverImageUrl" class="img-fluid book-cover shadow-sm" alt="Book Cover" />
+                </div>
+
+                <div class="col-md-7">
+                    <div class="product-info">
+                        <nav aria-label="breadcrumb" class="mb-3">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/Search" class="text-decoration-none" style="color: var(--primary-color)"></a></li>
+                             
+                            </ol>
+                        </nav>
+
+                        <h1 class="product-title">@Model.Title</h1>
+
+                        <div class="product-price">
+                            @Model.Price.ToString("N0") <span style="font-size: 1rem; vertical-align: middle;">đ</span>
+                        </div>
+
+                        <hr class="my-4" style="opacity: 0.1;">
+
+                        <p class="product-description">
+                            @Model.Description
+                        </p>
+
+                        <div class="mt-5 d-flex gap-3">
+                            <a href="/Cart/Add/@Model.BookId" class="btn btn-custom-primary">
+                                <i class="bi bi-cart-plus me-2"></i> Thêm vào giỏ hàng
+                            </a>
+
+                            <a href="/Search" class="btn btn-custom-outline">
+                                Quay lại
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

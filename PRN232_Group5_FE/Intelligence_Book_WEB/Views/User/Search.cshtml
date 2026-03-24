@@ -1,0 +1,195 @@
+﻿@model List<Intelligence_Book_WEB.Models.BookViewModel>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<style>
+    body {
+        background-color: #fff; /* Cam nhạt */
+    }
+
+    /* CSS cho icon trái tim trên hình ảnh */
+    .book-card-container {
+        position: relative;
+    }
+
+    .wishlist-icon-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid #000; /* Viền đen mặc định */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.3s ease;
+        padding: 0;
+        outline: none;
+    }
+
+        /* Hình trái tim mặc định: chỉ có viền đen */
+        .wishlist-icon-btn i {
+            font-size: 1.2rem;
+            color: white; /* Màu trong tim là trắng */
+            -webkit-text-stroke: 1.5px black; /* Tạo viền đen cho icon trái tim */
+        }
+
+        /* Khi đã active (đã thêm vào wishlist) */
+        .wishlist-icon-btn.active {
+            border-color: #ff0000; /* Viền chuyển sang đỏ */
+        }
+
+            .wishlist-icon-btn.active i {
+                color: #ff0000; /* Tim chuyển sang màu đỏ toàn bộ */
+                -webkit-text-stroke: 0px; /* Bỏ viền đen của icon */
+            }
+
+        .wishlist-icon-btn:hover {
+            transform: scale(1.1);
+        }
+
+    .btn-addcart {
+        background-color: #192432; /* màu bạn muốn */
+        color: white; /* chữ màu trắng */
+        border: none; /* bỏ viền mặc định */
+    }
+
+        .btn-addcart:hover {
+            background-color: #1f2a38; /* màu hover nhạt hơn 1 chút */
+            color: white;
+        }
+</style>
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4" style="color: black ;">Book Store</h2>
+
+    <form method="get" class="row mb-4">
+        <div class="col-md-3">
+            <input name="search"
+                   class="form-control"
+                   placeholder="Tìm kiếm sách..." />
+            <div class="mt-2">
+                <button id="open-wishlist" type="button" class="btn btn-danger btn-sm">
+                    <i class="bi bi-heart-fill"></i> My Wishlist
+                </button>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="categoryId" class="form-select">
+                <option value="">All Categories</option>
+                @foreach (var cate in ViewBag.Categories ?? new List<Intelligence_Book_WEB.Models.CategoryViewModel>())
+                {
+                    <option value="@cate.CategoryId"
+                            selected="@(ViewBag.SelectedCategory != null && ViewBag.SelectedCategory == cate.CategoryId ? "selected" : null)">
+                        @cate.CategoryName
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <input name="minPrice" type="number" class="form-control" placeholder="Min Price" />
+        </div>
+
+        <div class="col-md-2">
+            <input name="maxPrice" type="number" class="form-control" placeholder="Max Price" />
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Tìm</button>
+        </div>
+    </form>
+
+    <div class="row">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="col-12 text-center mt-5">
+                <div class="alert alert-warning">
+                    <i class="bi bi-search"></i> Không tìm thấy sách nào phù hợp với yêu cầu của bạn.
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col-md-3 mb-4" data-id="@item.BookId">
+                    <div class="card shadow book-card-container">
+
+                        <button class="wishlist-icon-btn add-wishlist" data-id="@item.BookId">
+                            <i class="bi bi-heart-fill"></i>
+                        </button>
+
+                        <img src="@item.CoverImageUrl" class="card-img-top" height="250" />
+
+                        <div class="card-body">
+                            <h5>@item.Title</h5>
+                            <p class="text-danger fw-bold">@item.Price.ToString("N0") đ</p>
+
+                            <a asp-controller="HomeController_Anh"
+                               asp-action="Details"
+                               asp-route-id="@item.BookId"
+                               class="btn btn-outline-primary w-100 mb-2">
+                                Xem chi tiết
+                            </a>
+
+                            <a href="/Cart/Add/@item.BookId" class="btn btn-addcart w-100 mb-2">
+                                Thêm vào giỏ hàng
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script>
+    // Hàm cập nhật UI khi load trang
+    function updateWishlistUI() {
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        document.querySelectorAll('.add-wishlist').forEach(btn => {
+            const bookId = parseInt(btn.getAttribute('data-id'));
+            if (wishlist.includes(bookId)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', updateWishlistUI);
+
+    // Logic Click
+    document.querySelectorAll('.add-wishlist').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const bookId = parseInt(this.getAttribute('data-id'));
+            let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
+            if (!wishlist.includes(bookId)) {
+                wishlist.push(bookId);
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                this.classList.add('active');
+                alert('Added to wishlist!');
+            } else {
+                wishlist = wishlist.filter(id => id != bookId);
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                this.classList.remove('active');
+                alert('Removed from wishlist!');
+            }
+        });
+    });
+
+    document.getElementById('open-wishlist').addEventListener('click', function() {
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        if (wishlist.length === 0) {
+            alert('Your wishlist is empty!');
+            return;
+        }
+        window.location.href = '/User/Wishlist?ids=' + wishlist.join(',');
+    });
+</script>
