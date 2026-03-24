@@ -1,0 +1,31 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DAL.Data;
+using DAL.Models;
+using DAL.Models.Enums;
+using DAL.Repositories.User.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace DAL.Repositories.User
+{
+    public class OrderRepository : IOrderRepository
+    {
+        private readonly Intelligence_Book_APIContext _context;
+
+        public OrderRepository(Intelligence_Book_APIContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<bool> HasUserPurchasedBookAsync(int userId, int bookId)
+        {
+            // Kiểm tra xem User có đơn hàng nào đã được giao (Delivered) và chứa cuốn sách này không
+            return await _context.Orders
+                .Where(o => o.UserId == userId && o.Status == OrderStatus.Delivered)
+                .AnyAsync(o => o.OrderItems.Any(oi => oi.BookId == bookId));
+        }
+    }
+}

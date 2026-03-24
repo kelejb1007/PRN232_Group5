@@ -1,8 +1,12 @@
-﻿using BLL.Services.Admin;
+using BLL.Services.Admin;
 using BLL.Services.Admin.Interfaces;
 using DAL.Data;
 using DAL.Repositories.Admin;
 using DAL.Repositories.Admin.Interfaces;
+using DAL.Repositories.User;
+using DAL.Repositories.User.Interfaces;
+using BLL.Services.User;
+using BLL.Services.User.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using DAL.Data;
@@ -31,7 +35,11 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
-
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

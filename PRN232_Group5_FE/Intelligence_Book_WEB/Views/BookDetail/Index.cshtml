@@ -1,0 +1,208 @@
+@model Intelligence_Book_WEB.Models.BookDetailViewModel
+@{
+    ViewData["Title"] = Model.Book.Title;
+    var userToken = Context.Request.Cookies["access_token"];
+    var isAuthenticated = !string.IsNullOrEmpty(userToken);
+}
+
+<div class="container mt-5">
+    <!-- Book Info (Placeholder) -->
+    <div class="row">
+        <div class="col-md-4">
+            <img src="@Model.Book.CoverImageUrl" class="img-fluid rounded shadow" alt="@Model.Book.Title">
+        </div>
+        <div class="col-md-8">
+            <h1 class="display-4">@Model.Book.Title</h1>
+            <p class="lead">@Model.Book.Description</p>
+            <h3 class="text-primary">Giá: @Model.Book.Price.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</h3>
+            <button class="btn btn-lg btn-success mt-3">Thêm vào giỏ hàng</button>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <!-- Review Section -->
+    <div class="reviews-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Đánh giá từ khách hàng (@Model.Reviews.Count)</h2>
+            
+            @if (isAuthenticated)
+            {
+                if (Model.CanReview)
+                {
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                        <i class="fas fa-edit me-2"></i>Viết đánh giá
+                    </button>
+                }
+                else if (Model.UserReview != null)
+                {
+                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#reviewModal" 
+                            onclick="populateEditForm('@Model.UserReview.ReviewId', '@Model.UserReview.Rating', '@Html.Raw(Model.UserReview.Comment)')">
+                        <i class="fas fa-edit me-2"></i>Chỉnh sửa đánh giá của bạn
+                    </button>
+                }
+            }
+            else
+            {
+                <span class="text-muted"><a asp-controller="Auth" asp-action="Login">Đăng nhập</a> để đánh giá</span>
+            }
+        </div>
+
+        @if (!Model.Reviews.Any())
+        {
+            <div class="alert alert-light text-center py-5 shadow-sm border-0">
+                <i class="far fa-comment-dots fa-3x mb-3 text-muted"></i>
+                <p class="text-muted">Chưa có đánh giá nào cho cuốn sách này. Hãy là người đầu tiên!</p>
+            </div>
+        }
+        else
+        {
+            <div class="review-list">
+                @foreach (var review in Model.Reviews)
+                {
+                    <div class="card mb-3 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="card-title mb-1 text-dark fw-bold">@review.UserName</h5>
+                                <small class="text-muted">@review.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                            <div class="text-warning mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="@(i <= review.Rating ? "fas" : "far") fa-star"></i>
+                                }
+                            </div>
+                            <p class="card-text text-secondary">@review.Comment</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-dark text-white border-0">
+                <h5 class="modal-title" id="modalTitle">Đánh giá sản phẩm</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="reviewForm" class="text-center">
+                    <input type="hidden" id="reviewId" name="reviewId" value="">
+                    <input type="hidden" id="bookId" name="bookId" value="@Model.Book.BookId">
+                    
+                    <p class="mb-2 text-secondary">Vui lòng chọn số sao</p>
+                    <div class="star-rating mb-4 display-6">
+                        <i class="far fa-star text-warning cursor-pointer" data-value="1"></i>
+                        <i class="far fa-star text-warning cursor-pointer" data-value="2"></i>
+                        <i class="far fa-star text-warning cursor-pointer" data-value="3"></i>
+                        <i class="far fa-star text-warning cursor-pointer" data-value="4"></i>
+                        <i class="far fa-star text-warning cursor-pointer" data-value="5"></i>
+                        <input type="hidden" id="ratingInput" name="rating" value="0">
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="comment" name="comment" style="height: 120px" placeholder="Nhận xét của bạn"></textarea>
+                        <label for="comment">Chia sẻ trải nghiệm của bạn về cuốn sách...</label>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-dark btn-lg py-3">Gửi đánh giá</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cursor-pointer { cursor: pointer; }
+    .star-rating i { transition: all 0.2s; }
+    .star-rating i:hover { transform: scale(1.2); }
+    .card { transition: transform 0.2s; border-radius: 12px; }
+    .card:hover { transform: translateY(-3px); }
+</style>
+
+@section Scripts {
+    <script>
+        $(function () {
+            let currentRating = 0;
+
+            // Xử lý hover/click chọn sao
+            $('.star-rating i').on('mouseover', function () {
+                let val = $(this).data('value');
+                highlightStars(val);
+            }).on('mouseout', function () {
+                highlightStars(currentRating);
+            }).on('click', function () {
+                currentRating = $(this).data('value');
+                $('#ratingInput').val(currentRating);
+                highlightStars(currentRating);
+            });
+
+            function highlightStars(count) {
+                $('.star-rating i').each(function (index) {
+                    if (index < count) {
+                        $(this).removeClass('far').addClass('fas');
+                    } else {
+                        $(this).removeClass('fas').addClass('far');
+                    }
+                });
+            }
+
+            // Gửi form AJAX
+            $('#reviewForm').on('submit', function (e) {
+                e.preventDefault();
+                
+                if (currentRating === 0) {
+                    alert('Vui lòng chọn số sao!');
+                    return;
+                }
+
+                const data = {
+                    reviewId: $('#reviewId').val() ? parseInt($('#reviewId').val()) : null,
+                    bookId: parseInt($('#bookId').val()),
+                    rating: parseInt($('#ratingInput').val()),
+                    comment: $('#comment').val()
+                };
+
+                $.ajax({
+                    url: '/BookDetail/SubmitReview',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (res) {
+                        if (res.success) {
+                            alert('Cảm ơn bạn đã đánh giá!');
+                            location.reload();
+                        }
+                    },
+                    error: function (xhr) {
+                        alert('Có lỗi xảy ra: ' + (xhr.responseJSON?.message || 'Vui lòng thử lại sau.'));
+                    }
+                });
+            });
+        });
+
+        function populateEditForm(id, rating, comment) {
+            $('#modalTitle').text('Chỉnh sửa đánh giá');
+            $('#reviewId').val(id);
+            $('#ratingInput').val(rating);
+            $('#comment').val(comment);
+            
+            // Highlight stars
+            $('.star-rating i').each(function (index) {
+                if (index < rating) {
+                    $(this).removeClass('far').addClass('fas');
+                } else {
+                    $(this).removeClass('fas').addClass('far');
+                }
+            });
+            // Update currentRating so mouseout works correctly
+            window.currentRating = rating; 
+        }
+    </script>
+}
