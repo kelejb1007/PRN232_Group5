@@ -152,7 +152,7 @@
         border-bottom: none;
     }
 
-    .star-rating i {
+    .star-rating i, .review-star i {
         color: var(--star-color);
         margin-right: 2px;
     }
@@ -268,10 +268,12 @@
                     {
                         <div class="review-card">
                             <div class="d-flex justify-content-between mb-2">
-                                <strong class="text-dark">@review.UserName</strong>
+                                <strong class="text-dark">
+                                    @(string.IsNullOrEmpty(review.UserName) ? "Người dùng ẩn danh" : review.UserName)
+                                </strong>
                                 <span class="text-muted small">@review.CreatedAt.ToString("dd/MM/yyyy")</span>
                             </div>
-                            <div class="star-rating mb-2">
+                            <div class="review-star mb-2">
                                 @for (int i = 1; i <= 5; i++)
                                 {
                                     <i class="@(i <= review.Rating ? "fas" : "far") fa-star"></i>
@@ -365,9 +367,10 @@
                 }
             });
 
-            // Hover & Click Stars
+            // Hover & Click Stars — scoped to modal form only, does NOT touch review-card stars
             let currentRating = 0;
-            $('.star-rating i').on('mouseover', function () {
+            const $modalStars = $('#reviewForm .star-rating i');
+            $modalStars.on('mouseover', function () {
                 highlightStars($(this).data('value'));
             }).on('mouseout', function () {
                 highlightStars(currentRating);
@@ -378,7 +381,7 @@
             });
 
             function highlightStars(count) {
-                $('.star-rating i').each(function (idx) {
+                $modalStars.each(function (idx) {
                     if (idx < count) $(this).removeClass('far').addClass('fas');
                     else $(this).removeClass('fas').addClass('far');
                 });
@@ -417,14 +420,10 @@
 
         function populateEditForm(id, rating, comment) {
             $('#reviewId').val(id);
-            $('#ratingInput').val(rating);
+            $('#ratingInput').val(parseInt(rating));
             $('#comment').val(comment);
-            
-            $('.star-rating i').each(function (idx) {
-                if (idx < rating) $(this).removeClass('far').addClass('fas');
-                else $(this).removeClass('fas').addClass('far');
-            });
-            window.currentRating = rating;
+            currentRating = parseInt(rating);
+            highlightStars(currentRating);
         }
     </script>
 }

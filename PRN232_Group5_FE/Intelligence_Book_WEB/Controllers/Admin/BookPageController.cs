@@ -26,20 +26,34 @@ namespace Intelligence_Book_WEB.Controllers.Admin
             return new List<CategoryViewModel>();
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search, List<int>? categoryIds)
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
-            var response = await client.GetAsync("api/Admin/Books");
 
-            if (!response.IsSuccessStatusCode)
+            // Build query string
+            var query = new List<string>();
+            if (!string.IsNullOrWhiteSpace(search))
+                query.Add($"search={Uri.EscapeDataString(search)}");
+            if (categoryIds != null && categoryIds.Any())
+                foreach (var id in categoryIds)
+                    query.Add($"categoryIds={id}");
+
+            var url = query.Any() ? $"api/Admin/Books?{string.Join("&", query)}" : "api/Admin/Books";
+            var response = await client.GetAsync(url);
+
+            var books = new List<BookViewModel>();
+            if (response.IsSuccessStatusCode)
             {
-                return View(new List<BookViewModel>());
+                var json = await response.Content.ReadAsStringAsync();
+                books = JsonSerializer.Deserialize<List<BookViewModel>>(
+                    json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? books;
             }
 
-            var json = await response.Content.ReadAsStringAsync();
-            var books = JsonSerializer.Deserialize<List<BookViewModel>>(
-                json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            // Pass categories and current filter state to view
+            ViewBag.Categories = await GetCategoriesAsync();
+            ViewBag.Search = search;
+            ViewBag.SelectedCategories = categoryIds ?? new List<int>();
 
             return View(books);
         }

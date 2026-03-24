@@ -11,6 +11,7 @@ namespace BLL.Services.Admin.Interfaces
     public interface IBookService
     {
         Task<List<BookResponeDTO>> GetAllAsync();
+        Task<List<BookResponeDTO>> SearchAsync(string? search, List<int>? categoryIds);
         Task<BookResponeDTO?> GetByIdAsync(int id);
         Task<BookResponeDTO> CreateAsync(BookCreateDTO dto);
         Task<BookResponeDTO?> UpdateAsync(int id, BookUpdateDTO dto);

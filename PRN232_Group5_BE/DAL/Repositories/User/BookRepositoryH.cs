@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,13 +22,13 @@ namespace DAL.Repositories.User
 
         public async Task<List<Book>> GetAllAsync()
         {
-            return await _context.Books.ToListAsync();
+            return await _context.Books.Where(b => !b.IsRemove).ToListAsync();
         }
 
         public async Task<Book?> GetByIdAsync(int id)
         {
             return await _context.Books
-                .FirstOrDefaultAsync(b => b.BookId == id);
+                .FirstOrDefaultAsync(b => b.BookId == id && !b.IsRemove);
         }
         public async Task<List<Book>> GetBestSellerAsync()
         {
@@ -46,7 +46,7 @@ namespace DAL.Repositories.User
                 .ToListAsync();
 
             var books = await _context.Books
-                .Where(b => bestSellerIds.Contains(b.BookId))
+                .Where(b => bestSellerIds.Contains(b.BookId) && !b.IsRemove)
                 .ToListAsync();
 
             // 🔥 giữ đúng thứ tự best seller

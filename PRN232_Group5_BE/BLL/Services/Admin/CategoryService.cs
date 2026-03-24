@@ -25,7 +25,12 @@ namespace BLL.Services.Admin
         {
             var categories = await _repository.GetAllAsync();
             return _mapper.Map<IEnumerable<CategoryResponseDto>>(categories);
-            //await _repository.GetAllAsync();
+        }
+
+        public async Task<IEnumerable<CategoryResponseDto>> SearchAsync(string search)
+        {
+            var categories = await _repository.SearchAsync(search);
+            return _mapper.Map<IEnumerable<CategoryResponseDto>>(categories);
         }
 
         public async Task<CategoryResponseDto?> GetByIdAsync(int id)

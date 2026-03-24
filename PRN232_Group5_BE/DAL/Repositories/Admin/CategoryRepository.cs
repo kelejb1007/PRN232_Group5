@@ -25,6 +25,15 @@ namespace DAL.Repositories.Admin
             return await _context.Categories.ToListAsync();
         }
 
+        // Search by name
+        public async Task<IEnumerable<Category>> SearchAsync(string search)
+        {
+            var keyword = search.Trim().ToLower();
+            return await _context.Categories
+                .Where(c => c.CategoryName.ToLower().Contains(keyword))
+                .ToListAsync();
+        }
+
         // by ID
         public async Task<Category?> GetByIdAsync(int id)
         {

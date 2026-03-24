@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +10,8 @@ namespace DAL.Repositories.Admin.Interfaces
     public interface ICategoryRepository
     {
         Task<IEnumerable<Category>> GetAllAsync();
+
+        Task<IEnumerable<Category>> SearchAsync(string search);
 
         Task<Category?> GetByIdAsync(int id);
         Task<List<Category>?> GetListByIdAsync(List<int> id);

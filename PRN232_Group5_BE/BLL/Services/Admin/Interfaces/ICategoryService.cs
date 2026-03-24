@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +11,8 @@ namespace BLL.Services.Admin.Interfaces
     public interface ICategoryService
     {
         Task<IEnumerable<CategoryResponseDto>> GetAllAsync();
+
+        Task<IEnumerable<CategoryResponseDto>> SearchAsync(string search);
 
         Task<CategoryResponseDto?> GetByIdAsync(int id);
 

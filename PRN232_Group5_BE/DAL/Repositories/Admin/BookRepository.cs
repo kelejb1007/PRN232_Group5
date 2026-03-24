@@ -47,6 +47,31 @@ namespace DAL.Repositories.Admin
         
         }
 
+        public async Task<IEnumerable<Book>> SearchAsync(string? search, List<int>? categoryIds)
+        {
+            var query = _context.Books
+                .Where(b => !b.IsRemove)
+                .Include(b => b.Author)
+                .Include(b => b.Categories)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var keyword = search.Trim().ToLower();
+                query = query.Where(b =>
+                    b.Title.ToLower().Contains(keyword) ||
+                    (b.Author != null && b.Author.AuthorName.ToLower().Contains(keyword)));
+            }
+
+            if (categoryIds != null && categoryIds.Any())
+            {
+                query = query.Where(b =>
+                    b.Categories.Any(c => categoryIds.Contains(c.CategoryId)));
+            }
+
+            return await query.ToListAsync();
+        }
+
         public async Task<Book?> GetByIdAsync(int id)
         {
            return await _context.Books
