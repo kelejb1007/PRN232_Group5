@@ -117,6 +117,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Intelligence_Book_WEB.Controllers
 {
+    // Giúp class này nhận diện các URL bắt đầu bằng /Home hoặc / (trang chủ)
+    [Route("Home")]
+    [Route("")]
     public class HomeController_Anh : Controller
     {
         private readonly ILogger<HomeController_Anh> _logger;
@@ -128,11 +131,14 @@ namespace Intelligence_Book_WEB.Controllers
             _factory = factory;
         }
 
+        [HttpGet("")] // Trang chủ mặc định: https://localhost:7117/
+        [HttpGet("Index")] // https://localhost:7117/Home/Index
         public IActionResult Index()
         {
             return View("~/Views/Home/Index.cshtml");
         }
 
+        [HttpGet("Search")] // https://localhost:7117/Home/Search
         public async Task<IActionResult> Search(string? search, decimal? minPrice, decimal? maxPrice, int? categoryId)
         {
             var client = _factory.CreateClient("BookAPI");
@@ -152,9 +158,10 @@ namespace Intelligence_Book_WEB.Controllers
             ViewBag.Categories = categories;
             ViewBag.SelectedCategory = categoryId;
 
-            return View("~/Views/Home/Search.cshtml", books);
+            return View("~/Views/User/Search.cshtml", books);
         }
 
+        [HttpGet("Details/{id}")] // https://localhost:7117/Home/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var client = _factory.CreateClient("BookAPI");
@@ -163,25 +170,23 @@ namespace Intelligence_Book_WEB.Controllers
             var book = JsonSerializer.Deserialize<BookViewModel>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            return View("~/Views/Home/BookDetails.cshtml", book);
+            return View("~/Views/User/BookDetails.cshtml", book);
         }
 
-        // **Thêm Route để My Wishlist mở được**
-        [Route("User/Wishlist")]  // <- đây chính là fix 404
+        [HttpGet("/User/Wishlist")] // Giữ nguyên link ngắn của bạn
         public async Task<IActionResult> Wishlist()
         {
             var client = _factory.CreateClient("BookAPI");
-
             var wishlistIdsQuery = Request.Query["ids"].ToString();
+
             if (string.IsNullOrEmpty(wishlistIdsQuery))
                 return View("~/Views/User/Wishlist.cshtml", new List<BookViewModel>());
 
             var wishlistIds = wishlistIdsQuery.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                              .Select(int.Parse)
-                                              .ToList();
+                                             .Select(int.Parse)
+                                             .ToList();
 
             var books = new List<BookViewModel>();
-
             foreach (var id in wishlistIds)
             {
                 var response = await client.GetAsync($"books/{id}");
@@ -193,7 +198,6 @@ namespace Intelligence_Book_WEB.Controllers
                     if (book != null) books.Add(book);
                 }
             }
-
             return View("~/Views/User/Wishlist.cshtml", books);
         }
     }
