@@ -5,7 +5,7 @@
 }
 
 <div class="container mt-5">
-    <h2 class="mb-4">Chi tiết đơn hàng</h2>
+    <h2 class="mb-4">📦 Chi tiết đơn hàng</h2>
 
     @if (ViewBag.Error != null)
     {
@@ -13,56 +13,91 @@
     }
     else if (Model == null || Model.OrderId <= 0)
     {
-        <div class="alert alert-warning">Không có dữ liệu đơn hàng.</div>
+        <div class="alert alert-warning">Không có dữ liệu đơn hàng hợp lệ.</div>
     }
     else
     {
-        @if (ViewBag.Warning != null)
+        if (ViewBag.Warning != null)
         {
             <div class="alert alert-warning">@ViewBag.Warning</div>
         }
 
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <p><strong>Mã đơn:</strong> #@Model.OrderId</p>
-                <p><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
-                <p><strong>Trạng thái:</strong> @Model.Status</p>
-                <p><strong>Địa chỉ giao hàng:</strong> @(string.IsNullOrWhiteSpace(Model.ShippingAddress) ? "Không có" : Model.ShippingAddress)</p>
-                <p><strong>Tổng tiền:</strong> @Model.TotalAmount.ToString("N0") VNĐ</p>
+    <!-- ORDER INFO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <p><strong>Mã đơn:</strong> #@Model.OrderId</p>
+
+            <p>
+                <strong>Ngày đặt:</strong>
+                @(Model.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+            </p>
+
+            <p>
+                <strong>Trạng thái:</strong>
+                <span class="badge
+                        @(Model.Status == "Delivered" ? "bg-success" :
+                                                Model.Status == "Paid" ? "bg-primary" :
+                                                Model.Status == "Pending" ? "bg-warning text-dark" :
+                                                Model.Status == "Cancelled" ? "bg-danger" :
+                                                "bg-secondary")">
+                                                             @Model.Status
+                                                         </span>
+                                                     </p>
+
+            <p>
+                <strong>Địa chỉ:</strong>
+                @(string.IsNullOrWhiteSpace(Model.ShippingAddress)
+                                ? "Không có"
+                                : Model.ShippingAddress)
+            </p>
+
+                <p>
+                    <strong>Tổng tiền:</strong>
+                    <span class="text-danger fw-bold">
+                        @string.Format("{0:N0} VNĐ", Model.TotalAmount)
+                    </span>
+                </p>
+
             </div>
         </div>
 
-        @if (Model.Items == null || !Model.Items.Any())
+        <!-- ITEMS -->
+    @if (Model.Items == null || !Model.Items.Any())
         {
             <div class="alert alert-info">Đơn hàng chưa có sản phẩm nào.</div>
         }
         else
         {
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Tên sách</th>
-                        <th>Số lượng</th>
-                        <th>Giá</th>
-                        <th>Thành tiền</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Items)
-                    {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td>@item.BookTitle</td>
-                            <td>@item.Quantity</td>
-                            <td>@item.PriceAtPurchase.ToString("N0") VNĐ</td>
-                            <td>@item.SubTotal.ToString("N0") VNĐ</td>
+                            <th>Tên sách</th>
+                            <th>Số lượng</th>
+                            <th>Giá</th>
+                            <th>Thành tiền</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>@item.BookTitle</td>
+                                <td>@item.Quantity</td>
+                                <td>@string.Format("{0:N0} VNĐ", item.PriceAtPurchase)</td>
+                                <td>@string.Format("{0:N0} VNĐ", item.SubTotal)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
 
         <div class="mt-3">
-            <a href="/Order/Index" class="btn btn-secondary">Quay lại danh sách đơn hàng</a>
+            <a href="/Order/Index" class="btn btn-secondary">
+                ← Quay lại
+            </a>
         </div>
     }
 </div>

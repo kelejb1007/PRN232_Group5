@@ -6,6 +6,13 @@ namespace Intelligence_Book_WEB.Controllers.User
 {
     public class OrderController : Controller
     {
+        private readonly HttpClient _client;
+
+        public OrderController(IHttpClientFactory factory)
+        {
+            _client = factory.CreateClient();
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -13,8 +20,6 @@ namespace Intelligence_Book_WEB.Controllers.User
 
         public async Task<IActionResult> OrderDetail(int orderId)
         {
-            using var client = new HttpClient();
-
             try
             {
                 if (orderId <= 0)
@@ -23,34 +28,36 @@ namespace Intelligence_Book_WEB.Controllers.User
                     return View(new OrderDetailViewModel());
                 }
 
-                // 1. gọi API đánh dấu đã thanh toán
-                var paidResponse = await client.PostAsync(
-                    $"https://localhost:7287/api/cart/mark-paid/{orderId}",
-                    null
+                // ❌ KHÔNG gọi mark-paid ở đây nữa
+                // 👉 nên gọi ở callback thanh toán hoặc backend
+
+                // ✅ gọi API lấy chi tiết đơn hàng
+                var response = await _client.GetAsync(
+                    $"https://localhost:7287/api/order/{orderId}"
                 );
-
-                // nếu fail thì vẫn cho xem chi tiết, không chặn cứng
-                if (!paidResponse.IsSuccessStatusCode)
-                {
-                    var paidError = await paidResponse.Content.ReadAsStringAsync();
-                    ViewBag.Warning = $"Không cập nhật được trạng thái thanh toán: {paidError}";
-                }
-
-                // 2. lấy lại chi tiết đơn hàng
-                var response = await client.GetAsync($"https://localhost:7287/api/cart/order-detail/{orderId}");
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    ViewBag.Error = "Không tải được chi tiết đơn hàng";
+                    var error = await response.Content.ReadAsStringAsync();
+                    ViewBag.Error = $"API lỗi: {error}";
                     return View(new OrderDetailViewModel());
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
 
-                var order = JsonSerializer.Deserialize<OrderDetailViewModel>(json, new JsonSerializerOptions
+                if (string.IsNullOrWhiteSpace(json))
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    ViewBag.Error = "API trả về dữ liệu rỗng";
+                    return View(new OrderDetailViewModel());
+                }
+
+                var order = JsonSerializer.Deserialize<OrderDetailViewModel>(
+                    json,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }
+                );
 
                 if (order == null)
                 {
@@ -62,10 +69,9 @@ namespace Intelligence_Book_WEB.Controllers.User
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
+                ViewBag.Error = $"Lỗi hệ thống: {ex.Message}";
                 return View(new OrderDetailViewModel());
             }
         }
     }
-
 }

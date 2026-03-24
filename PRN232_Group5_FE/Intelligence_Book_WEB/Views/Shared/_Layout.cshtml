@@ -86,11 +86,23 @@
                                 👤 Tài khoản
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#">Đăng nhập</a></li>
-                                <li><a class="dropdown-item" href="#">Đăng ký</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Hồ sơ</a></li>
-                                <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+
+                                <!-- CHƯA LOGIN -->
+                                <li id="nav-login">
+                                    <a class="dropdown-item" href="/Auth/Login">Đăng nhập</a>
+                                </li>
+                                <li id="nav-register">
+                                    <a class="dropdown-item" href="/Auth/Register">Đăng ký</a>
+                                </li>
+
+                                <!-- ĐÃ LOGIN -->
+                                <li id="nav-profile" style="display:none;">
+                                    <a class="dropdown-item" href="#">Hồ sơ</a>
+                                </li>
+                                <li id="nav-logout" style="display:none;">
+                                    <a class="dropdown-item" href="#" onclick="logout()">Đăng xuất</a>
+                                </li>
+
                             </ul>
                         </li>
 
@@ -124,4 +136,61 @@
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
+<script>
+    const API_BASE = "https://localhost:7287/api";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        checkLogin();
+        loadCartCount();
+    });
+
+    async function checkLogin() {
+        try {
+            const res = await fetch(`${API_BASE}/auth/me`, {
+                credentials: "include"
+            });
+
+            const login = document.getElementById("nav-login");
+            const register = document.getElementById("nav-register");
+            const profile = document.getElementById("nav-profile");
+            const logoutBtn = document.getElementById("nav-logout");
+
+            if (res.ok) {
+                login.style.display = "none";
+                register.style.display = "none";
+                profile.style.display = "block";
+                logoutBtn.style.display = "block";
+            } else {
+                login.style.display = "block";
+                register.style.display = "block";
+                profile.style.display = "none";
+                logoutBtn.style.display = "none";
+            }
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function logout() {
+        window.location.href = "/Auth/Logout";
+    }
+
+    async function loadCartCount() {
+        try {
+            const res = await fetch(`${API_BASE}/cart`, {
+                credentials: "include"
+            });
+
+            if (res.status === 401) {
+                document.getElementById("cart-count").innerText = "0";
+                return;
+            }
+
+            const data = await res.json();
+            document.getElementById("cart-count").innerText = data.length;
+
+        } catch {}
+    }
+</script>
 </html>

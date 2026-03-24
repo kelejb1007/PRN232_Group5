@@ -1,0 +1,128 @@
+﻿@* @page *@
+@model List<CategoryViewModel>
+
+@{
+    ViewData["Title"] = "Category Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/CategoryIndex.css" asp-append-version="true" />
+
+<div class="category-page">
+
+    <div class="edit-category-header">
+        <h1>Category Management</h1>
+    </div>
+
+    @* ===== SEARCH (Controller chưa xử lý nên tạm comment) ===== *@
+    @*
+    <div class="search-bar">
+        <div class="search-container">
+            <form method="get">
+                <input type="text"
+                       name="SearchKeyword"
+                       placeholder="Enter Category Name"
+                       value="@Model.SearchKeyword" />
+                <button type="submit" class="search-btn">Search</button>
+            </form>
+        </div>
+    </div>
+    *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert-error">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    <div class="add-btn-container">
+        <a asp-controller="CategoryPage"
+           asp-action="Create"
+           class="add-btn">
+            Add Category
+        </a>
+    </div>
+
+    @* ===== MESSAGE (Model không có) ===== *@
+    @*
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert">
+            @Model.Message
+        </div>
+    }
+    *@
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Category ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @* ===== Vì Model giờ là List<CategoryViewModel> ===== *@
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var category in Model)
+                    {
+                        <tr>
+                            <td>@category.CategoryId</td>
+                            <td>@category.CategoryName</td>
+                            <td>@category.Description</td>
+                            <td>
+                                <a asp-controller="CategoryPage"
+                                   asp-action="Edit"
+                                   asp-route-id="@category.CategoryId"
+                                   class="action-btn edit-btn">
+                                    Edit
+                                </a>
+
+                                <form asp-controller="CategoryPage"
+                                      asp-action="Delete"
+                                      asp-route-id="@category.CategoryId"
+                                      method="post"
+                                      style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="action-btn delete-btn"
+                                            onclick="return confirm('Are you sure?');">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">No categories found</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    @* ===== PAGINATION (Controller không trả TotalPages nên bỏ) ===== *@
+    @*
+    @if (Model.TotalPages > 1)
+    {
+        <div class="pagination-container">
+            ...
+        </div>
+    }
+    *@
+
+</div>

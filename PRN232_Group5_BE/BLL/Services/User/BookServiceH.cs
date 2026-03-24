@@ -22,5 +22,9 @@ namespace BLL.Services.User
         {
             return await _bookRepository.GetAllAsync();
         }
+        public async Task<List<Book>> GetBestSellerAsync()
+        {
+            return await _bookRepository.GetBestSellerAsync();
+        }
     }
 }

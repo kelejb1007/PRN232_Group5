@@ -13,7 +13,6 @@
 @section Scripts {
     <script>
         const API_BASE = "https://localhost:7287/api";
-        const USER_ID = 1;
 
         document.addEventListener("DOMContentLoaded", () => {
             loadOrders();
@@ -23,18 +22,31 @@
             const container = document.getElementById("order-list");
 
             try {
-                const res = await fetch(`${API_BASE}/cart/orders/${USER_ID}`);
+                const res = await fetch(`${API_BASE}/cart/orders`, {
+                    credentials: "include" // 🔥 QUAN TRỌNG
+                });
+
+                if (res.status === 401) {
+                    window.location.href = "/Auth/Login";
+                    return;
+                }
 
                 if (!res.ok) {
                     const text = await res.text();
-                    container.innerHTML = `<div class="alert alert-danger">Lỗi load danh sách đơn hàng: ${text}</div>`;
+                    container.innerHTML = `
+                        <div class="alert alert-danger">
+                            Lỗi load đơn hàng: ${text}
+                        </div>`;
                     return;
                 }
 
                 const orders = await res.json();
 
                 if (!orders || orders.length === 0) {
-                    container.innerHTML = `<div class="alert alert-info">Bạn chưa có đơn hàng nào.</div>`;
+                    container.innerHTML = `
+                        <div class="alert alert-info">
+                            Bạn chưa có đơn hàng nào.
+                        </div>`;
                     return;
                 }
 
@@ -44,11 +56,11 @@
                             <tr>
                                 <th>Mã đơn</th>
                                 <th>Ngày đặt</th>
-                                <th>Số lượng SP</th>
+                                <th>Số lượng</th>
                                 <th>Tổng tiền</th>
                                 <th>Trạng thái</th>
-                                <th>Địa chỉ giao hàng</th>
-                                <th>Thao tác</th>
+                                <th>Địa chỉ</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,32 +73,46 @@
                             <td>${formatDate(order.orderDate)}</td>
                             <td>${order.totalItems}</td>
                             <td>${Number(order.totalAmount).toLocaleString("vi-VN")} VNĐ</td>
-                            <td>${order.status}</td>
+                            <td>
+                                <span class="badge ${getStatusClass(order.status)}">
+                                    ${order.status}
+                                </span>
+                            </td>
                             <td>${order.shippingAddress ?? ""}</td>
                             <td>
-                                <a href="/Order/OrderDetail?orderId=${order.orderId}" class="btn btn-sm btn-primary">
-                                    Xem chi tiết
+                                <a href="/Order/OrderDetail?orderId=${order.orderId}"
+                                   class="btn btn-sm btn-primary">
+                                    Xem
                                 </a>
                             </td>
                         </tr>
                     `;
                 });
 
-                html += `
-                        </tbody>
-                    </table>
-                `;
-
+                html += `</tbody></table>`;
                 container.innerHTML = html;
+
             } catch (err) {
-                console.error("Load orders lỗi:", err);
-                container.innerHTML = `<div class="alert alert-danger">Không tải được danh sách đơn hàng.</div>`;
+                console.error(err);
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        Không tải được đơn hàng
+                    </div>`;
             }
         }
 
         function formatDate(dateString) {
             const d = new Date(dateString);
             return d.toLocaleString("vi-VN");
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case "Paid": return "bg-success";
+                case "Pending": return "bg-warning";
+                case "Failed": return "bg-danger";
+                default: return "bg-secondary";
+            }
         }
     </script>
 }

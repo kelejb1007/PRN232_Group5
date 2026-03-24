@@ -186,123 +186,146 @@
 </div>
 
 @section Scripts {
-    <script>
-        const API_BASE = "https://localhost:7287/api";
-        const USER_ID = 1;
+<script>
+    const API_BASE = "https://localhost:7287/api";
 
-        document.addEventListener("DOMContentLoaded", function () {
-            loadCart();
-        });
+    document.addEventListener("DOMContentLoaded", function () {
+        loadCart();
+    });
 
-        async function loadCart() {
-            try {
-                const response = await fetch(`${API_BASE}/cart/${USER_ID}`);
-                const carts = await response.json();
-                renderCart(carts);
-            } catch (error) {
-                console.error("Lỗi load cart:", error);
-            }
-        }
+    // ===== LOAD CART =====
+    async function loadCart() {
+        try {
+            const response = await fetch(`${API_BASE}/cart`, {
+                credentials: "include"
+            });
 
-        function renderCart(carts) {
-            const container = document.getElementById("cart-container");
-            container.innerHTML = "";
-
-            if (!carts || carts.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-5 my-5">
-                        <h3 class="text-muted">Giỏ hàng của bạn đang trống</h3>
-                        <a href="/" class="btn btn-primary btn-lg mt-4">Tiếp tục mua sắm</a>
-                    </div>`;
-                document.getElementById("total-price").innerText = "0";
+            if (response.status === 401) {
+                window.location.href = "/Auth/Login";
                 return;
             }
 
-            let total = 0;
+            if (!response.ok) {
+                const text = await response.text();
+                console.error("SERVER ERROR:", text);
+                return;
+            }
 
-            carts.forEach(item => {
-                const price = item.book.price;
-                const quantity = item.quantity;
-                const subTotal = price * quantity;
-                total += subTotal;
+            const carts = await response.json();
+            renderCart(carts);
 
-                container.innerHTML += `
-                    <div class="cart-item">
-                        <div class="row align-items-center">
-                            <div class="col-md-2 col-4">
-                                <img src="${item.book.coverImageUrl ?? 'https://via.placeholder.com/300x400'}"
-                                     class="book-img w-100" alt="${item.book.title}">
-                            </div>
-                            <div class="col-md-5 col-8 book-info">
-                                <h6>${item.book.title}</h6>
-                                <p class="price mb-1">${price.toLocaleString()} VND</p>
-                            </div>
-                            <div class="col-md-2 col-6 mt-3 mt-md-0">
-                                <div class="quantity-wrapper">
-                                    <input type="number"
-                                           min="1"
-                                           value="${quantity}"
-                                           class="form-control quantity-input"
-                                           onchange="updateQuantity(${item.cartId}, this.value)">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6 mt-3 mt-md-0 text-end">
-                                <p class="subtotal mb-3">${subTotal.toLocaleString()} VND</p>
-                                <button class="btn btn-delete"
-                                        onclick="deleteCart(${item.cartId})">
-                                    Xóa
-                                </button>
-                            </div>
+        } catch (error) {
+            console.error("Lỗi load cart:", error);
+        }
+    }
+
+    // ===== RENDER CART (🔥 thiếu cái này) =====
+    function renderCart(carts) {
+        const container = document.getElementById("cart-container");
+        container.innerHTML = "";
+
+        if (!carts || carts.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <h4>Giỏ hàng trống</h4>
+                </div>`;
+            document.getElementById("total-price").innerText = "0 VND";
+            return;
+        }
+
+        let total = 0;
+
+        carts.forEach(item => {
+            const price = item.book.price;
+            const quantity = item.quantity;
+            const subTotal = price * quantity;
+            total += subTotal;
+
+            container.innerHTML += `
+                <div class="cart-item">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <img src="${item.book.coverImageUrl ?? 'https://via.placeholder.com/150'}"
+                                 class="book-img w-100">
+                        </div>
+
+                        <div class="col-md-4">
+                            <h6>${item.book.title}</h6>
+                            <p class="price">${price.toLocaleString()} VND</p>
+                        </div>
+
+                        <div class="col-md-2">
+                            <input type="number"
+                                   value="${quantity}"
+                                   min="1"
+                                   onchange="updateQuantity(${item.cartId}, this.value)"
+                                   class="form-control">
+                        </div>
+
+                        <div class="col-md-2 text-end">
+                            <p>${subTotal.toLocaleString()} VND</p>
+                        </div>
+
+                        <div class="col-md-2 text-end">
+                            <button class="btn btn-danger"
+                                    onclick="deleteCart(${item.cartId})">
+                                Xóa
+                            </button>
                         </div>
                     </div>
-                `;
-            });
+                </div>
+            `;
+        });
 
-            document.getElementById("total-price").innerText = total.toLocaleString() + " VND";
-        }
+        document.getElementById("total-price").innerText =
+            total.toLocaleString() + " VND";
+    }
 
-        async function updateQuantity(cartId, quantity) {
-            if (parseInt(quantity) < 1) return;
+    // ===== UPDATE =====
+    async function updateQuantity(cartId, quantity) {
+        if (parseInt(quantity) < 1) return;
 
-            try {
-                const response = await fetch(`${API_BASE}/cart/update`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ cartId: cartId, quantity: parseInt(quantity) })
-                });
+        const response = await fetch(`${API_BASE}/cart/update`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+                cartId: cartId,
+                quantity: parseInt(quantity)
+            })
+        });
 
-                if (response.ok) loadCart();
-                else alert("Cập nhật số lượng thất bại!");
-            } catch (error) {
-                console.error(error);
-            }
-        }
+        if (response.ok) loadCart();
+    }
 
-        async function deleteCart(cartId) {
-            if (!confirm("Bạn có chắc muốn xóa sách này?")) return;
+    // ===== DELETE =====
+    async function deleteCart(cartId) {
+        if (!confirm("Bạn có chắc muốn xóa?")) return;
 
-            try {
-                await fetch(`${API_BASE}/cart/${cartId}`, { method: "DELETE" });
-                loadCart();
-            } catch (error) {
-                console.error("Lỗi xóa:", error);
-            }
-        }
+        const response = await fetch(`${API_BASE}/cart/${cartId}`, {
+            method: "DELETE",
+            credentials: "include"
+        });
 
-        async function clearCart() {
-            if (!confirm("Bạn có chắc muốn xóa TOÀN BỘ giỏ hàng?")) return;
+        if (response.ok) loadCart();
+    }
 
-            try {
-                const response = await fetch(`${API_BASE}/cart/clear/${USER_ID}`, { method: "DELETE" });
-                if (response.ok) loadCart();
-                else alert("Xóa giỏ hàng thất bại!");
-            } catch (error) {
-                console.error("Lỗi clear cart:", error);
-            }
-        }
+    // ===== CLEAR =====
+    async function clearCart() {
+        if (!confirm("Xóa toàn bộ giỏ hàng?")) return;
 
-                   function goCheckout() {
-            window.location.href = "/Cart/Checkout";
-        }
-    </script>
+        const response = await fetch(`${API_BASE}/cart/clear`, {
+            method: "DELETE",
+            credentials: "include"
+        });
+
+        if (response.ok) loadCart();
+    }
+
+    function goCheckout() {
+        window.location.href = "/Cart/Checkout";
+    }
+</script>
+
+}
 }

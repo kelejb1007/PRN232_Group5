@@ -1,0 +1,179 @@
+﻿/* new - updated to match old */
+
+body {
+    margin: 0px;
+    font-family: Oswald;
+    display: flex;
+    background-color: #f4f6f9;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 15%;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    min-height: 100vh;
+    box-shadow: 1px 1px 10px 3px gray;
+    z-index: 1;
+    position: fixed;
+}
+
+/* ===== LOGO ===== */
+.logo {
+    height: 9vh;
+    text-align: center;
+}
+
+    .logo img {
+        margin-top: 2vh;
+        width: 60%;
+    }
+
+/* ===== ADMIN / USER INFO ===== */
+.admin {
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 17%;
+}
+
+    .admin p {
+        margin: 0px 0px 0px 10px;
+    }
+
+    .admin img {
+        padding: 5px;
+        width: 15%;
+        height: 15%;
+        text-align: center;
+    }
+
+    .admin div {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+/* ===== MENU ===== */
+.menu {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+    margin-top: 20px;
+}
+
+    .menu li a span {
+        margin-left: 5%;
+    }
+
+    .menu li a {
+        padding: 10px 10px 0px 10px;
+        height: 7vh;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+        .menu li a img {
+            width: 13%;
+        }
+
+        .menu li a:hover {
+            background-color: #f57c00;
+            color: white;
+        }
+
+a:hover {
+    background-color: #F79356;
+    color: white;
+}
+
+hr {
+    margin: 0px;
+    background-color: rgb(225, 223, 223);
+    width: 80%;
+    height: 0.1px;
+    margin: auto;
+    border: none;
+}
+
+.active {
+    background-color: #f57c00;
+    color: white;
+}
+
+/* ===== DROPDOWN LOGOUT ===== */
+#dropdown-menu-sidebar {
+    display: none;
+    margin-left: 10px;
+    position: absolute;
+    width: 70px;
+}
+
+#dropdown-sidebar {
+    width: 100%;
+}
+
+#dropdown-menu-sidebar * {
+    text-align: center;
+}
+
+#dropdown-sidebar:hover #dropdown-menu-sidebar {
+    display: block;
+    cursor: pointer;
+}
+
+#Logoutbutton a {
+    display: block;
+    padding: 5px 10px;
+    border-radius: 8px;
+    color: black !important;
+    text-decoration: none !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+    #Logoutbutton a:hover {
+        background-color: #f57c00 !important;
+        color: white !important;
+        border-radius: 8px !important;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+/* ===== MAIN CONTENT ===== */
+.container {
+    margin-left: 15%;
+    padding: 0;
+    width: 85%;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .container {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        min-height: auto;
+    }
+
+    .container {
+        margin-left: 0;
+        width: 100%;
+    }
+}

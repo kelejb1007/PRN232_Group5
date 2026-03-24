@@ -1,9 +1,8 @@
-﻿using BLL.Services.User;
-using BLL.Services.User.Interfaces;
+﻿using BLL.Services.User.Interfaces;
 using DAL.DTOs;
 using Intelligence_Book_API.Services.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Intelligence_Book_API.Controllers.User
 {
@@ -20,73 +19,67 @@ namespace Intelligence_Book_API.Controllers.User
             _payOS = payOS;
         }
 
-        // =========================
-        // GET CART BY USER
-        // =========================
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetCart(int userId)
+        private int GetUserId()
         {
-            var cart = await _service.GetCartByUser(userId);
-            return Ok(cart);
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                      ?? User.FindFirst("sub")?.Value;
+
+            if (userId == null)
+                throw new UnauthorizedAccessException("Token không hợp lệ");
+
+            return int.Parse(userId);
         }
 
-        // =========================
-        // ADD TO CART
-        // =========================
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetCart()
+        {
+            var userId = GetUserId();
+            return Ok(await _service.GetCartByUser(userId));
+        }
+
         [HttpPost("add")]
+        [Authorize]
         public async Task<IActionResult> Add([FromBody] AddCartRequest request)
         {
-            if (request == null)
-                return BadRequest("Request is null");
-
-            await _service.AddToCart(
-                request.UserId,
-                request.BookId,
-                request.Quantity
-            );
-
-            return Ok(new { message = "Added to cart successfully" });
+            await _service.AddToCart(GetUserId(), request.BookId, request.Quantity);
+            return Ok();
         }
-        // =========================
-        // UPDATE QUANTITY
-        // =========================
+
         [HttpPut("update")]
+        [Authorize]
         public async Task<IActionResult> Update([FromBody] UpdateCartRequest request)
         {
-            await _service.UpdateQuantity(
-                request.CartId,
-                request.Quantity
-            );
-
-            return Ok(new { message = "Cart updated successfully" });
+            await _service.UpdateQuantity(request.CartId, request.Quantity, GetUserId());
+            return Ok();
         }
 
-        // =========================
-        // DELETE CART ITEM
-        // =========================
         [HttpDelete("{cartId}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int cartId)
         {
-            await _service.Remove(cartId);
-            return Ok(new { message = "Cart item deleted successfully" });
+            await _service.Remove(cartId, GetUserId());
+            return Ok();
         }
 
-        [HttpDelete("clear/{userId}")]
-        public async Task<IActionResult> ClearCart(int userId)
+        [HttpDelete("clear")]
+        [Authorize]
+        public async Task<IActionResult> ClearCart()
         {
-            await _service.ClearCart(userId);
-            return Ok(new { message = "Cart cleared successfully" });
+            await _service.ClearCart(GetUserId());
+            return Ok();
         }
+
         [HttpPost("checkout")]
+        [Authorize]
         public async Task<IActionResult> Checkout([FromBody] CheckoutRequest req)
         {
-            if (req == null)
-                return BadRequest(new { message = "Request is null" });
-
             try
             {
+                var userId = GetUserId();
+
                 var order = await _service.CreateOrder(
-                    req.UserId,
+                    userId,
                     req.ShippingAddress,
                     req.ReceiverName,
                     req.PhoneNumber
@@ -102,35 +95,18 @@ namespace Intelligence_Book_API.Controllers.User
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    message = ex.Message
-                });
-            }
-        }
-        [HttpGet("order-detail/{orderId}")]
-        public async Task<IActionResult> GetOrderDetail(int orderId)
-        {
-            var order = await _service.GetOrderDetail(orderId);
-
-            if (order == null)
-                return NotFound(new { message = "Không tìm thấy đơn hàng" });
-
-            return Ok(order);
-        }
-
-        [HttpPost("mark-paid/{orderId}")]
-        public async Task<IActionResult> MarkPaid(int orderId)
-        {
-            try
-            {
-                await _service.MarkOrderAsPaid(orderId);
-                return Ok(new { message = "Cập nhật thanh toán thành công" });
-            }
-            catch (Exception ex)
-            {
                 return StatusCode(500, new { message = ex.Message });
             }
+        }
+        [HttpGet("orders")]
+        [Authorize]
+        public async Task<IActionResult> GetOrders()
+        {
+            var userId = GetUserId();
+
+            var orders = await _service.GetOrdersByUser(userId);
+
+            return Ok(orders);
         }
     }
 }

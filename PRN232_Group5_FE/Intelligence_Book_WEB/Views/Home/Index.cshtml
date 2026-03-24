@@ -197,39 +197,61 @@
 @section Scripts {
     <script>
         const API_BASE = "https://localhost:7287/api";
-        const USER_ID = 1; // ⚠ tạm hardcode, sau này dùng session/login
+        const USER_ID = 1;
 
         document.addEventListener("DOMContentLoaded", function () {
             loadFeaturedBooks();
             loadBestSellerBooks();
         });
 
+        // ===== FEATURED =====
         async function loadFeaturedBooks() {
             try {
                 const response = await fetch(`${API_BASE}/home/featured-books`);
-                const books = await response.json();
+                const text = await response.text();
+
+                if (!response.ok) {
+                    console.error("SERVER ERROR (featured):", text);
+                    throw new Error("API lỗi featured");
+                }
+
+                const books = JSON.parse(text);
                 renderBooks(books, "featured-books");
+
             } catch (error) {
                 console.error("Lỗi load featured:", error);
             }
         }
 
+        // ===== BEST SELLER =====
         async function loadBestSellerBooks() {
             try {
-                const response = await fetch(`${API_BASE}/home/featured-books`);
-                const books = await response.json();
+                const response = await fetch(`${API_BASE}/home/best-seller-books`);
+                const text = await response.text();
+
+                if (!response.ok) {
+                    console.error("SERVER ERROR (best seller):", text);
+                    throw new Error("API lỗi best seller");
+                }
+
+                const books = JSON.parse(text);
                 renderBooks(books, "best-seller-books");
+
             } catch (error) {
                 console.error("Lỗi load best seller:", error);
             }
         }
 
+        // ===== RENDER =====
         function renderBooks(books, containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = "";
 
             if (!books || books.length === 0) {
-                container.innerHTML = `<div class="col-12"><p class="text-center text-muted py-5">Không có sách.</p></div>`;
+                container.innerHTML = `
+                    <div class="col-12">
+                        <p class="text-center text-muted py-5">Không có sách.</p>
+                    </div>`;
                 return;
             }
 
@@ -256,29 +278,38 @@
             });
         }
 
-        async function addToCart(bookId) {
+                       async function addToCart(bookId) {
             try {
                 const response = await fetch(`${API_BASE}/cart/add`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include", // 🔥 gửi cookie
                     body: JSON.stringify({
-                        userId: USER_ID,
                         bookId: bookId,
                         quantity: 1
                     })
                 });
 
+                const text = await response.text();
+
+                // 🔥 JWT tự check → 401 nếu chưa login
+                if (response.status === 401) {
+                    window.location.href = "/Auth/Login";
+                    return;
+                }
+
                 if (!response.ok) {
-                    const text = await response.text();
                     console.error("SERVER ERROR:", text);
-                    alert("❌ Lỗi server, xem Console");
+                    alert("❌ Lỗi server");
                     return;
                 }
 
                 alert("✅ Đã thêm vào giỏ hàng!");
+
             } catch (error) {
-                console.error("Lỗi thêm cart:", error);
-                alert("❌ Có lỗi xảy ra!");
+                console.error("Lỗi:", error);
             }
         }
     </script>

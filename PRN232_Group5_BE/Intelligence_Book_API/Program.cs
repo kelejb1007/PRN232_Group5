@@ -1,10 +1,19 @@
-﻿using BLL.Services.User;
+﻿using System.Text;
+using BLL.Services.Admin;
+using BLL.Services.Admin.Interfaces;
+using BLL.Services.User;
 using BLL.Services.User.Interfaces;
 using DAL.Data;
+using DAL.Mapper;
+using DAL.Repositories.Admin;
+using DAL.Repositories.Admin.Interfaces;
 using DAL.Repositories.User;
 using DAL.Repositories.User.Interfaces;
 using Intelligence_Book_API.Services.User;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,36 +21,124 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("Intelligence_Book_APIContext")
-        ?? throw new InvalidOperationException("Connection string not found.")
-    ));
+        ?? throw new InvalidOperationException("Connection string not found")
+    )
+);
 
-// ================= CORS =================
+// ================= CONTROLLERS =================
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
+// ================= CORS (🔥 FIX CHUẨN COOKIE) =================
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy => policy.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://localhost:7117") // 👈 URL frontend
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // 👈 bắt buộc khi dùng cookie
+    });
 });
 
-// ================= SERVICES =================
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// ================= DEPENDENCY INJECTION =================
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddScoped<ICartServiceH, CartServiceH>();
+builder.Services.AddScoped<IOrderRepositoryH, OrderRepositoryH>();
+builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IBookRepositoryH, BookRepositoryH>();
 builder.Services.AddScoped<IBookServiceH, BookServiceH>();
 
-builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
-builder.Services.AddScoped<ICartServiceH, CartServiceH>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<PayOSService>();
+// ================= JWT =================
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+builder.Services
+    .AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/Auth/Login";
+    });
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
 
-builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
-builder.Services.AddScoped<ICartServiceH, CartServiceH>();
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
 
-builder.Services.AddScoped<IOrderRepositoryH, OrderRepositoryH>();
-builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-builder.Services.AddHttpClient<PayOSService>();
-//builder.Services.AddScoped<PayOSService>();
+        // 🔥 LẤY TOKEN TỪ COOKIE
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue("access_token", out var token))
+                {
+                    context.Token = token;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+// ================= SWAGGER =================
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Intelligence Book API",
+        Version = "v1"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter JWT token"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
 var app = builder.Build();
 
 // ================= PIPELINE =================
@@ -53,9 +150,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// phải nằm trước MapControllers
-app.UseCors("AllowAll");
+// 🔥 CORS PHẢI ĐẶT TRƯỚC AUTH
+app.UseCors("AllowFrontend");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

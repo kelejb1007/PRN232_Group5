@@ -24,6 +24,12 @@ namespace Intelligence_Book_API.Controllers.User
                 var books = await _bookService.GetAllAsync();
                 return Ok(books);
             }
+            [HttpGet("best-seller-books")]
+            public async Task<IActionResult> GetBestSellerBooks()
+            {
+                var books = await _bookService.GetBestSellerAsync(); // bạn cần viết hàm này
+                return Ok(books);
+            }
         }
     }
 }
