@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,11 +23,14 @@ namespace Intelligence_Book_API.Controllers.Admin
             _service = service;
         }
 
-        // GET: api/Categories
+        // GET: api/Admin/Categories?search=...
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> GetCategories(
+            [FromQuery] string? search)
         {
-            var categories = await _service.GetAllAsync();
+            var categories = string.IsNullOrWhiteSpace(search)
+                ? await _service.GetAllAsync()
+                : await _service.SearchAsync(search);
             return Ok(categories);
         }
 

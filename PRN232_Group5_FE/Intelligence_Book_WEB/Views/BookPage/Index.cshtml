@@ -3,16 +3,203 @@
 @{
     ViewData["Title"] = "Quản lý Sách";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var categories = ViewBag.Categories as List<Intelligence_Book_WEB.Models.CategoryViewModel> ?? new List<Intelligence_Book_WEB.Models.CategoryViewModel>();
+    var selectedCategories = ViewBag.SelectedCategories as List<int> ?? new List<int>();
+    string currentSearch = ViewBag.Search ?? "";
+    bool hasFilter = !string.IsNullOrEmpty(currentSearch) || selectedCategories.Any();
 }
 
+<style>
+    .filter-panel {
+        background-color: #1f2937;
+        border-radius: 10px;
+        padding: 14px 20px;
+        margin-bottom: 20px;
+    }
+    .filter-panel label { color: #d1d5db; font-size: 0.82rem; margin-bottom: 4px; display: block; }
+    .filter-panel .form-control {
+        background-color: #111827;
+        color: #f9fafb;
+        border-color: #374151;
+        font-size: 0.875rem;
+    }
+    .filter-panel .form-control::placeholder { color: #6b7280; }
+    .filter-panel .form-control:focus {
+        border-color: #c5a059;
+        box-shadow: 0 0 0 0.15rem rgba(197,160,89,0.3);
+    }
+    /* Dropdown trigger button */
+    .cat-toggle-btn {
+        background-color: #111827;
+        border: 1px solid #374151;
+        color: #d1d5db;
+        font-size: 0.875rem;
+        text-align: left;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+    .cat-toggle-btn:hover, .cat-toggle-btn.active { border-color: #c5a059; }
+    .cat-badge { background-color: #c5a059 !important; color: #111827; font-weight: 700; font-size: 0.72rem; }
+    /* Floating dropdown */
+    .cat-dropdown-wrapper { position: relative; }
+    .cat-dropdown-panel {
+        display: none;
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        z-index: 1060;
+        background-color: #111827;
+        border: 1px solid #c5a059;
+        border-radius: 8px;
+        padding: 10px 14px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        /* horizontal wrap grid */
+        display: none;
+        flex-wrap: wrap;
+        gap: 2px 0;
+    }
+    .cat-dropdown-panel.open {
+        display: flex !important;
+    }
+    .cat-dropdown-panel .form-check {
+        width: 33.33%;
+        min-width: 130px;
+        padding-right: 6px;
+        margin: 3px 0;
+    }
+    .cat-dropdown-panel .form-check-label { color: #d1d5db; font-size: 0.82rem; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .cat-dropdown-panel .form-check-input:checked { background-color: #c5a059; border-color: #c5a059; }
+    .cat-dropdown-panel .form-check-input:focus { box-shadow: 0 0 0 0.15rem rgba(197,160,89,0.3); }
+    .btn-gold { background-color: #c5a059; border: none; color: #fff; font-weight: 600; }
+    .btn-gold:hover { background-color: #b08d48; color: #fff; }
+</style>
+
 <div class="book-page">
-    <div class="d-flex justify-content-between align-items-center mb-4 rounded shadow-sm" style="background-color: #111827; border-left: 5px solid #c5a059; padding: 20px;">
-        <h2 class="text-white m-0 fw-bold"><i class="bi bi-journal-bookmark me-2" style="color: #c5a059;"></i> Quản lý Sách</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4 rounded shadow-sm"
+         style="background-color: #111827; border-left: 5px solid #c5a059; padding: 20px;">
+        <h2 class="text-white m-0 fw-bold">
+            <i class="bi bi-journal-bookmark me-2" style="color: #c5a059;"></i> Quản lý Sách
+        </h2>
     </div>
 
+    <!-- Search & Filter Panel — single compact row -->
+    <form method="get" asp-controller="BookPage" asp-action="Index" class="filter-panel mb-4" id="filterForm">
+        <div class="row g-2 align-items-end">
+
+            <!-- Search input -->
+            <div class="col-md-3">
+                <label><i class="bi bi-search me-1" style="color:#c5a059;"></i> Tìm kiếm</label>
+                <input type="text" name="search" class="form-control form-control-sm"
+                       placeholder="Tên sách / tác giả..."
+                       value="@currentSearch" />
+            </div>
+
+            <!-- Category floating dropdown -->
+            <div class="col-md-6">
+                <label>
+                    <i class="bi bi-tags me-1" style="color:#c5a059;"></i> Danh mục
+                    @if (selectedCategories.Any())
+                    {
+                        <span class="badge cat-badge ms-1">@selectedCategories.Count đã chọn</span>
+                    }
+                </label>
+                <div class="cat-dropdown-wrapper">
+                    <button type="button" class="cat-toggle-btn @(selectedCategories.Any() ? "active" : "")"
+                            id="catToggleBtn" onclick="toggleCatDropdown(event)">
+                        <span id="catBtnText">
+                            @(selectedCategories.Any() ? $"{selectedCategories.Count} danh mục được chọn" : "Chọn danh mục để lọc...")
+                        </span>
+                        <i class="bi bi-chevron-down" id="catChevron" style="font-size:0.8rem; transition:transform 0.2s;"></i>
+                    </button>
+
+                    <!-- Floating panel — absolute, does NOT push the row -->
+                    <div class="cat-dropdown-panel" id="catDropdownPanel">
+                        @if (categories.Any())
+                        {
+                            foreach (var cat in categories)
+                            {
+                                var isChecked = selectedCategories.Contains(cat.CategoryId);
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           name="categoryIds" value="@cat.CategoryId"
+                                           id="cat_@cat.CategoryId" @(isChecked ? "checked" : "")
+                                           onchange="updateCatBtnText()" />
+                                    <label class="form-check-label" for="cat_@cat.CategoryId" title="@cat.CategoryName">
+                                        @cat.CategoryName
+                                    </label>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Không có danh mục nào.</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-gold btn-sm flex-fill hover-lift">
+                    <i class="bi bi-funnel me-1"></i> Lọc
+                </button>
+                @if (hasFilter)
+                {
+                    <a asp-controller="BookPage" asp-action="Index"
+                       class="btn btn-sm btn-outline-secondary flex-fill hover-lift"
+                       style="color:#d1d5db; border-color:#4b5563;">
+                        <i class="bi bi-x-circle me-1"></i> Xóa
+                    </a>
+                }
+            </div>
+        </div>
+    </form>
+
+    @section Scripts {
+        <script>
+            function toggleCatDropdown(e) {
+                e.stopPropagation();
+                const panel = document.getElementById('catDropdownPanel');
+                const chevron = document.getElementById('catChevron');
+                const btn = document.getElementById('catToggleBtn');
+                panel.classList.toggle('open');
+                chevron.style.transform = panel.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+                btn.classList.toggle('active', panel.classList.contains('open') || @(selectedCategories.Any() ? "true" : "false"));
+            }
+            // Close when clicking outside
+            document.addEventListener('click', function (e) {
+                const wrapper = document.querySelector('.cat-dropdown-wrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    document.getElementById('catDropdownPanel').classList.remove('open');
+                    document.getElementById('catChevron').style.transform = 'rotate(0deg)';
+                }
+            });
+            function updateCatBtnText() {
+                const checked = document.querySelectorAll('[name="categoryIds"]:checked').length;
+                const text = document.getElementById('catBtnText');
+                text.textContent = checked > 0 ? `${checked} danh mục được chọn` : 'Chọn danh mục để lọc...';
+                document.getElementById('catToggleBtn').classList.toggle('active', checked > 0);
+            }
+        </script>
+    }
+
+    <!-- Book Table -->
     <div class="bg-white p-4 shadow-sm rounded">
-        <div class="mb-3 text-end">
-            <a asp-controller="BookPage" asp-action="Create" class="btn text-white fw-bold hover-lift" style="background-color: #c5a059; border: none;">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <span class="text-muted small">
+                Tìm thấy <strong>@(Model?.Count() ?? 0)</strong> cuốn sách
+                @if (hasFilter) { <span class="text-warning fw-bold">(đang lọc)</span> }
+            </span>
+            <a asp-controller="BookPage" asp-action="Create"
+               class="btn text-white fw-bold hover-lift" style="background-color: #c5a059; border: none;">
                 <i class="bi bi-plus-circle me-1"></i> Thêm sách mới
             </a>
         </div>
@@ -43,15 +230,20 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a asp-controller="BookPage" asp-action="Details" asp-route-id="@book.BookId" class="btn btn-sm btn-outline-info me-1" title="Chi tiết">
+                                    <a asp-controller="BookPage" asp-action="Details" asp-route-id="@book.BookId"
+                                       class="btn btn-sm btn-outline-info me-1" title="Chi tiết">
                                         <i class="bi bi-info-circle"></i> Chi tiết
                                     </a>
-                                    <a asp-controller="BookPage" asp-action="Edit" asp-route-id="@book.BookId" class="btn btn-sm btn-outline-warning me-1" title="Sửa">
+                                    <a asp-controller="BookPage" asp-action="Edit" asp-route-id="@book.BookId"
+                                       class="btn btn-sm btn-outline-warning me-1" title="Sửa">
                                         <i class="bi bi-pencil"></i> Sửa
                                     </a>
-                                    <form asp-controller="BookPage" asp-action="Delete" asp-route-id="@book.BookId" method="post" style="display:inline;">
+                                    <form asp-controller="BookPage" asp-action="Delete" asp-route-id="@book.BookId"
+                                          method="post" style="display:inline;">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa cuốn sách này không?');" title="Xóa">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Bạn có chắc chắn muốn xóa cuốn sách này không?');"
+                                                title="Xóa">
                                             <i class="bi bi-trash"></i> Xóa
                                         </button>
                                     </form>
@@ -62,7 +254,10 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">Không tìm thấy cuốn sách nào trong kho.</td>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-search fs-2 d-block mb-2 opacity-50"></i>
+                                Không tìm thấy cuốn sách nào phù hợp với bộ lọc hiện tại.
+                            </td>
                         </tr>
                     }
                 </tbody>

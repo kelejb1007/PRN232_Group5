@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +11,8 @@ namespace DAL.Repositories.Admin.Interfaces
     public interface IBookRepository
     {
         Task<IEnumerable<Book>> GetAllAsync();
+
+        Task<IEnumerable<Book>> SearchAsync(string? search, List<int>? categoryIds);
 
         Task<Book?> GetByIdAsync(int id);
 

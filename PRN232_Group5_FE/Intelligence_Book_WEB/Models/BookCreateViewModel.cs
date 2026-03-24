@@ -9,7 +9,7 @@ namespace Intelligence_Book_WEB.Models
         [StringLength(255, ErrorMessage = "Tiêu đề không quá 255 ký tự.")]
         public string Title { get; set; } = string.Empty;
 
-        [Range(0.01, double.MaxValue, ErrorMessage = "Giá sách phải lớn hơn 0.")]
+        [Range(1, double.MaxValue, ErrorMessage = "Giá sách phải lớn hơn 0.")]
         public decimal Price { get; set; }
 
         [MaxLength(20, ErrorMessage = "ISBN không quá 20 ký tự.")]

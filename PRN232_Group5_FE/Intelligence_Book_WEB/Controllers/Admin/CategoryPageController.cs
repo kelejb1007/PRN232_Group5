@@ -13,23 +13,27 @@ namespace Intelligence_Book_WEB.Controllers.Admin
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search)
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
 
-            var response = await client.GetAsync("api/Admin/categories");
+            var url = string.IsNullOrWhiteSpace(search)
+                ? "api/Admin/categories"
+                : $"api/Admin/categories?search={Uri.EscapeDataString(search)}";
 
-            if (!response.IsSuccessStatusCode)
+            var response = await client.GetAsync(url);
+
+            var categories = new List<CategoryViewModel>();
+            if (response.IsSuccessStatusCode)
             {
-                return View(new List<CategoryViewModel>());
+                var json = await response.Content.ReadAsStringAsync();
+                categories = JsonSerializer.Deserialize<List<CategoryViewModel>>(
+                    json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? categories;
             }
 
-            var json = await response.Content.ReadAsStringAsync();
-
-            var categories = JsonSerializer.Deserialize<List<CategoryViewModel>>(
-                json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
+            ViewBag.Search = search;
+            ViewBag.HasFilter = !string.IsNullOrWhiteSpace(search);
 
             return View(categories);
         }

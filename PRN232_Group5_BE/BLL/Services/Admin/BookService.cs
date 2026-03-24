@@ -48,6 +48,18 @@ namespace BLL.Services.Admin
             return listDTO;
         }
 
+        public async Task<List<BookResponeDTO>> SearchAsync(string? search, List<int>? categoryIds)
+        {
+            var books = (await _bookRepository.SearchAsync(search, categoryIds)).ToList();
+            List<BookResponeDTO> listDTO = _mapper.Map<List<BookResponeDTO>>(books);
+            for (int i = 0; i < listDTO.Count(); i++)
+            {
+                listDTO[i].Categories = _mapper.Map<List<CategoryResponseDto>>(books[i].Categories);
+                listDTO[i].AuthorName = books[i].Author?.AuthorName;
+            }
+            return listDTO;
+        }
+
         public async Task<BookResponeDTO?> GetByIdAsync(int id)
         {
             BookResponeDTO dtoRespone = new BookResponeDTO();

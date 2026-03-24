@@ -47,11 +47,16 @@ namespace Intelligence_Book_API.Controllers.Admin
         }
 
 
-        // GET: api/Books
+        // GET: api/Admin/Books?search=...&categoryIds=1&categoryIds=2
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookResponeDTO>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<BookResponeDTO>>> GetBooks(
+            [FromQuery] string? search,
+            [FromQuery] List<int>? categoryIds)
         {
-            var books = await _bookService.GetAllAsync();
+            var hasFilter = !string.IsNullOrWhiteSpace(search) || (categoryIds != null && categoryIds.Any());
+            var books = hasFilter
+                ? await _bookService.SearchAsync(search, categoryIds)
+                : await _bookService.GetAllAsync();
             return Ok(books);
         }
 

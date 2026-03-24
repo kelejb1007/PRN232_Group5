@@ -3,16 +3,75 @@
 @{
     ViewData["Title"] = "Quản lý Danh mục";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string currentSearch = ViewBag.Search ?? "";
+    bool hasFilter = ViewBag.HasFilter == true;
 }
 
+<style>
+    .cat-search-panel {
+        background-color: #1f2937;
+        border-radius: 10px;
+        padding: 14px 20px;
+        margin-bottom: 20px;
+    }
+    .cat-search-panel label { color: #d1d5db; font-size: 0.82rem; margin-bottom: 4px; display: block; }
+    .cat-search-panel .form-control {
+        background-color: #111827;
+        color: #f9fafb;
+        border-color: #374151;
+        font-size: 0.875rem;
+    }
+    .cat-search-panel .form-control::placeholder { color: #6b7280; }
+    .cat-search-panel .form-control:focus {
+        border-color: #c5a059;
+        box-shadow: 0 0 0 0.15rem rgba(197,160,89,0.3);
+    }
+    .btn-gold { background-color: #c5a059; border: none; color: #fff; font-weight: 600; }
+    .btn-gold:hover { background-color: #b08d48; color: #fff; }
+</style>
+
 <div class="category-page">
-    <div class="d-flex justify-content-between align-items-center mb-4 rounded shadow-sm" style="background-color: #111827; border-left: 5px solid #c5a059; padding: 20px;">
-        <h2 class="text-white m-0 fw-bold"><i class="bi bi-grid-3x3-gap me-2" style="color: #c5a059;"></i> Quản lý Danh mục</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4 rounded shadow-sm"
+         style="background-color: #111827; border-left: 5px solid #c5a059; padding: 20px;">
+        <h2 class="text-white m-0 fw-bold">
+            <i class="bi bi-grid-3x3-gap me-2" style="color: #c5a059;"></i> Quản lý Danh mục
+        </h2>
     </div>
 
+    <!-- Search Bar -->
+    <form method="get" asp-controller="CategoryPage" asp-action="Index" class="cat-search-panel">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label><i class="bi bi-search me-1" style="color:#c5a059;"></i> Tìm kiếm danh mục</label>
+                <input type="text" name="search" class="form-control form-control-sm"
+                       placeholder="Nhập tên danh mục..."
+                       value="@currentSearch" />
+            </div>
+            <div class="col-auto d-flex gap-2">
+                <button type="submit" class="btn btn-gold btn-sm px-4 hover-lift">
+                    <i class="bi bi-search me-1"></i> Tìm
+                </button>
+                @if (hasFilter)
+                {
+                    <a asp-controller="CategoryPage" asp-action="Index"
+                       class="btn btn-sm btn-outline-secondary px-3 hover-lift"
+                       style="color:#d1d5db; border-color:#4b5563;">
+                        <i class="bi bi-x-circle me-1"></i> Xóa
+                    </a>
+                }
+            </div>
+        </div>
+    </form>
+
+    <!-- Category Table -->
     <div class="bg-white p-4 shadow-sm rounded">
-        <div class="mb-3 text-end">
-            <a asp-controller="CategoryPage" asp-action="Create" class="btn text-white fw-bold hover-lift" style="background-color: #c5a059; border: none;">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <span class="text-muted small">
+                Tìm thấy <strong>@(Model?.Count ?? 0)</strong> danh mục
+                @if (hasFilter) { <span class="text-warning fw-bold">(đang lọc)</span> }
+            </span>
+            <a asp-controller="CategoryPage" asp-action="Create"
+               class="btn text-white fw-bold hover-lift" style="background-color: #c5a059; border: none;">
                 <i class="bi bi-plus-circle me-1"></i> Thêm mới danh mục
             </a>
         </div>
@@ -37,12 +96,18 @@
                                 <td class="fw-bold">@category.CategoryName</td>
                                 <td class="text-muted">@(string.IsNullOrEmpty(category.Description) ? "Không có mô tả" : category.Description)</td>
                                 <td class="text-center">
-                                    <a asp-controller="CategoryPage" asp-action="Edit" asp-route-id="@category.CategoryId" class="btn btn-sm btn-outline-warning me-2" title="Chỉnh sửa">
+                                    <a asp-controller="CategoryPage" asp-action="Edit"
+                                       asp-route-id="@category.CategoryId"
+                                       class="btn btn-sm btn-outline-warning me-2" title="Chỉnh sửa">
                                         <i class="bi bi-pencil"></i> Sửa
                                     </a>
-                                    <form asp-controller="CategoryPage" asp-action="Delete" asp-route-id="@category.CategoryId" method="post" style="display:inline;">
+                                    <form asp-controller="CategoryPage" asp-action="Delete"
+                                          asp-route-id="@category.CategoryId"
+                                          method="post" style="display:inline;">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không? Các sách thuộc danh mục này có thể bị ảnh hưởng.');" title="Xóa">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không? Các sách thuộc danh mục này có thể bị ảnh hưởng.');"
+                                                title="Xóa">
                                             <i class="bi bi-trash"></i> Xóa
                                         </button>
                                     </form>
@@ -53,7 +118,10 @@
                     else
                     {
                         <tr>
-                            <td colspan="4" class="text-center py-4 text-muted">Không có danh mục nào trên hệ thống.</td>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-search fs-2 d-block mb-2 opacity-50"></i>
+                                @(hasFilter ? "Không tìm thấy danh mục nào phù hợp." : "Không có danh mục nào trên hệ thống.")
+                            </td>
                         </tr>
                     }
                 </tbody>
