@@ -33,7 +33,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         [HttpGet("OrderList")]
         public async Task<IActionResult> OrderList(string? search, OrderStatus? status, int page = 1, int pageSize = 5)
         {
-            var client = _http.CreateClient("Api");
+            var client = _http.CreateClient("MyAPI");
 
             var qs = new List<string> { $"page={page}", $"pageSize={pageSize}" };
             if (!string.IsNullOrWhiteSpace(search)) qs.Add($"search={Uri.EscapeDataString(search)}");
@@ -69,7 +69,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         [HttpGet("Detail/{id}")]
         public async Task<IActionResult> Detail(int id)
         {
-            var client = _http.CreateClient("Api");
+            var client = _http.CreateClient("MyAPI");
             try
             {
                 var dto = await client.GetFromJsonAsync<OrderDetailDto>($"api/admin/orders/{id}", GetJsonOptions());
@@ -92,7 +92,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(int id, OrderStatus newStatus)
         {
-            var client = _http.CreateClient("Api");
+            var client = _http.CreateClient("MyAPI");
             var payload = new { newStatus = newStatus };
             
             var res = await client.PutAsJsonAsync($"api/admin/orders/{id}/status", payload, GetJsonOptions());
@@ -112,7 +112,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Cancel(int id)
         {
-            var client = _http.CreateClient("Api");
+            var client = _http.CreateClient("MyAPI");
             var res = await client.PutAsync($"api/admin/orders/{id}/cancel", null);
             
             if (!res.IsSuccessStatusCode)

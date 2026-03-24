@@ -20,7 +20,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         [HttpGet("CouponList")]
         public async Task<IActionResult> CouponList(string? search, int page = 1, int pageSize = 5)
         {
-            var client = _http.CreateClient("Api");
+            var client = _http.CreateClient("MyAPI");
 
             var qs = new List<string>
             {
@@ -52,7 +52,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         [HttpGet("CouponDetails")]
         public async Task<IActionResult> CouponDetails(int id)
         {
-            var client = _http.CreateClient("Api");
+            var client = _http.CreateClient("MyAPI");
             var dto = await client.GetFromJsonAsync<CouponDto>($"api/admin/coupons/{id}");
 
             if (dto == null)
@@ -76,7 +76,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         [HttpGet("CouponUpdate")]
         public async Task<IActionResult> CouponUpdate(int id)
         {
-            var client = _http.CreateClient("Api");
+            var client = _http.CreateClient("MyAPI");
             var dto = await client.GetFromJsonAsync<CouponDto>($"api/admin/coupons/{id}");
 
             if (dto == null)
@@ -100,7 +100,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CouponSave(CouponVm model)
         {
-            var client = _http.CreateClient("Api");
+            var client = _http.CreateClient("MyAPI");
 
             // Normalize
             model.Code = (model.Code ?? "").Trim();
@@ -156,7 +156,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CouponDelete(int id)
         {
-            var client = _http.CreateClient("Api");
+            var client = _http.CreateClient("MyAPI");
             var res = await client.DeleteAsync($"api/admin/coupons/{id}");
 
             if (!res.IsSuccessStatusCode)

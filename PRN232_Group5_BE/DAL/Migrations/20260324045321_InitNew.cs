@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitNew : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -117,8 +117,7 @@ namespace DAL.Migrations
                     TotalAmount = table.Column<decimal>(type: "decimal(15,2)", precision: 15, scale: 2, nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ShippingAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CouponId = table.Column<int>(type: "int", nullable: true),
-                    UserAccountUserId = table.Column<int>(type: "int", nullable: true)
+                    CouponId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -129,8 +128,8 @@ namespace DAL.Migrations
                         principalTable: "Coupons",
                         principalColumn: "CouponId");
                     table.ForeignKey(
-                        name: "FK_Orders_UserAccounts_UserAccountUserId",
-                        column: x => x.UserAccountUserId,
+                        name: "FK_Orders_UserAccounts_UserId",
+                        column: x => x.UserId,
                         principalTable: "UserAccounts",
                         principalColumn: "UserId");
                 });
@@ -286,9 +285,9 @@ namespace DAL.Migrations
                 column: "CouponId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_UserAccountUserId",
+                name: "IX_Orders_UserId",
                 table: "Orders",
-                column: "UserAccountUserId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_BookId",

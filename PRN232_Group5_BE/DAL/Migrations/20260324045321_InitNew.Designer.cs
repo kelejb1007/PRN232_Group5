@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(Intelligence_Book_APIContext))]
-    [Migration("20260303100945_Init")]
-    partial class Init
+    [Migration("20260324045321_InitNew")]
+    partial class InitNew
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,43 @@ namespace DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Book", b =>
+            modelBuilder.Entity("BookCategories", b =>
+                {
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BookId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("BookCategories");
+                });
+
+            modelBuilder.Entity("DAL.Models.Author", b =>
+                {
+                    b.Property<int>("AuthorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuthorId"));
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Biography")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AuthorId");
+
+                    b.ToTable("Authors");
+                });
+
+            modelBuilder.Entity("DAL.Models.Book", b =>
                 {
                     b.Property<int>("BookId")
                         .ValueGeneratedOnAdd()
@@ -76,42 +112,6 @@ namespace DAL.Migrations
                     b.HasIndex(new[] { "Title" }, "idx_book_title");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("BookCategories", b =>
-                {
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("BookId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("BookCategories");
-                });
-
-            modelBuilder.Entity("DAL.Models.Author", b =>
-                {
-                    b.Property<int>("AuthorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuthorId"));
-
-                    b.Property<string>("AuthorName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Biography")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("AuthorId");
-
-                    b.ToTable("Authors");
                 });
 
             modelBuilder.Entity("DAL.Models.Cart", b =>
@@ -219,9 +219,6 @@ namespace DAL.Migrations
                         .HasPrecision(15, 2)
                         .HasColumnType("decimal(15,2)");
 
-                    b.Property<int?>("UserAccountUserId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
@@ -229,7 +226,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CouponId");
 
-                    b.HasIndex("UserAccountUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Orders");
                 });
@@ -353,18 +350,9 @@ namespace DAL.Migrations
                     b.ToTable("UserAccounts");
                 });
 
-            modelBuilder.Entity("Book", b =>
-                {
-                    b.HasOne("DAL.Models.Author", "Author")
-                        .WithMany("Books")
-                        .HasForeignKey("AuthorId");
-
-                    b.Navigation("Author");
-                });
-
             modelBuilder.Entity("BookCategories", b =>
                 {
-                    b.HasOne("Book", null)
+                    b.HasOne("DAL.Models.Book", null)
                         .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -377,9 +365,18 @@ namespace DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DAL.Models.Book", b =>
+                {
+                    b.HasOne("DAL.Models.Author", "Author")
+                        .WithMany("Books")
+                        .HasForeignKey("AuthorId");
+
+                    b.Navigation("Author");
+                });
+
             modelBuilder.Entity("DAL.Models.Cart", b =>
                 {
-                    b.HasOne("Book", "Book")
+                    b.HasOne("DAL.Models.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -404,7 +401,7 @@ namespace DAL.Migrations
 
                     b.HasOne("DAL.Models.UserAccount", "UserAccount")
                         .WithMany()
-                        .HasForeignKey("UserAccountUserId");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Coupon");
 
@@ -413,7 +410,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.OrderItem", b =>
                 {
-                    b.HasOne("Book", "Book")
+                    b.HasOne("DAL.Models.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -432,7 +429,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.Review", b =>
                 {
-                    b.HasOne("Book", "Book")
+                    b.HasOne("DAL.Models.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
