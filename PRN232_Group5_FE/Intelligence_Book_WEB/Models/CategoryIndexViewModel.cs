@@ -1,4 +1,4 @@
-﻿using Intelligence_Book_WEB.Models;
+using Intelligence_Book_WEB.Models;
 
 public class CategoryIndexViewModel
 {
@@ -7,5 +7,5 @@ public class CategoryIndexViewModel
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }
 
-    public string SearchKeyword { get; set; }
+    public string SearchKeyword { get; set; } = string.Empty;
 }

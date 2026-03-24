@@ -1,4 +1,4 @@
-﻿@{
+@{
     Layout = null;
 }
 @model Models.UserAccount.AuthDTO.RegisterRequestDTO
@@ -8,131 +8,396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join Us | Intelligence Book Store</title>
+    <title>Đăng ký | Intelligence Book</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1a2a3a;
+            --primary-color: rgba(25, 36, 50, 1);
             --accent-color: #c5a059;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f1ea;
+            background-color: #f8f9fa;
+            margin: 0;
+        }
+
+        .login-container {
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
         }
 
-        .register-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 900px;
-            display: flex;
-            overflow: hidden;
-        }
-
-        .register-info {
-            background: var(--primary-color);
-            color: white;
-            width: 40%;
-            padding: 50px;
+        .login-image {
+            background: linear-gradient(rgba(25, 36, 50, 0.8), rgba(25, 36, 50, 0.8)), url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            width: 50%;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 40px;
         }
 
-        .register-form {
-            width: 60%;
-            padding: 50px;
+        .login-image h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
         }
 
-        .btn-register {
-            background: var(--primary-color);
+        .login-form-section {
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            padding: 60px;
+        }
+
+        .form-wrapper {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .brand-logo {
+            color: var(--primary-color);
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .btn-login {
+            background-color: var(--primary-color);
             color: white;
             border: none;
             padding: 12px;
-            width: 100%;
             border-radius: 5px;
             font-weight: 600;
-            margin-top: 10px;
+            transition: 0.3s;
+            width: 100%;
         }
 
-            .btn-register:hover {
-                background: var(--accent-color);
-                color: white;
-            }
-
-        .form-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #666;
-            letter-spacing: 0.5px;
+        .btn-login:hover {
+            background-color: var(--accent-color);
+            color: white;
         }
 
-        @@media (max-width: 768px) {
-            .register-card {
-                flex-direction: column;
-            }
+        .form-control {
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
 
-            .register-info, .register-form {
-                width: 100%;
-                padding: 30px;
-            }
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: none;
+        }
+
+        @@media (max-width: 992px) {
+            .login-image { display: none; }
+            .login-form-section { width: 100%; }
+        }
+        .otp-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .otp-input {
+            width: 45px;
+            height: 55px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px rgba(197, 160, 89, 0.2);
+            outline: none;
         }
     </style>
 </head>
 <body>
-
-    <div class="register-card">
-        <div class="register-info text-center">
-            <h2 style="font-family: 'Playfair Display';">Join the Club</h2>
-            <p class="fw-light opacity-75 mt-3">Become a member of Intelligence Book and get exclusive access to rare collections and literary events.</p>
-            <div class="mt-4">
-                <img src="https://cdn-icons-png.flaticon.com/512/3429/3429149.png" width="120" style="filter: invert(1); opacity: 0.8;" alt="Book Icon">
+    <div class="login-container">
+        <div class="login-image">
+            <h1>Join Us</h1>
+            <p class="fs-5 text-center fw-light">"A room without books is like a body without a soul."</p>
+            <div class="mt-4 border-top pt-3 w-50 text-center" style="border-color: rgba(255,255,255,0.3) !important;">
+                <small>EST. 2024</small>
             </div>
         </div>
 
-        <div class="register-form">
-            <h3 class="fw-bold mb-4">Create Account</h3>
-            @if (ViewBag.Error != null)
-            {
-                <div class="alert alert-danger py-2 small">@ViewBag.Error</div>
-            }
-            <form asp-action="Register" method="post">
-                @Html.AntiForgeryToken()
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label class="form-label">FULL NAME</label>
-                        <input asp-for="FullName" class="form-control" placeholder="John Doe" required />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">USERNAME</label>
-                        <input asp-for="Username" class="form-control" placeholder="johndoe123" required />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">EMAIL</label>
-                        <input asp-for="Email" type="email" class="form-control" placeholder="john@example.com" required />
-                    </div>
-                    <div class="col-md-12 mb-4">
-                        <label class="form-label">PASSWORD</label>
-                        <input asp-for="Password" type="password" class="form-control" placeholder="At least 8 characters" required />
-                    </div>
-                </div>
+        <div class="login-form-section">
+            <div class="form-wrapper">
+                <a href="/" class="brand-logo text-center">BookStore.</a>
+                <h2 class="fw-bold mb-2">Tạo tài khoản</h2>
+                <p class="text-muted mb-4">Bắt đầu hành trình văn học của bạn cùng chúng tôi.</p>
 
-                <button type="submit" class="btn btn-register">REGISTER NOW</button>
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger border-0 small">@ViewBag.Error</div>
+                }
 
-                <p class="text-center mt-4 small text-muted">
-                    Already a member? <a asp-action="Login" class="text-decoration-none fw-bold" style="color: var(--accent-color);">Sign In</a>
-                </p>
-            </form>
+                <form asp-action="Register" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">HỌ VÀ TÊN</label>
+                        <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" required>
+                        <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">TÊN ĐĂNG NHẬP</label>
+                            <input asp-for="Username" class="form-control" placeholder="tên đăng nhập" required>
+                            <span asp-validation-for="Username" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">EMAIL</label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="email@vidu.com" required>
+                            <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">MẬT KHẨU</label>
+                        <div class="input-group">
+                            <input asp-for="Password" type="password" id="passwordInput" class="form-control" placeholder="" required style="border-right: none;">
+                            <button class="btn btn-outline-secondary bg-white text-muted" type="button" id="togglePassword" style="border-left: none; border-color: #ddd;">
+                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                </svg>
+                                <svg id="eyeSlashIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: none;">
+                                  <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z"/>
+                                  <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-login mb-3">TẠO TÀI KHOẢN</button>
+
+                    <div class="text-center mt-3">
+                        <p class="small text-muted">
+                            Đã có tài khoản?
+                            <a asp-action="Login" class="fw-bold text-decoration-none" style="color: var(--accent-color);">Đăng nhập ngay</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
+    @if (TempData["ShowOtpPopup"] != null)
+    {
+        <div class="modal fade" id="otpModal" tabindex="-1" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+                    <div class="modal-body p-5 text-center">
+                        <h4 class="fw-bold mb-3" style="color: var(--primary-color);">Xác thực Email</h4>
+                        <p class="text-muted mb-4 small">Chúng tôi đã gửi mã xác thực 6 chữ số đến<br/><strong>@TempData["UserEmail"]</strong></p>
+                        
+                        <div id="otpTimer" class="mb-3">
+                            <span class="badge bg-light text-dark border p-2">
+                                <i class="bi bi-clock me-1"></i> Mã hết hạn sau: <span id="timerValue" class="fw-bold text-danger">02:00</span>
+                            </span>
+                        </div>
+                        
+                        @if (TempData["OtpError"] != null)
+                        {
+                            <div class="alert alert-danger py-2 small mb-3">@TempData["OtpError"]</div>
+                        }
+
+                        <form asp-action="VerifyEmail" asp-controller="Auth" method="post" id="otpForm">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="Email" value="@TempData["UserEmail"]" />
+                            <input type="hidden" name="Token" id="fullToken" />
+                            
+                            <div class="otp-container">
+                                <input type="text" class="otp-input" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-input" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-input" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-input" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-input" maxlength="1" pattern="\d*" inputmode="numeric">
+                                <input type="text" class="otp-input" maxlength="1" pattern="\d*" inputmode="numeric">
+                            </div>
+
+                            <button type="submit" class="btn btn-login mb-2">XÁC NHẬN TÀI KHOẢN</button>
+                            <div class="mt-2">
+                                <small class="text-muted">Không nhận được mã? </small>
+                                <a href="javascript:void(0)" id="resendBtn" onclick="resendOtp('@TempData["UserEmail"]', 'register')" class="small fw-bold text-decoration-none" style="color: var(--accent-color);">Gửi lại mã</a>
+                                <div id="resendTimer" class="small text-muted mt-1" style="display: none;">Vui lòng đợi <span id="resendValue">30</span> giây để gửi lại</div>
+                            </div>
+                            <a href="/Auth/Register" class="text-muted small text-decoration-none d-block mt-3">Hủy bỏ</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function resendOtp(email, type) {
+                const btn = document.getElementById('resendBtn');
+                const resendTimerDiv = document.getElementById('resendTimer');
+                const resendValueSpan = document.getElementById('resendValue');
+                
+                btn.style.pointerEvents = "none";
+                btn.style.opacity = "0.5";
+
+                fetch(`/Auth/ResendOtp?email=${encodeURIComponent(email)}&type=${encodeURIComponent(type)}`, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        // Start 30s cooldown
+                        let timeLeft = 30;
+                        resendTimerDiv.style.display = "block";
+                        btn.style.display = "none";
+                        
+                        const cooldownInterval = setInterval(() => {
+                            timeLeft--;
+                            resendValueSpan.innerText = timeLeft;
+                            if (timeLeft <= 0) {
+                                clearInterval(cooldownInterval);
+                                resendTimerDiv.style.display = "none";
+                                btn.style.display = "inline";
+                                btn.style.pointerEvents = "auto";
+                                btn.style.opacity = "1";
+                            }
+                        }, 1000);
+
+                        // Reset 2m timer
+                        startOtpTimer(120);
+                    } else {
+                        btn.style.pointerEvents = "auto";
+                        btn.style.opacity = "1";
+                    }
+                })
+                .catch(() => {
+                    alert("Có lỗi xảy ra khi gửi lại mã.");
+                    btn.style.pointerEvents = "auto";
+                    btn.style.opacity = "1";
+                });
+            }
+
+            let mainTimerInterval;
+            function startOtpTimer(durationSeconds) {
+                clearInterval(mainTimerInterval);
+                let timer = durationSeconds;
+                const display = document.getElementById('timerValue');
+                const submitBtn = document.querySelector('#otpForm button[type="submit"]');
+                
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = "1";
+                }
+
+                mainTimerInterval = setInterval(() => {
+                    let minutes = Math.floor(timer / 60);
+                    let seconds = timer % 60;
+
+                    display.innerText = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+
+                    if (--timer < 0) {
+                        clearInterval(mainTimerInterval);
+                        display.innerText = "Đã hết hạn";
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.style.opacity = "0.5";
+                        }
+                    }
+                }, 1000);
+            }
+            
+            document.addEventListener("DOMContentLoaded", function() {
+                var otpModalElement = document.getElementById('otpModal');
+                if (otpModalElement) {
+                    var otpModal = new bootstrap.Modal(otpModalElement);
+                    otpModal.show();
+                    
+                    // Start the 2-minute timer
+                    startOtpTimer(120);
+                    
+                    const inputs = document.querySelectorAll('.otp-input');
+                    const hiddenInput = document.getElementById('fullToken');
+                    const form = document.getElementById('otpForm');
+
+                    inputs.forEach((input, index) => {
+                        input.addEventListener('input', (e) => {
+                            if (e.target.value.length === 1 && index < inputs.length - 1) {
+                                inputs[index + 1].focus();
+                            }
+                            updateHiddenInput();
+                        });
+
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                                inputs[index - 1].focus();
+                            }
+                        });
+
+                        input.addEventListener('paste', (e) => {
+                            e.preventDefault();
+                            const pasteData = e.clipboardData.getData('text').slice(0, 6);
+                            if (/^\d+$/.test(pasteData)) {
+                                pasteData.split('').forEach((char, i) => {
+                                    if (inputs[i]) inputs[i].value = char;
+                                });
+                                inputs[Math.min(pasteData.length, inputs.length - 1)].focus();
+                                updateHiddenInput();
+                            }
+                        });
+                    });
+
+                    function updateHiddenInput() {
+                        let token = '';
+                        inputs.forEach(input => token += input.value);
+                        hiddenInput.value = token;
+                    }
+
+                    form.addEventListener('submit', (e) => {
+                        updateHiddenInput();
+                        if (hiddenInput.value.length !== 6) {
+                            e.preventDefault();
+                            alert('Vui lòng nhập đầy đủ mã OTP 6 chữ số.');
+                        }
+                    });
+                }
+            });
+        </script>
+    }
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const eyeSlashIcon = document.getElementById('eyeSlashIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeSlashIcon.style.display = 'block';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeSlashIcon.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

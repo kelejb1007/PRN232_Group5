@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,17 +22,14 @@ namespace DAL.Repositories.Admin
         // All
         public async Task<IEnumerable<Category>> GetAllAsync()
         {
-            return await _context.Categories
-                                 .Where(c => !c.IsRemove)
-                                 .ToListAsync();
+            return await _context.Categories.ToListAsync();
         }
 
         // by ID
         public async Task<Category?> GetByIdAsync(int id)
         {
             return await _context.Categories
-                                 .Where(c => !c.IsRemove && c.CategoryId == id)
-                                 .FirstOrDefaultAsync();
+                                 .FirstOrDefaultAsync(c => c.CategoryId == id);
         }
 
         // create
@@ -66,7 +63,8 @@ namespace DAL.Repositories.Admin
             if (category == null)
                 return false;
 
-            category.IsRemove = true;
+            // category.IsRemove = true; // Cannot use as [NotMapped] for DB logic anymore
+            _context.Categories.Remove(category); // Actual delete as fallback
 
             await _context.SaveChangesAsync();
             return true;
@@ -74,7 +72,7 @@ namespace DAL.Repositories.Admin
 
         public async Task<bool> GetExistedByNameAsync(String name, int id) {
             var modelIsExisted = await _context.Categories
-                                 .Where(c => !c.IsRemove && c.CategoryName.Equals(name) && c.CategoryId != id)
+                                 .Where(c => c.CategoryName.Equals(name) && c.CategoryId != id)
                                  .FirstOrDefaultAsync();
             if (modelIsExisted != null)
             {

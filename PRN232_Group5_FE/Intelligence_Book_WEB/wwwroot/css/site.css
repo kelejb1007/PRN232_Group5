@@ -25,10 +25,84 @@ body {
 /* Bookstore Theme Colors */
 :root {
     --book-navy: #1a2a3a;
+    --navy-dark: #121c27;
     --book-gold: #c5a059;
+    --gold-hover: #b38f4d;
     --paper-white: #fdfdfd;
 }
 
+.bg-book-navy {
+    background-color: var(--book-navy) !important;
+}
+
+.text-gold {
+    color: var(--book-gold) !important;
+}
+
+.btn-gold {
+    background-color: var(--book-gold);
+    color: white;
+    border: none;
+}
+
+.btn-gold:hover {
+    background-color: var(--gold-hover);
+    color: white;
+}
+
+/* Navbar Enhancements */
+.navbar-brand .brand-text {
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+}
+
+.search-bar {
+    background: white;
+    border-radius: 50px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.search-bar:focus-within {
+    box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.2);
+}
+
+.search-bar .form-control {
+    font-size: 0.95rem;
+}
+
+.search-bar .btn {
+    border-radius: 0;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.cart-badge {
+    font-size: 0.65rem;
+    padding: 0.25em 0.5em;
+}
+
+.dropdown-menu {
+    min-width: 220px;
+    border-radius: 12px;
+}
+
+.dropdown-item {
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: var(--book-navy);
+    padding-left: 1.25rem;
+}
+
+/* Auth Styles */
 .auth-container {
     background-color: var(--paper-white);
     min-height: 80vh;
@@ -61,7 +135,7 @@ body {
 }
 
     .btn-bookstore:hover {
-        background-color: #b38f4d;
+        background-color: var(--gold-hover);
         color: white;
         transform: translateY(-1px);
     }
@@ -69,4 +143,36 @@ body {
 .form-control:focus {
     border-color: var(--book-gold);
     box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25);
+}
+
+/* OTP Input Styling */
+.otp-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.otp-input {
+    width: 45px;
+    height: 55px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.otp-input:focus {
+    border-color: var(--book-gold);
+    box-shadow: 0 0 8px rgba(197, 160, 89, 0.2);
+    outline: none;
+}
+
+.otp-input::-webkit-outer-spin-button,
+.otp-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

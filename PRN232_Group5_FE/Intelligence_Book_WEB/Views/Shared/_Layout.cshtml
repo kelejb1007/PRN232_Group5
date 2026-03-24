@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -97,10 +97,19 @@
 
                                 <!-- ĐÃ LOGIN -->
                                 <li id="nav-profile" style="display:none;">
-                                    <a class="dropdown-item" href="#">Hồ sơ</a>
+                                    <a class="dropdown-item" href="/Profile">
+                                        <i class="bi bi-person me-2"></i><span id="nav-user-name">Hồ sơ</span>
+                                    </a>
+                                </li>
+                                <li id="nav-dashboard" style="display:none;">
+                                    <a class="dropdown-item text-primary fw-bold" href="/Dashboard">
+                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                    </a>
                                 </li>
                                 <li id="nav-logout" style="display:none;">
-                                    <a class="dropdown-item" href="#" onclick="logout()">Đăng xuất</a>
+                                    <a class="dropdown-item text-danger" href="#" onclick="logout()">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                                    </a>
                                 </li>
 
                             </ul>
@@ -153,17 +162,28 @@
             const login = document.getElementById("nav-login");
             const register = document.getElementById("nav-register");
             const profile = document.getElementById("nav-profile");
+            const dashboard = document.getElementById("nav-dashboard");
             const logoutBtn = document.getElementById("nav-logout");
+            const userNameSpan = document.getElementById("nav-user-name");
 
             if (res.ok) {
+                const data = await res.json();
                 login.style.display = "none";
                 register.style.display = "none";
                 profile.style.display = "block";
                 logoutBtn.style.display = "block";
+                
+                if (userNameSpan) userNameSpan.innerText = data.username || "Hồ sơ";
+
+                // Check Role for Dashboard
+                if (data.role === "Admin") {
+                    if (dashboard) dashboard.style.display = "block";
+                }
             } else {
                 login.style.display = "block";
                 register.style.display = "block";
                 profile.style.display = "none";
+                if (dashboard) dashboard.style.display = "none";
                 logoutBtn.style.display = "none";
             }
 

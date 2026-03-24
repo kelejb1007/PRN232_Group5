@@ -1,6 +1,6 @@
-﻿using DAL.Data;
+using DAL.Data;
 using DAL.Models;
-using DAL.Repositories.Admin.Interfaces;
+using DAL.Repositories.User.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -8,8 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DAL.Repositories.User.Interfaces;
 
-namespace DAL.Repositories.Admin
+namespace DAL.Repositories.User
 {
     public class UserRepository : IUserRepository
     {
@@ -33,7 +34,13 @@ namespace DAL.Repositories.Admin
         public async Task<UserAccount?> GetUserByUsernameAsync(string username)
         {
             return await _context.UserAccounts
-                .FirstOrDefaultAsync(u => u.Username == username && u.IsActive);
+                .FirstOrDefaultAsync(u => u.Username == username);
+        }
+
+        public async Task<UserAccount?> GetUserByEmailAsync(string email)
+        {
+            return await _context.UserAccounts
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<bool> IsUserNameExistsAsync(string userName)
