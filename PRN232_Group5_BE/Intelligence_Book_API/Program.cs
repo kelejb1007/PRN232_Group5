@@ -11,9 +11,20 @@ using DAL.Repositories.Admin;
 using DAL.Repositories.Admin.Interfaces;
 using DAL.Repositories.User;
 using DAL.Repositories.User.Interfaces;
+using BLL.Services.User;
+using BLL.Services.User.Interfaces;
 using Intelligence_Book_API.Services.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using DAL.Data;
+using DAL.Repositories.Admin;
+using DAL.Repositories.Admin.Interfaces;
+using BLL.Services.Admin.Interfaces;
+using BLL.Services.Admin;
+using DAL.Mapper;
+using BLL.Services.Util;
+using BLL.Services.Util.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -53,10 +64,32 @@ builder.Services.AddMemoryCache();
 // Admin
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IBookRepository_Anh, BookRepository_Anh>();
+builder.Services.AddScoped<IBookService_Anh, BookService_Anh>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
+builder.Services.AddScoped<ICartServiceH, CartServiceH>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
-
-// User
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
@@ -157,6 +190,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
 
 var app = builder.Build();
 

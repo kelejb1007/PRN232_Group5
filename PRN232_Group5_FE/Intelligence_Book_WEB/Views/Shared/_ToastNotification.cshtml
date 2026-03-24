@@ -1,0 +1,93 @@
+@if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+{
+    var message = TempData["SuccessMessage"] ?? TempData["ErrorMessage"];
+    var type = TempData["SuccessMessage"] != null ? "success" : "error";
+
+    <div id="toast-notification" class="toast-container @type">
+        <div class="toast-content">
+            <i class="bi @(type == "success" ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill")"></i>
+            <span>@message</span>
+        </div>
+        <div class="toast-progress"></div>
+    </div>
+
+    <style>
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            min-width: 300px;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            animation: slideIn 0.5s ease forwards;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .toast-container.success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-left: 5px solid #1e8449;
+        }
+
+        .toast-container.error {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-left: 5px solid #922b21;
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .toast-content i {
+            font-size: 1.2rem;
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            width: 100%;
+            background: rgba(255,255,255,0.3);
+            animation: progress 3s linear forwards;
+        }
+
+        @@keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @@keyframes fadeOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(120%); opacity: 0; }
+        }
+
+        @@keyframes progress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+    </style>
+
+    <script>
+        (function() {
+            const toast = document.getElementById('toast-notification');
+            if (toast) {
+                // Auto hide after 3 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'fadeOut 0.5s ease forwards';
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 500);
+                }, 3000);
+            }
+        })();
+    </script>
+}

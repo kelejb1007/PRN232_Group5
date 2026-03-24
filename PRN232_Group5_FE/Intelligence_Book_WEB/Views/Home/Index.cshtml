@@ -1,10 +1,12 @@
+@model List<Intelligence_Book_WEB.Models.BookViewModel>
 @{
     ViewData["Title"] = "Home";
+    bool isSearching = ViewBag.IsSearching ?? false;
 }
 
 <style>
     :root {
-        --primary: rgba(25, 36, 50, 1); /* Màu chủ đạo như bạn yêu cầu */
+        --primary: rgba(25, 36, 50, 1);
         --primary-dark: rgba(15, 25, 38, 1);
         --text-dark: #2c3e50;
     }
@@ -21,10 +23,22 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-        #mainCarousel .carousel-item img {
-            height: 460px;
-            object-fit: cover;
-        }
+    #mainCarousel .carousel-item img {
+        height: 400px;
+        object-fit: cover;
+    }
+
+    /* Advanced Search Box */
+    .search-panel {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        margin-top: -50px;
+        position: relative;
+        z-index: 10;
+        border: 1px solid #eee;
+    }
 
     /* Tiêu đề */
     .section-title {
@@ -33,39 +47,20 @@
         font-size: 1.75rem;
         position: relative;
         display: inline-block;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        margin-top: 1rem;
     }
 
-        .section-title:after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 70px;
-            height: 4px;
-            background: var(--primary);
-            border-radius: 2px;
-        }
-
-    /* Danh mục */
-    .category-card {
-        background: white;
-        border: 1px solid #eee;
-        border-radius: 12px;
-        padding: 1.8rem 1rem;
-        font-size: 1.15rem;
-        font-weight: 600;
-        color: var(--text-dark);
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 2px;
     }
-
-        .category-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 25px rgba(25, 36, 50, 0.15);
-            border-color: var(--primary);
-            color: var(--primary);
-        }
 
     /* Card sách */
     .book-card {
@@ -75,68 +70,59 @@
         transition: all 0.4s ease;
         background: white;
         height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
-        .book-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 20px 35px rgba(25, 36, 50, 0.12);
-        }
+    .book-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(25, 36, 50, 0.12);
+    }
 
-        .book-card .card-img-top {
-            height: 240px;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
+    .book-card .card-img-top {
+        height: 280px;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
 
-        .book-card:hover .card-img-top {
-            transform: scale(1.06);
-        }
-
-        .book-card .card-body {
-            padding: 1.25rem;
-        }
-
-        .book-card .card-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            line-height: 1.4;
-            color: var(--text-dark);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+    .book-card:hover .card-img-top {
+        transform: scale(1.04);
+    }
 
     .price {
-        color: #e74c3c; /* Giữ giá tiền màu đỏ nổi */
-        font-size: 1.35rem;
+        color: #d9534f;
+        font-size: 1.25rem;
         font-weight: 700;
         margin: 0.5rem 0;
     }
 
-    /* Button - Đổi sang màu chủ đạo rgba(25,36,50,1) */
-    .btn-detail {
+    .btn-action {
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 10px;
+        transition: 0.2s;
+    }
+
+    .btn-outline-primary-custom {
         border: 2px solid var(--primary);
         color: var(--primary);
-        font-weight: 600;
-        border-radius: 8px;
     }
 
-        .btn-detail:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-    .btn-add {
+    .btn-outline-primary-custom:hover {
         background: var(--primary);
         color: white;
-        font-weight: 600;
-        border-radius: 8px;
     }
 
-        .btn-add:hover {
-            background: var(--primary-dark);
-        }
+    .btn-primary-custom {
+        background: var(--primary);
+        color: white;
+        border: none;
+    }
+
+    .btn-primary-custom:hover {
+        background: var(--primary-dark);
+        color: white;
+    }
 </style>
 
 <div class="container mt-5">
@@ -145,57 +131,96 @@
     <div id="mainCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794"
-                     class="d-block w-100" alt="Banner 1">
+                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794" class="d-block w-100" alt="Banner 1">
             </div>
             <div class="carousel-item">
-                <img src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d"
-                     class="d-block w-100" alt="Banner 2">
+                <img src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d" class="d-block w-100" alt="Banner 2">
             </div>
-            <div class="carousel-item">
-                <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
-                     class="d-block w-100" alt="Banner 3">
-            </div>
-        </div>
-
-        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-
-    <!-- DANH MỤC -->
-    <h3 class="section-title">Danh mục nổi bật</h3>
-    <div class="row g-4 mb-5 text-center">
-        <div class="col-md-3 col-6">
-            <div class="category-card">📘 Lập trình</div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="category-card">📕 Kinh tế</div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="category-card">📗 Kỹ năng sống</div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="category-card">📙 Tiểu thuyết</div>
         </div>
     </div>
 
-    <!-- SÁCH NỔI BẬT -->
-    <h3 class="section-title">Sách nổi bật</h3>
-    <div id="featured-books" class="row g-4 mb-5"></div>
+    <!-- SEARCH PANEL -->
+    <div class="search-panel mb-5">
+        <form method="get" action="/Home/Index" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold small text-muted">Tên sách / Tác giả</label>
+                <input name="search" class="form-control" value="@ViewBag.SearchTerm" placeholder="Tìm kiếm ngay..." />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold small text-muted">Danh mục</label>
+                <select name="categoryId" class="form-select">
+                    <option value="">Tất cả thể loại</option>
+                    @foreach (var cate in (ViewBag.Categories as List<Intelligence_Book_WEB.Models.CategoryViewModel>) ?? new List<Intelligence_Book_WEB.Models.CategoryViewModel>())
+                    {
+                        <option value="@cate.CategoryId" selected="@(ViewBag.SelectedCategory == cate.CategoryId)">@cate.CategoryName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold small text-muted">Giá từ</label>
+                <input name="minPrice" type="number" class="form-control" value="@ViewBag.MinPrice" placeholder="VND" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold small text-muted">Đến giá</label>
+                <input name="maxPrice" type="number" class="form-control" value="@ViewBag.MaxPrice" placeholder="VND" />
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-warning w-100 p-2"><i class="fas fa-search"></i></button>
+            </div>
+        </form>
+    </div>
 
-    <!-- SÁCH BÁN CHẠY -->
-    <h3 class="section-title">Sách bán chạy</h3>
-    <div id="best-seller-books" class="row g-4"></div>
+    @if (isSearching)
+    {
+        <!-- SEARCH RESULTS -->
+        <h3 class="section-title">Kết quả tìm kiếm cho: "@ViewBag.SearchTerm"</h3>
+        <div class="row g-4 mb-5">
+            @if (Model == null || !Model.Any())
+            {
+                <div class="col-12 text-center py-5">
+                    <div class="alert alert-light border shadow-sm">
+                        <i class="fas fa-info-circle me-2"></i> Không tìm thấy kết quả phù hợp.
+                        <a href="/" class="ms-2">Quay lại trang chính</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @foreach (var book in Model)
+                {
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card book-card shadow-sm h-100">
+                            <img src="@(book.CoverImageUrl ?? "https://via.placeholder.com/300x400")" class="card-img-top" alt="@book.Title">
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold text-dark">@book.Title</h6>
+                                <p class="price">@book.Price.ToString("N0") đ</p>
+                                <div class="mt-auto pt-2">
+                                    <a asp-controller="Book" asp-action="Details" asp-route-id="@book.BookId" class="btn btn-outline-primary-custom btn-action w-100 mb-2 text-decoration-none">Xem chi tiết</a>
+                                    <button class="btn btn-primary-custom btn-action w-100" onclick="addToCart(@book.BookId)">
+                                        🛒 Thêm vào giỏ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <!-- DEFAULT HOMEPAGE CONTENT -->
+        <h3 class="section-title">Sách nổi bật</h3>
+        <div id="featured-books" class="row g-4 mb-5"></div>
+
+        <h3 class="section-title">Sách bán chạy</h3>
+        <div id="best-seller-books" class="row g-4 mb-5"></div>
+    }
 </div>
 
 @section Scripts {
     <script>
+        const API_BASE = "https://localhost:7287/api";
         const USER_ID = 1;
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -263,9 +288,12 @@
                             <div class="card-body d-flex flex-column">
                                 <h6 class="card-title">${book.title}</h6>
                                 <p class="price">${book.price.toLocaleString()} VND</p>
-                                <div class="mt-auto pt-2">
-                                    <button class="btn btn-detail w-100 mb-2">Xem chi tiết</button>
-                                    <button class="btn btn-add w-100"
+                                 <div class="mt-auto pt-2">
+                                    <button class="btn btn-outline-primary-custom btn-action w-100 mb-2" 
+                                            onclick="window.location.href='/Book/Details/${book.bookId}'">
+                                        Xem chi tiết
+                                    </button>
+                                    <button class="btn btn-primary-custom btn-action w-100"
                                             onclick="addToCart(${book.bookId})">
                                         🛒 Thêm vào giỏ
                                     </button>

@@ -12,7 +12,7 @@ using DAL.DTOs.CategoryDTOs;
 
 namespace Intelligence_Book_API.Controllers.Admin
 {
-    [Route("api/[controller]")]
+    [Route("api/Admin/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
     {

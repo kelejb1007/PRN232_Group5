@@ -1,4 +1,4 @@
-﻿/* new - updated to match old */
+/* new - updated to match old */
 
 body {
     margin: 0px;
@@ -14,31 +14,41 @@ a {
 
 /* ===== SIDEBAR ===== */
 .sidebar {
-    width: 15%;
+    width: 250px;
     background-color: #fff;
     border-right: 1px solid #ddd;
     min-height: 100vh;
-    box-shadow: 1px 1px 10px 3px gray;
-    z-index: 1;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
     position: fixed;
+    padding-top: 20px;
 }
 
-/* ===== LOGO ===== */
-.logo {
-    height: 9vh;
+.logo-section {
     text-align: center;
+    margin-bottom: 30px;
+    padding: 0 15px;
 }
 
-    .logo img {
-        margin-top: 2vh;
-        width: 60%;
-    }
-
-/* ===== ADMIN / USER INFO ===== */
-.admin {
+.user-info {
     display: flex;
-    justify-content: flex-start;
-    padding-left: 17%;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+.user-details {
+    margin-left: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+    margin-left: 250px;
+    padding: 0;
+    width: calc(100% - 250px);
 }
 
     .admin p {

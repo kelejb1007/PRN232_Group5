@@ -12,6 +12,7 @@ namespace DAL.Repositories.Admin.Interfaces
         Task<IEnumerable<Category>> GetAllAsync();
 
         Task<Category?> GetByIdAsync(int id);
+        Task<List<Category>?> GetListByIdAsync(List<int> id);
 
         Task<Category> CreateAsync(Category category);
 
