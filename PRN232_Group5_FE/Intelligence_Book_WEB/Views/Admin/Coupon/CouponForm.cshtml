@@ -1,0 +1,460 @@
+@model Intelligence_Book_WEB.Models.Dto.CouponVm
+@{
+    var isEdit = Model.CouponId != 0;
+    ViewData["Title"] = isEdit ? "Cập nhật Coupon" : "Thêm Coupon";
+}
+
+<style>
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #f8fafc;
+        margin: 0;
+        padding: 0;
+        color: #0f172a;
+    }
+
+    /* Layout */
+    .admin-layout {
+        display: flex;
+        min-height: calc(100vh - 60px);
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+    }
+
+    /* Left Sidebar (20%) */
+    .sidebar-left {
+        width: 20%;
+        background: #ffffff;
+        border-right: 1px solid #e2e8f0;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-placeholder {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        color: #64748b;
+        background: #f8fafc;
+    }
+
+    /* Main Content (80%) */
+    .main-wrapper {
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        background: #f1f5f9;
+    }
+
+    /* Red Topbar (80%) */
+    .top-navbar {
+        background: #ffffff;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        padding: 0 32px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .top-navbar h1 {
+        color: #dc2626;
+        font-size: 22px;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: 0.5px;
+    }
+
+    /* Content Area */
+    .content-area {
+        padding: 32px;
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        padding: 32px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .top-action {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .title-sub {
+        font-size: 20px;
+        font-weight: 800;
+        margin: 0;
+        color: #1e293b;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .btn-orange { background: #f97316; color: #fff; }
+    .btn-orange:hover { background: #ea580c; }
+
+    .btn-dark { background: #0f172a; color: #fff; }
+    .btn-dark:hover { background: #1e293b; }
+
+    .btn-outline { background: #fff; border: 1px solid #cbd5e1; color: #475569; padding: 11px 23px; }
+    .btn-outline:hover { background: #f8fafc; border-color: #94a3b8; }
+
+    .grid-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-weight: 700;
+        color: #334155;
+        font-size: 14px;
+    }
+
+    input {
+        padding: 12px 16px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 15px;
+        transition: all 0.2s;
+        outline: none;
+        color: #0f172a;
+        background: #fff;
+    }
+    input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    input[readonly], input:disabled {
+        background: #f1f5f9;
+        color: #64748b;
+        cursor: not-allowed;
+    }
+
+    .error-box {
+        margin-bottom: 24px;
+        padding: 14px 20px;
+        border-radius: 12px;
+        background: #fef2f2;
+        color: #991b1b;
+        font-weight: 600;
+        border: 1px solid #fecaca;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hint {
+        font-size: 13px;
+        color: #64748b;
+    }
+
+    .field-error {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    }
+
+    .action-group {
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: flex-end;
+    }
+</style>
+
+<div class="admin-layout">
+    <!-- Left Sidebar (20%) -->
+    <div class="sidebar-left">
+        <div class="sidebar-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px; opacity: 0.5;">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+            <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px 0; color: #475569;">Admin Sidebar</h3>
+            <span style="font-size: 13px;">(Cột dành cho tính năng khác)</span>
+        </div>
+    </div>
+
+    <!-- Main Content (80%) -->
+    <div class="main-wrapper">
+        <!-- Top Navbar (80%) -->
+        <div class="top-navbar">
+            <h1>Quản Lý Coupon</h1>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="content-area">
+            <div class="card">
+                <div class="top-action">
+                    <h2 class="title-sub">@(isEdit ? "Cập nhật Coupon" : "Thêm Coupon Mới")</h2>
+                    <a class="btn btn-outline" href="/Admin/Coupon/CouponList" style="padding: 8px 16px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Trở Về
+                    </a>
+                </div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="error-box">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        @ViewBag.Error
+                    </div>
+                }
+
+                <div id="clientError" class="error-box" style="display:none;"></div>
+
+                <form id="couponForm" method="post" action="/Admin/Coupon/CouponSave" novalidate>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="CouponId" value="@Model.CouponId" />
+
+                    <div class="grid-form">
+                        <div class="form-group full">
+                            <label>Mã Coupon (Code)</label>
+                            <div style="display:flex; gap:12px; align-items:center;">
+                                <input id="Code" name="Code" value="@Model.Code" maxlength="50" required readonly style="flex:1; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 18px; font-weight: 700; letter-spacing: 2px; color: #0f172a;" />
+                                @if (!isEdit)
+                                {
+                                    <button id="btnRandom" type="button" class="btn btn-dark" style="white-space:nowrap;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                                        Tạo Tự Động
+                                    </button>
+                                }
+                            </div>
+                            <div class="hint">Mã tự động sinh. Định dạng: Chữ in hoa và số.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phần trăm giảm (1-50%)</label>
+                            <input id="DiscountPercent" type="number" name="DiscountPercent" value="@Model.DiscountPercent" min="1" max="50" step="1" required @(isEdit ? "readonly" : "") />
+                            <div class="hint">Giá trị từ 1 đến 50.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ngày hết hạn</label>
+                            <input id="ExpiryDate" type="date" name="ExpiryDate" value="@(Model.ExpiryDate?.ToString("yyyy-MM-dd") ?? "")" />
+                            <div class="hint">Để trống nếu mã giảm giá dùng vĩnh viễn.</div>
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Số lượng khả dụng</label>
+                            <input id="quantity" type="number" name="quantity" value="@Model.quantity" min="0" max="10000" step="1" required />
+                            <div class="hint">Từ 0 đến 10.000 (Đặt bằng 0 để khóa sử dụng).</div>
+                        </div>
+                    </div>
+
+                    <div class="action-group">
+                        <button class="btn btn-orange" type="submit">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                            @(isEdit ? "Lưu Thay Đổi" : "Tạo Mã Giảm Giá")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const isEdit = @((Model.CouponId != 0).ToString().ToLower());
+
+    const form = document.getElementById("couponForm");
+    const clientError = document.getElementById("clientError");
+
+    const codeEl = document.getElementById("Code");
+    const discountEl = document.getElementById("DiscountPercent");
+    const expiryEl = document.getElementById("ExpiryDate");
+    const qtyEl = document.getElementById("quantity");
+    const btnRandom = document.getElementById("btnRandom");
+
+    function todayStr() {
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    const today = todayStr();
+
+    // set min date để không chọn ngày quá khứ
+    expiryEl.setAttribute("min", today);
+
+    // UPDATE: khóa Code & Discount
+    if (isEdit) {
+        codeEl.readOnly = true;
+        discountEl.readOnly = true;
+    } else {
+        codeEl.readOnly = true; // create cũng không cho nhập tay
+        discountEl.readOnly = false;
+    }
+
+    // random code thực tế: CP + 8 ký tự (A-Z0-9) tránh nhầm
+    function randomCode() {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // bỏ I,O,1,0
+        let s = "CP";
+        for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        return s;
+    }
+
+    function normalizeCode(v) {
+        v = (v || "").toUpperCase().trim();
+        v = v.replace(/[^A-Z0-9]/g, "");
+        return v;
+    }
+
+    // Create: auto sinh code nếu trống + nút random
+    if (btnRandom) {
+        btnRandom.addEventListener("click", function () {
+            codeEl.value = randomCode();
+        });
+        if (!codeEl.value || !codeEl.value.trim()) {
+            codeEl.value = randomCode();
+        }
+    }
+
+    function showError(msg) {
+        const icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="min-width: 20px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+        clientError.innerHTML = icon + "&nbsp;" + msg;
+        clientError.style.display = "flex";
+    }
+
+    function clearError() {
+        clientError.innerHTML = "";
+        clientError.style.display = "none";
+        [codeEl, discountEl, expiryEl, qtyEl].forEach(x => x.classList.remove("field-error"));
+    }
+
+    function mark(el) { if (el) el.classList.add("field-error"); }
+
+    function clampInt(el, min, max) {
+        el.addEventListener("input", function () {
+            if (el.value === "") return;
+            let v = parseInt(el.value, 10);
+            if (Number.isNaN(v)) return;
+            if (v < min) v = min;
+            if (v > max) v = max;
+            el.value = v;
+        });
+    }
+
+    clampInt(discountEl, 1, 50);
+    clampInt(qtyEl, 0, 10000);
+
+    form.addEventListener("submit", function (e) {
+        clearError();
+
+        // normalize code
+        codeEl.value = normalizeCode(codeEl.value);
+
+        const code = codeEl.value;
+        const discount = parseInt(discountEl.value, 10);
+        const qty = parseInt(qtyEl.value, 10);
+        const expiry = (expiryEl.value || "").trim();
+
+        // Code: 6-20, chỉ A-Z0-9
+        if (!code) {
+            e.preventDefault();
+            showError("Mã không được để trống. Vui lòng tạo tự động.");
+            mark(codeEl);
+            return;
+        }
+        if (code.length < 6 || code.length > 20) {
+            e.preventDefault();
+            showError("Mã phải dài từ 6 tới 20 ký tự (A-Z, 0-9).");
+            mark(codeEl);
+            return;
+        }
+        if (!/^[A-Z0-9]+$/.test(code)) {
+            e.preventDefault();
+            showError("Mã chỉ được chứa chữ in hoa và số (A-Z, 0-9).");
+            mark(codeEl);
+            return;
+        }
+
+        // Discount 1-50
+        if (!Number.isInteger(discount) || discount < 1 || discount > 50) {
+            e.preventDefault();
+            showError("Phần trăm giảm giá phải nằm trong khoảng từ 1 tới 50.");
+            mark(discountEl);
+            return;
+        }
+
+        // Quantity 0-10000
+        if (!Number.isInteger(qty) || qty < 0 || qty > 10000) {
+            e.preventDefault();
+            showError("Số lượng khả dụng chỉ được từ 0 tới 10000.");
+            mark(qtyEl);
+            return;
+        }
+
+        // ExpiryDate: nếu có chọn thì không quá khứ
+        if (expiry && expiry < today) {
+            e.preventDefault();
+            showError("Ngày hết hạn không được thuộc về quá khứ.");
+            mark(expiryEl);
+            return;
+        }
+
+        // Logic thực tế: quantity = 0 => confirm
+        if (qty === 0) {
+            const ok = confirm("Số lượng = 0 có nghĩa là Coupon tạm thời vô hiệu hóa. Bạn có muốn lưu tiếp?");
+            if (!ok) {
+                e.preventDefault();
+                mark(qtyEl);
+                return;
+            }
+        }
+
+        if (isEdit) {
+            // bảo vệ khỏi devtools
+            codeEl.readOnly = true;
+            discountEl.readOnly = true;
+        }
+    });
+
+})();
+</script>

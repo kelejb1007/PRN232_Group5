@@ -16,9 +16,16 @@ builder.Services.AddControllersWithViews();
 //});
 
 var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? throw new InvalidOperationException("ApiSettings:BaseUrl is missing");
+
+// HttpClient cho AuthService
 builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 builder.Services.AddHttpClient<IProfileService, ProfileService>(client =>
 {
@@ -38,7 +45,17 @@ builder.Services.AddHttpClient<IDashboardService, DashboardService>(client =>
 });
 builder.Services.AddHttpContextAccessor();
 
-// ✅ HttpClient chính cho toàn app
+// Named HttpClient nếu chỗ khác trong project có dùng
+builder.Services.AddHttpClient("MyAPI", client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+});
+
 builder.Services.AddHttpClient("api", client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
@@ -49,6 +66,13 @@ builder.Services.AddHttpClient("MyAPI", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7287/");
 });
+// Cookie Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
+    });
 
 // ================= PIPELINE =================
 var app = builder.Build();

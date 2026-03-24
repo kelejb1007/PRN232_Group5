@@ -1,33 +1,25 @@
 using System.Text;
+using BLL.Mapper;
 using BLL.Services;
 using BLL.Services.Interfaces;
 using BLL.Services.Admin;
 using BLL.Services.Admin.Interfaces;
 using BLL.Services.User;
 using BLL.Services.User.Interfaces;
+using BLL.Services.Util;
+using BLL.Services.Util.Interfaces;
 using DAL.Data;
 using DAL.Mapper;
 using DAL.Repositories.Admin;
 using DAL.Repositories.Admin.Interfaces;
 using DAL.Repositories.User;
 using DAL.Repositories.User.Interfaces;
-using BLL.Services.User;
-using BLL.Services.User.Interfaces;
+using Intelligence_Book_API.Services;
 using Intelligence_Book_API.Services.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using DAL.Data;
-using DAL.Repositories.Admin;
-using DAL.Repositories.Admin.Interfaces;
-using BLL.Services.Admin.Interfaces;
-using BLL.Services.Admin;
-using DAL.Mapper;
-using BLL.Services.Util;
-using BLL.Services.Util.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // ================= DB =================
@@ -35,8 +27,21 @@ var connectionString = builder.Configuration.GetConnectionString("Intelligence_B
     ?? throw new InvalidOperationException("Connection string not found");
 
 builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
-    options.UseSqlServer(connectionString)
-);
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Intelligence_Book_APIContext")
+        ?? throw new InvalidOperationException("Connection string 'Intelligence_Book_APIContext' not found.")));
+
+// DI Repo + Service
+builder.Services.AddScoped<ICouponRepository, CouponRepository>();
+builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<DAL.Repositories.Admin.Interfaces.IOrderRepository, DAL.Repositories.Admin.OrderRepository>();
+builder.Services.AddScoped<BLL.Services.Admin.Interfaces.IOrderService, BLL.Services.Admin.OrderService>();
+
+// AutoMapper (scan profile)
+builder.Services.AddAutoMapper(cfg => 
+{
+    cfg.AddProfile<CouponProfile>();
+    cfg.AddProfile<OrderProfile>();
+});
 
 // ================= CONTROLLERS =================
 builder.Services.AddControllers()
@@ -44,7 +49,10 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.ReferenceHandler =
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+// Register Background Services
+builder.Services.AddHostedService<OrderCompletionHostedService>();
 
 // ================= CORS =================
 builder.Services.AddCors(options =>
@@ -68,14 +76,13 @@ builder.Services.AddScoped<IBookRepository_Anh, BookRepository_Anh>();
 builder.Services.AddScoped<IBookService_Anh, BookService_Anh>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<DAL.Repositories.User.Interfaces.IOrderRepository, DAL.Repositories.User.OrderRepository>();
+builder.Services.AddScoped<BLL.Services.User.Interfaces.IOrderService, BLL.Services.User.OrderService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
 builder.Services.AddScoped<ICartServiceH, CartServiceH>();
@@ -95,20 +102,27 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IAddressService, AddressService>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<DAL.Repositories.Admin.Interfaces.IOrderRepository, DAL.Repositories.Admin.OrderRepository>();
+builder.Services.AddScoped<BLL.Services.Admin.Interfaces.IOrderService, BLL.Services.Admin.OrderService>();
 
 // Legacy/Other
 builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
 builder.Services.AddScoped<ICartServiceH, CartServiceH>();
 builder.Services.AddScoped<IOrderRepositoryH, OrderRepositoryH>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IBookRepositoryH, BookRepositoryH>();
 builder.Services.AddScoped<IBookServiceH, BookServiceH>();
 
-// Utils
+// AutoMapper (MappingProfile for User-side)
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Utils
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<PayOSService>();
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 // ================= JWT =================
 var jwtSettings = builder.Configuration.GetSection("Jwt");

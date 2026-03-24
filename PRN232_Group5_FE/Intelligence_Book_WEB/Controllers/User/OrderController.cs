@@ -7,7 +7,7 @@ namespace Intelligence_Book_WEB.Controllers.User
 {
     public class OrderController : Controller
     {
-        private readonly IOrderService _orderService;
+        private readonly Intelligence_Book_WEB.Services.User.Interfaces.IOrderService _orderService;
         private readonly IProfileService _profileService;
         private const string AccessTokenCookie = "access_token";
         private readonly IHttpClientFactory _factory;

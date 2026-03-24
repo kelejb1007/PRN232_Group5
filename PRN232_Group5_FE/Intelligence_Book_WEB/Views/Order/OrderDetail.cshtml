@@ -1,7 +1,18 @@
-﻿@model Intelligence_Book_WEB.Models.OrderDetailViewModel
+@model Intelligence_Book_WEB.Models.OrderDetailViewModel
 
 @{
     ViewData["Title"] = "Chi tiết đơn hàng";
+
+    // Cleanly compute the status badge color to avoid Razor string literal parsing issues later
+    string statusClass = "bg-secondary";
+    if (Model != null)
+    {
+        statusClass = Model.Status == "Delivered" ? "bg-success" :
+                      Model.Status == "Paid" ? "bg-primary" :
+                      Model.Status == "Pending" ? "bg-warning text-dark" :
+                      Model.Status == "Cancelled" ? "bg-danger" : 
+                      "bg-secondary";
+    }
 }
 
 <div class="container mt-5">
@@ -23,35 +34,30 @@
             <div class="alert alert-warning">@ViewBag.Warning</div>
         }
 
-    @* ORDER INFO *@
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
+        @* ORDER INFO *@
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
 
-            <p><strong>Mã đơn:</strong> #@Model.OrderId</p>
+                <p><strong>Mã đơn:</strong> #@Model.OrderId</p>
 
-            <p>
-                <strong>Ngày đặt:</strong>
-                @(Model.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
-            </p>
+                <p>
+                    <strong>Ngày đặt:</strong>
+                    @(Model.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                </p>
 
-            <p>
-                <strong>Trạng thái:</strong>
-                <span class="badge
-                        @(Model.Status == "Delivered" ? "bg-success" :
-                                                Model.Status == "Paid" ? "bg-primary" :
-                                                Model.Status == "Pending" ? "bg-warning text-dark" :
-                                                Model.Status == "Cancelled" ? "bg-danger" :
-                                                "bg-secondary")">
-                                                             @Model.Status
-                                                         </span>
-                                                     </p>
+                <p>
+                    <strong>Trạng thái:</strong>
+                    <span class="badge @statusClass">
+                        @Model.Status
+                    </span>
+                </p>
 
-            <p>
-                <strong>Địa chỉ:</strong>
-                @(string.IsNullOrWhiteSpace(Model.ShippingAddress)
-                                ? "Không có"
-                                : Model.ShippingAddress)
-            </p>
+                <p>
+                    <strong>Địa chỉ:</strong>
+                    @(string.IsNullOrWhiteSpace(Model.ShippingAddress)
+                                    ? "Không có"
+                                    : Model.ShippingAddress)
+                </p>
 
                 <p>
                     <strong>Tổng tiền:</strong>
@@ -64,7 +70,7 @@
         </div>
 
         @* ITEMS *@
-    @if (Model.Items == null || !Model.Items.Any())
+        if (Model.Items == null || !Model.Items.Any())
         {
             <div class="alert alert-info">Đơn hàng chưa có sản phẩm nào.</div>
         }
