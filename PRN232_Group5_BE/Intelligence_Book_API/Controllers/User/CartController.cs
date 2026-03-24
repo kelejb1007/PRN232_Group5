@@ -108,5 +108,23 @@ namespace Intelligence_Book_API.Controllers.User
 
             return Ok(orders);
         }
+        [HttpGet("order-detail/{orderId}")]
+        public async Task<IActionResult> GetOrderDetail(int orderId)
+        {
+            try
+            {
+
+                var order = await _service.GetOrderDetail(orderId);
+
+                if (order == null)
+                    return NotFound(new { message = "Không tìm thấy đơn hàng" });
+
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
     }
 }
