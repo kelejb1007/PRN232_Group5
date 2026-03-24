@@ -127,7 +127,10 @@ namespace Intelligence_Book_API.Controllers
         [Authorize]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete(AuthCookieName);
+            Response.Cookies.Delete(AuthCookieName, new CookieOptions { 
+                Secure = true, 
+                SameSite = SameSiteMode.None 
+            });
             return Ok(new { message = "Đăng xuất thành công." });
         }
 
@@ -135,10 +138,11 @@ namespace Intelligence_Book_API.Controllers
         {
             Response.Cookies.Append(AuthCookieName, token, new CookieOptions
             {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = expiresAtUtc
+                HttpOnly = false, // Allow navbar JS to read this!
+                Secure = true, // Required for SameSite=None
+                SameSite = SameSiteMode.None, // Support cross-origin
+                Expires = expiresAtUtc,
+                Path = "/"
             });
         }
     }

@@ -70,9 +70,15 @@ namespace Intelligence_Book_WEB.Controllers
         public async Task<IActionResult> Logout()
         {
             var token = Request.Cookies[AccessTokenCookie];
-            await _authService.LogoutAsync(token);
+            if (!string.IsNullOrEmpty(token))
+            {
+                await _authService.LogoutAsync(token);
+            }
 
-            Response.Cookies.Delete(AccessTokenCookie);
+            Response.Cookies.Delete(AccessTokenCookie, new CookieOptions { 
+                Secure = true, 
+                SameSite = SameSiteMode.Lax 
+            });
             Response.Cookies.Delete(RefreshTokenCookie);
 
             return RedirectToAction("Index", "Home");
@@ -191,10 +197,11 @@ namespace Intelligence_Book_WEB.Controllers
         {
             Response.Cookies.Append(AccessTokenCookie, token, new CookieOptions
             {
-                HttpOnly = true,
+                HttpOnly = false, // Allow navbar JS to read this!
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = expiresAtUtc
+                SameSite = SameSiteMode.Lax,
+                Expires = expiresAtUtc,
+                Path = "/"
             });
         }
     }
