@@ -13,6 +13,7 @@ namespace DAL.Repositories.User.Interfaces
         Task<Cart?> GetCartItemAsync(int userId, int bookId);
         Task AddAsync(Cart cart);
      
+        Task DeleteRangeAsync(List<Cart> carts);
 
         Task<Cart> GetByIdAsync(int cartId);
         Task UpdateAsync(Cart cart);

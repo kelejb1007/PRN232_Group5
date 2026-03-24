@@ -3,6 +3,7 @@ using BLL.Services.User.Interfaces;
 using DAL.Data;
 using DAL.Repositories.User;
 using DAL.Repositories.User.Interfaces;
+using Intelligence_Book_API.Services.User;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,10 +31,17 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IBookRepositoryH, BookRepositoryH>();
 builder.Services.AddScoped<IBookServiceH, BookServiceH>();
+
 builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
 builder.Services.AddScoped<ICartServiceH, CartServiceH>();
+
 builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
 builder.Services.AddScoped<ICartServiceH, CartServiceH>();
+
+builder.Services.AddScoped<IOrderRepositoryH, OrderRepositoryH>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddHttpClient<PayOSService>();
+//builder.Services.AddScoped<PayOSService>();
 var app = builder.Build();
 
 // ================= PIPELINE =================
@@ -45,7 +53,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ⚠ CORS phải nằm trước MapControllers
+// phải nằm trước MapControllers
 app.UseCors("AllowAll");
 
 app.UseAuthorization();

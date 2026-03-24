@@ -8,5 +8,20 @@ namespace Intelligence_Book_WEB.Controllers.User
         {
             return View();
         }
+
+        public IActionResult Checkout()
+        {
+            return View();
+        }
+
+        public IActionResult Success()
+        {
+            return View();
+        }
+
+        public IActionResult Cancel()
+        {
+            return View();
+        }
     }
 }

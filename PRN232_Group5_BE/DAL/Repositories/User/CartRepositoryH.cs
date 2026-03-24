@@ -59,5 +59,10 @@ namespace DAL.Repositories.User
             return await _context.Carts
                 .FirstOrDefaultAsync(x => x.CartId == cartId);
         }
+        public async Task DeleteRangeAsync(List<Cart> carts)
+        {
+            _context.Carts.RemoveRange(carts);
+            await _context.SaveChangesAsync();
+        }
     }
 }
