@@ -43,6 +43,12 @@ namespace DAL.Data
                 .Property(o => o.Status)
                 .HasConversion<string>();
 
+            // Map quan hệ Order - UserAccount
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.UserAccount)
+                .WithMany()
+                .HasForeignKey(o => o.UserId);
+
             modelBuilder.Entity<UserAccount>()
                 .Property(u => u.Role)
                 .HasConversion<string>();

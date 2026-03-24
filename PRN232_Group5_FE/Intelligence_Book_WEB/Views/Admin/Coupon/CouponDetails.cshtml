@@ -1,0 +1,322 @@
+@model Intelligence_Book_WEB.Models.Dto.CouponVm
+@{
+    ViewData["Title"] = "Chi tiết Coupon";
+    var isUnlimited = !Model.ExpiryDate.HasValue || Model.ExpiryDate.Value.Year >= 2099;
+    var isExpired = !isUnlimited && Model.ExpiryDate.Value.Date < DateTime.Today;
+}
+
+<style>
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #f8fafc;
+        margin: 0;
+        padding: 0;
+        color: #0f172a;
+    }
+
+    /* Layout */
+    .admin-layout {
+        display: flex;
+        min-height: calc(100vh - 60px);
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+    }
+
+    /* Left Sidebar (20%) */
+    .sidebar-left {
+        width: 20%;
+        background: #ffffff;
+        border-right: 1px solid #e2e8f0;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-placeholder {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        color: #64748b;
+        background: #f8fafc;
+    }
+
+    /* Main Content (80%) */
+    .main-wrapper {
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        background: #f1f5f9;
+    }
+
+    /* Red Topbar (80%) */
+    .top-navbar {
+        background: #ffffff;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        padding: 0 32px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .top-navbar h1 {
+        color: #dc2626;
+        font-size: 22px;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: 0.5px;
+    }
+
+    /* Content Area */
+    .content-area {
+        padding: 32px;
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        padding: 32px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .top-action {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .title-sub {
+        font-size: 20px;
+        font-weight: 800;
+        margin: 0;
+        color: #1e293b;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .btn-green { background: #10b981; color: #fff; }
+    .btn-green:hover { background: #059669; }
+
+    .btn-red { background: #ef4444; color: #fff; }
+    .btn-red:hover { background: #dc2626; }
+
+    .btn-dark { background: #0f172a; color: #fff; }
+    .btn-dark:hover { background: #1e293b; }
+
+    .btn-disabled { background: #94a3b8; color: #fff; cursor: not-allowed; }
+    .btn-disabled:hover { transform: none; box-shadow: none; }
+
+    .code-display {
+        font-size: 42px;
+        font-weight: 900;
+        text-align: center;
+        margin: 16px 0 32px;
+        letter-spacing: 4px;
+        color: #0f172a;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        background: #f8fafc;
+        padding: 24px;
+        border-radius: 12px;
+        border: 2px dashed #cbd5e1;
+    }
+
+    .grid-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px 24px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px 18px;
+    }
+
+    .info-row strong {
+        color: #64748b;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-row span.val {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 15px;
+    }
+
+    .badge {
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .badge::before { content: ""; display: block; width: 6px; height: 6px; border-radius: 50%; }
+
+    .ok { color: #16a34a; background: #dcfce7; }
+    .ok::before { background: #16a34a; }
+
+    .bad { color: #dc2626; background: #fee2e2; }
+    .bad::before { background: #dc2626; }
+
+    .action-group {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .msg {
+        margin: 0 auto 24px;
+        max-width: 800px;
+        padding: 14px 20px;
+        border-radius: 12px;
+        background: #dbeafe;
+        color: #1e40af;
+        font-weight: 600;
+        border: 1px solid #bfdbfe;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+</style>
+
+<div class="admin-layout">
+    <!-- Left Sidebar (20%) -->
+    <div class="sidebar-left">
+        <div class="sidebar-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px; opacity: 0.5;">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+            <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px 0; color: #475569;">Admin Sidebar</h3>
+            <span style="font-size: 13px;">(Cột dành cho tính năng khác)</span>
+        </div>
+    </div>
+
+    <!-- Main Content (80%) -->
+    <div class="main-wrapper">
+        <!-- Top Navbar (80%) -->
+        <div class="top-navbar">
+            <h1>Quản Lý Coupon</h1>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="content-area">
+            
+            @if (TempData["Message"] != null)
+            {
+                <div class="msg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    @TempData["Message"]
+                </div>
+            }
+
+            <div class="card">
+                <div class="top-action">
+                    <h2 class="title-sub">Chi Liết Coupon</h2>
+                    <a class="btn btn-dark" href="/Admin/Coupon/CouponList">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Quay về danh sách
+                    </a>
+                </div>
+
+                <div class="code-display">@Model.Code</div>
+
+                <div class="grid-info">
+                    <div class="info-row">
+                        <strong>ID</strong>
+                        <span class="val">@Model.CouponId</span>
+                    </div>
+                    <div class="info-row">
+                        <strong>Giảm Giá</strong>
+                        <span class="val" style="color: #dc2626; font-size: 18px;">@Model.DiscountPercent%</span>
+                    </div>
+                    <div class="info-row">
+                        <strong>Ngày Hết Hạn</strong>
+                        <span class="val">@(isUnlimited ? "Không thời hạn" : Model.ExpiryDate?.ToString("dd-MM-yyyy"))</span>
+                    </div>
+                    <div class="info-row">
+                        <strong>Trạng Thái</strong>
+                        @if (isExpired)
+                        {
+                            <span class="badge bad">Đã hết hạn</span>
+                        }
+                        else
+                        {
+                            <span class="badge ok">Khả dụng</span>
+                        }
+                    </div>
+                    <div class="info-row" style="grid-column: 1 / -1;">
+                        <strong>Số lượng còn lại</strong>
+                        <span class="val" style="font-size: 18px; color: #2563eb;">@Model.quantity</span>
+                    </div>
+                </div>
+
+                <div class="action-group">
+                    @if (!isExpired)
+                    {
+                        <a class="btn btn-green" href="/Admin/Coupon/CouponUpdate?id=@Model.CouponId">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            Cập nhật
+                        </a>
+
+                        <form method="post" action="/Admin/Coupon/CouponDelete" onsubmit="return confirm('Bạn có chắc chắn muốn XÓA coupon này?');" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.CouponId" />
+                            <button class="btn btn-red" type="submit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                Xóa
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="btn btn-disabled" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            Khóa (Hết hạn)
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
