@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Đơn hàng của tôi";
 }
 
@@ -12,7 +12,7 @@
 
 @section Scripts {
     <script>
-        const API_BASE = "https://localhost:7287/api";
+        // API_BASE is already defined in _Layout.cshtml
 
         document.addEventListener("DOMContentLoaded", () => {
             loadOrders();
@@ -80,7 +80,7 @@
                             </td>
                             <td>${order.shippingAddress ?? ""}</td>
                             <td>
-                                <a href="/Order/OrderDetail?orderId=${order.orderId}"
+                                <a href="/Order/Details?id=${order.orderId}"
                                    class="btn btn-sm btn-primary">
                                     Xem
                                 </a>

@@ -17,12 +17,13 @@
     }
     else
     {
+        @* WARNING *@
         if (ViewBag.Warning != null)
         {
             <div class="alert alert-warning">@ViewBag.Warning</div>
         }
 
-    <!-- ORDER INFO -->
+    @* ORDER INFO *@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
 
@@ -62,7 +63,7 @@
             </div>
         </div>
 
-        <!-- ITEMS -->
+        @* ITEMS *@
     @if (Model.Items == null || !Model.Items.Any())
         {
             <div class="alert alert-info">Đơn hàng chưa có sản phẩm nào.</div>

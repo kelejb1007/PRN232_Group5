@@ -67,7 +67,7 @@ namespace Intelligence_Book_WEB.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout(string returnUrl = null)
         {
             var token = Request.Cookies[AccessTokenCookie];
             if (!string.IsNullOrEmpty(token))
@@ -80,6 +80,11 @@ namespace Intelligence_Book_WEB.Controllers
                 SameSite = SameSiteMode.Lax 
             });
             Response.Cookies.Delete(RefreshTokenCookie);
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
 
             return RedirectToAction("Index", "Home");
         }

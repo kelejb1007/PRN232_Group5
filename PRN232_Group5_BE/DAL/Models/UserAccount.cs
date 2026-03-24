@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DAL.Models.Enums;
-using DAL.Models.DAL.Models;
+using DAL.Models;
 
 namespace DAL.Models
 {
