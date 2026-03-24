@@ -21,7 +21,6 @@ namespace DAL.Models
         public string? CoverImageUrl { get; set; }
         public string? Description { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public bool IsRemove { get; set; }
         public int? AuthorId { get; set; }
         public Author? Author { get; set; }

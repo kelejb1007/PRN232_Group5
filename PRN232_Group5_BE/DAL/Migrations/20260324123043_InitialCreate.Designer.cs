@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(Intelligence_Book_APIContext))]
-    [Migration("20260324025253_AddDeliveryAddress")]
-    partial class AddDeliveryAddress
+    [Migration("20260324123043_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

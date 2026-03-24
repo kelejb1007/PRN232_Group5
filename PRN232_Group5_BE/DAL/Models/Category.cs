@@ -14,7 +14,6 @@ namespace DAL.Models
         [Required, StringLength(100)]
         public string CategoryName { get; set; } = string.Empty;
         public string? Description { get; set; }
-        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public bool IsRemove { get; set; }
         public List<Book> Books { get; set; } = new();
     }
