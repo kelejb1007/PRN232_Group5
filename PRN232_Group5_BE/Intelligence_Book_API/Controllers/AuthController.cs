@@ -21,13 +21,13 @@ namespace Intelligence_Book_API.Controllers
         {
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
             {
-                return BadRequest("UserName and Password are required.");
+                return BadRequest("Tên đăng nhập và Mật khẩu là bắt buộc.");
             }
 
             var authResult = await _authService.LoginAsync(request);
             if (authResult == null)
             {
-                return Unauthorized("Invalid username or password.");
+                return Unauthorized("Tên đăng nhập hoặc mật khẩu không đúng.");
             }
 
             WriteAuthCookie(authResult.AccessToken, authResult.ExpiresAtUtc);
@@ -46,7 +46,7 @@ namespace Intelligence_Book_API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest("Invalid Google token: " + ex.Message);
+                return BadRequest("Mã Google không hợp lệ: " + ex.Message);
             }
         }
 
@@ -58,7 +58,7 @@ namespace Intelligence_Book_API.Controllers
                 string.IsNullOrWhiteSpace(request.Username) ||
                 string.IsNullOrWhiteSpace(request.Password))
             {
-                return BadRequest("Email, UserName, and Password are required.");
+                return BadRequest("Email, Tên đăng nhập và Mật khẩu là bắt buộc.");
             }
 
             try
@@ -79,9 +79,9 @@ namespace Intelligence_Book_API.Controllers
             var success = await _authService.VerifyEmailAsync(request);
             if (success)
             {
-                return Ok(new { message = "Email verified successfully" });
+                return Ok(new { message = "Xác thực email thành công" });
             }
-            return BadRequest("Invalid or expired verification token.");
+            return BadRequest("Mã xác thực không hợp lệ hoặc đã hết hạn.");
         }
 
         [HttpPost("forgot-password")]
@@ -91,7 +91,7 @@ namespace Intelligence_Book_API.Controllers
             try
             {
                 var success = await _authService.ForgotPasswordAsync(request);
-                return Ok(new { message = "If your email is registered, you will receive an OTP shortly." });
+                return Ok(new { message = "Nếu email của bạn đã được đăng ký, bạn sẽ nhận được mã OTP sớm." });
             }
             catch (InvalidOperationException ex)
             {
@@ -106,9 +106,9 @@ namespace Intelligence_Book_API.Controllers
             var success = await _authService.ResetPasswordAsync(request);
             if (success)
             {
-                return Ok(new { message = "Password has been reset successfully." });
+                return Ok(new { message = "Mật khẩu đã được đặt lại thành công." });
             }
-            return BadRequest("Invalid or expired verification token.");
+            return BadRequest("Mã xác thực không hợp lệ hoặc đã hết hạn.");
         }
 
         [HttpPost("resend-otp")]
@@ -118,9 +118,9 @@ namespace Intelligence_Book_API.Controllers
             var success = await _authService.ResendOtpAsync(email, type);
             if (success)
             {
-                return Ok(new { message = "OTP has been resent successfully." });
+                return Ok(new { message = "Mã OTP đã được gửi lại thành công." });
             }
-            return BadRequest("Could not resend OTP. Please try again.");
+            return BadRequest("Không thể gửi lại mã OTP. Vui lòng thử lại sau.");
         }
 
         [HttpPost("logout")]
@@ -128,7 +128,7 @@ namespace Intelligence_Book_API.Controllers
         public IActionResult Logout()
         {
             Response.Cookies.Delete(AuthCookieName);
-            return Ok(new { message = "Logged out successfully." });
+            return Ok(new { message = "Đăng xuất thành công." });
         }
 
         private void WriteAuthCookie(string token, DateTime expiresAtUtc)
