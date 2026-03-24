@@ -6,11 +6,11 @@ namespace Intelligence_Book_WEB.Controllers.User
 {
     public class OrderController : Controller
     {
-        private readonly HttpClient _client;
+        private readonly IHttpClientFactory _factory;
 
         public OrderController(IHttpClientFactory factory)
         {
-            _client = factory.CreateClient();
+            _factory = factory;
         }
 
         public IActionResult Index()
@@ -28,12 +28,10 @@ namespace Intelligence_Book_WEB.Controllers.User
                     return View(new OrderDetailViewModel());
                 }
 
-                // ❌ KHÔNG gọi mark-paid ở đây nữa
-                // 👉 nên gọi ở callback thanh toán hoặc backend
+                var client = _factory.CreateClient("MyAPI");
 
-                // ✅ gọi API lấy chi tiết đơn hàng
-                var response = await _client.GetAsync(
-                    $"https://localhost:7287/api/order/{orderId}"
+                var response = await client.GetAsync(
+                    $"api/cart/order-detail/{orderId}"
                 );
 
                 if (!response.IsSuccessStatusCode)
@@ -45,12 +43,6 @@ namespace Intelligence_Book_WEB.Controllers.User
 
                 var json = await response.Content.ReadAsStringAsync();
 
-                if (string.IsNullOrWhiteSpace(json))
-                {
-                    ViewBag.Error = "API trả về dữ liệu rỗng";
-                    return View(new OrderDetailViewModel());
-                }
-
                 var order = JsonSerializer.Deserialize<OrderDetailViewModel>(
                     json,
                     new JsonSerializerOptions
@@ -59,17 +51,11 @@ namespace Intelligence_Book_WEB.Controllers.User
                     }
                 );
 
-                if (order == null)
-                {
-                    ViewBag.Error = "Không đọc được dữ liệu đơn hàng";
-                    return View(new OrderDetailViewModel());
-                }
-
                 return View(order);
             }
             catch (Exception ex)
             {
-                ViewBag.Error = $"Lỗi hệ thống: {ex.Message}";
+                ViewBag.Error = ex.Message;
                 return View(new OrderDetailViewModel());
             }
         }
