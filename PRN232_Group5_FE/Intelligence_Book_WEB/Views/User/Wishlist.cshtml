@@ -1,0 +1,258 @@
+﻿@model List<Intelligence_Book_WEB.Models.BookViewModel>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    :root {
+        --primary-dark: #192432;
+        --primary-hover: #2c3e50;
+        --accent-red: #ff4757;
+        --bg-light: #f4f7f6;
+    }
+
+    body {
+        background-color: var(--bg-light);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Tiêu đề */
+    h2.wishlist-title {
+        color: var(--primary-dark);
+        font-weight: 800;
+        letter-spacing: -1px;
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+    /* Control Panel */
+    .control-panel {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    /* Card Sách */
+    .book-card {
+        border: none;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        background: #fff;
+    }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+        }
+
+    .image-container {
+        position: relative;
+        overflow: hidden;
+        background: #f8f9fa;
+        padding: 15px;
+    }
+
+    .card-img-top {
+        object-fit: contain;
+        transition: transform 0.5s ease;
+    }
+
+    .book-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+
+    /* Badge & Checkbox */
+    .wishlist-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        border: none;
+    }
+
+        .wishlist-badge i {
+            color: var(--accent-red);
+            font-size: 1.2rem;
+        }
+
+    .select-book-check {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 20px;
+        height: 20px;
+        z-index: 11;
+        cursor: pointer;
+        accent-color: var(--primary-dark);
+    }
+
+    /* Nút bấm */
+    .btn-addcart {
+        background-color: var(--primary-dark);
+        color: white;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        border: 2px solid var(--primary-dark);
+        transition: all 0.3s;
+    }
+
+        .btn-addcart:hover {
+            background-color: transparent;
+            color: var(--primary-dark);
+        }
+
+    .btn-view-detail {
+        border-radius: 10px;
+        font-weight: 600;
+        color: var(--primary-dark);
+        border: 2px solid #eee;
+    }
+
+        .btn-view-detail:hover {
+            background: #eee;
+            color: var(--primary-dark);
+        }
+
+    .btn-backshop {
+        background-color: var(--primary-dark);
+        color: white;
+        border-radius: 50px;
+        padding: 12px 40px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(25, 36, 50, 0.3);
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-5 wishlist-title">My Wishlist</h2>
+
+    <div class="control-panel shadow-sm px-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="form-check custom-check">
+                <input class="form-check-input" type="checkbox" id="select-all">
+                <label class="form-check-label fw-bold" for="select-all">Select All</label>
+            </div>
+            <button id="delete-selected" class="btn btn-link text-danger text-decoration-none btn-sm fw-bold">
+                <i class="bi bi-trash"></i> Delete Selected
+            </button>
+        </div>
+        <button id="delete-all" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+            <i class="bi bi-x-circle"></i> Clear All
+        </button>
+    </div>
+
+    <div class="row" id="wishlist-container">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-heartbreak" style="font-size: 4rem; color: #ccc;"></i>
+                <p class="text-muted mt-3 fs-5">Danh sách yêu thích của bạn hiện đang trống.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4 book-item" data-id="@item.BookId">
+                    <div class="card h-100 book-card shadow-sm">
+                        <div class="image-container">
+                            <input type="checkbox" class="select-book-check item-checkbox" data-id="@item.BookId">
+                            <div class="wishlist-badge">
+                                <i class="bi bi-heart-fill"></i>
+                            </div>
+                            <img src="@item.CoverImageUrl" class="card-img-top" height="220" />
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="text-dark fw-bold text-truncate mb-1">@item.Title</h6>
+                            <p class="text-danger fw-bold mb-3">@item.Price.ToString("N0") đ</p>
+
+                            <div class="mt-auto">
+                                <a asp-action="Details" asp-route-id="@item.BookId" class="btn btn-view-detail w-100 mb-2">
+                                    Xem chi tiết
+                                </a>
+                                <a href="/Cart/Add/@item.BookId" class="btn btn-addcart w-100">
+                                    <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="text-center mt-5 mb-5">
+        <a href="/Search" class="btn btn-backshop">
+            <i class="bi bi-arrow-left me-2"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<script>
+    // 1. Logic Chọn tất cả (Select All)
+    document.getElementById('select-all').addEventListener('change', function() {
+        const isChecked = this.checked;
+        document.querySelectorAll('.item-checkbox').forEach(cb => {
+            cb.checked = isChecked;
+        });
+    });
+
+    // 2. Xóa các mục đã chọn (Delete Selected)
+    document.getElementById('delete-selected').addEventListener('click', function() {
+        const selectedCbs = document.querySelectorAll('.item-checkbox:checked');
+
+        if (selectedCbs.length === 0) {
+            alert('Please select at least one book to delete.');
+            return;
+        }
+
+        if (confirm(`Are you sure you want to remove ${selectedCbs.length} items?`)) {
+            let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
+            selectedCbs.forEach(cb => {
+                const bookId = parseInt(cb.getAttribute('data-id'));
+                wishlist = wishlist.filter(id => id != bookId);
+
+                // Xóa giao diện
+                cb.closest('.book-item').remove();
+            });
+
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            checkEmpty();
+        }
+    });
+
+    // 3. Xóa toàn bộ (Delete All)
+    document.getElementById('delete-all').addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear your entire wishlist?')) {
+            localStorage.setItem('wishlist', JSON.stringify([]));
+            document.getElementById('wishlist-container').innerHTML =
+                '<div class="col-12 text-center py-5"><p class="text-muted">Your wishlist is currently empty.</p></div>';
+            document.getElementById('select-all').checked = false;
+        }
+    });
+
+    // Hàm kiểm tra nếu xóa hết thì hiện thông báo trống
+    function checkEmpty() {
+        const items = document.querySelectorAll('.book-item');
+        if (items.length === 0) {
+            document.getElementById('wishlist-container').innerHTML =
+                '<div class="col-12 text-center py-5"><p class="text-muted">Your wishlist is currently empty.</p></div>';
+        }
+    }
+</script>
