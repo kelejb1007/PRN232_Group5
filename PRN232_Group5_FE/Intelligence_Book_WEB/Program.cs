@@ -1,7 +1,19 @@
+﻿using Intelligence_Book_WEB.Services;
+using Intelligence_Book_WEB.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddHttpClient("MyAPI", client =>
 {
@@ -23,6 +35,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
