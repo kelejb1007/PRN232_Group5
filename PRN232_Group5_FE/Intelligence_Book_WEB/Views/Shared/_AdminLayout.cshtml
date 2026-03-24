@@ -193,7 +193,7 @@
                 <a href="/CategoryPage" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "CategoryPage" ? "active" : "")">
                     <i class="bi bi-grid-3x3-gap"></i> Danh mục
                 </a>
-                <a href="#" class="nav-link">
+                <a href="/BookPage" class="nav-link">
                     <i class="bi bi-journal-bookmark"></i> Quản lý Sách
                 </a>
                 <a href="#" class="nav-link">
@@ -230,25 +230,25 @@
                 </button>
             </div>
 
-            <div class="container-fluid p-0">
-                @if (TempData["ErrorMessage"] != null)
-                {
-                    <div class="p-4 pb-0">
-                        <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm mb-0" role="alert">
+            <div class="container-fluid p-0 position-relative">
+                <!-- Floating Toast Notifications -->
+                <div class="position-absolute top-0 end-0 p-3" style="z-index: 1055; min-width: 320px; max-width: 450px;">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-3 mb-3 animate-fade-in" role="alert">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                    </div>
-                }
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <div class="p-4 pb-0">
-                        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm mb-0" role="alert">
+                    }
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3 mb-3 animate-fade-in" role="alert">
                             <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
+
                 @RenderBody()
             </div>
         </main>

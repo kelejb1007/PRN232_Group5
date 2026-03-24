@@ -1,61 +1,51 @@
-﻿@model Intelligence_Book_WEB.Models.CategoryViewModel
+@model Intelligence_Book_WEB.Models.CategoryViewModel
+
 @{
-    ViewData["Title"] = "Edit Category";
+    ViewData["Title"] = "Chỉnh sửa Danh mục";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-<link rel="stylesheet" href="~/css/CategoryIndex.css" asp-append-version="true" />
-<link rel="stylesheet" href="~/css/CategoryCreate.css" asp-append-version="true" />
 
 <div class="category-page">
-    <div class="edit-category-header">
-        <h1>Edit Category</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4 rounded shadow-sm" style="background-color: #111827; border-left: 5px solid #c5a059; padding: 20px;">
+        <h2 class="text-white m-0 fw-bold"><i class="bi bi-pencil-square me-2" style="color: #c5a059;"></i> Cập nhật Danh mục</h2>
     </div>
-    <div class="create-form-container">
-        <div class="form-card">
-            <form asp-controller="CategoryPage" asp-action="Edit" method="post">
-                @Html.AntiForgeryToken()
 
-                <input type="hidden" asp-for="CategoryId" />
+    <div class="container bg-white p-4 shadow-sm rounded" style="max-width: 800px; margin: 0 auto;">
+        <form asp-controller="CategoryPage" asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
 
-                <div class="form-group">
-                    <label asp-for="CategoryId" class="form-label">Category ID</label>
-                    <input asp-for="CategoryId"
-                           class="form-input input-readonly"
-                           readonly />
-                </div>
+            <input type="hidden" asp-for="CategoryId" />
 
-                <div class="form-group">
-                    <label asp-for="CategoryName" class="form-label">Category Name</label>
-                    <input asp-for="CategoryName"
-                           class="form-input"
-                           placeholder="Enter category name" />
-                    <span asp-validation-for="CategoryName" class="validation-msg"></span>
-                </div>
+            <div class="mb-4">
+                <label asp-for="CategoryId" class="form-label fw-bold text-muted">Mã danh mục (ID)</label>
+                <input asp-for="CategoryId" class="form-control bg-light" readonly />
+            </div>
 
-                <div class="form-group">
-                    <label asp-for="Description" class="form-label">Description</label>
-                    <textarea asp-for="Description"
-                              class="form-input form-textarea"
-                              placeholder="Enter description"
-                              rows="4"></textarea>
-                    <span asp-validation-for="Description" class="validation-msg"></span>
-                </div>
+            <div class="mb-4">
+                <label asp-for="CategoryName" class="form-label fw-bold">Tên danh mục <span class="text-danger">*</span></label>
+                <input asp-for="CategoryName" class="form-control" placeholder="Nhập tên mới cho danh mục" />
+                <span asp-validation-for="CategoryName" class="text-danger small"></span>
+            </div>
 
-                <div class="form-actions">
-                    <a asp-controller="CategoryPage" asp-action="Index" class="btn-cancel">
-                        Cancel
-                    </a>
-                    <button type="submit" class="btn-save">
-                        Save Changes
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="mb-4">
+                <label asp-for="Description" class="form-label fw-bold">Mô tả danh mục</label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+
+            <div class="mt-5 pt-3 border-top text-end">
+                <a asp-controller="CategoryPage" asp-action="Index" class="btn btn-outline-secondary px-4 me-2 hover-lift">
+                    <i class="bi bi-arrow-left me-1"></i> Quay lại
+                </a>
+                <button type="submit" class="btn text-white px-5 fw-bold hover-lift" style="background-color: #c5a059;">
+                    <i class="bi bi-check-circle me-1"></i> Lưu thay đổi
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

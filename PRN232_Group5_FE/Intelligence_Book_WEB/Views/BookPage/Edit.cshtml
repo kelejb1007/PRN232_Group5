@@ -1,109 +1,122 @@
 @model Intelligence_Book_WEB.Models.BookUpdateViewModel
 
 @{
-    ViewData["Title"] = "Edit Book";
+    ViewData["Title"] = "Chỉnh sửa Sách";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="book-page">
-    <div class="edit-category-header" style="background: linear-gradient(135deg, #F79356 0%, #f57c00 100%); padding: 20px; color: white; margin-bottom: 20px;">
-        <h1>Edit Book: @Model.Title</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4 rounded shadow-sm" style="background-color: #111827; border-left: 5px solid #c5a059; padding: 20px;">
+        <h2 class="text-white m-0 fw-bold"><i class="bi bi-pencil-square me-2" style="color: #c5a059;"></i> Cập nhật Sách: @Model.Title</h2>
     </div>
 
-    <div class="container bg-white p-4 shadow rounded">
+    <div class="container bg-white p-4 shadow-sm rounded">
         <form asp-controller="BookPage" asp-action="Edit" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="BookId" />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Title" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
-                    <input asp-for="Title" class="form-control" placeholder="Enter book title" />
-                    <span asp-validation-for="Title" class="text-danger"></span>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label asp-for="Title" class="form-label fw-bold">Tên sách <span class="text-danger">*</span></label>
+                    <input asp-for="Title" class="form-control" placeholder="Nhập tên cuốn sách" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="AuthorName" class="form-label fw-bold">Author Name</label>
-                    <input asp-for="AuthorName" class="form-control" placeholder="Enter author name" />
-                    <span asp-validation-for="AuthorName" class="text-danger"></span>
+                <div class="col-md-6">
+                    <label asp-for="AuthorName" class="form-label fw-bold">Tác giả</label>
+                    <input asp-for="AuthorName" class="form-control" placeholder="Tên tác giả" />
+                    <span asp-validation-for="AuthorName" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Price" class="form-label fw-bold">Price (VND) <span class="text-danger">*</span></label>
-                    <input asp-for="Price" class="form-control" type="number" step="any" />
-                    <span asp-validation-for="Price" class="text-danger"></span>
+                <div class="col-md-6">
+                    <label asp-for="Price" class="form-label fw-bold">Giá bán (VNĐ) <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input asp-for="Price" class="form-control" type="number" step="1000" min="0" />
+                        <span class="input-group-text bg-light">VNĐ</span>
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="StockQuantity" class="form-label fw-bold">Stock Quantity</label>
-                    <input asp-for="StockQuantity" class="form-control" type="number" />
-                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                <div class="col-md-6">
+                    <label asp-for="StockQuantity" class="form-label fw-bold">Số lượng tồn kho</label>
+                    <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="StockQuantity" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="ISBN" class="form-label fw-bold">ISBN</label>
+                <div class="col-md-6">
+                    <label asp-for="ISBN" class="form-label fw-bold">Mã ISBN</label>
                     <input asp-for="ISBN" class="form-control" />
-                    <span asp-validation-for="ISBN" class="text-danger"></span>
+                    <span asp-validation-for="ISBN" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Publisher" class="form-label fw-bold">Publisher</label>
+                <div class="col-md-6">
+                    <label asp-for="Publisher" class="form-label fw-bold">Nhà xuất bản</label>
                     <input asp-for="Publisher" class="form-control" />
-                    <span asp-validation-for="Publisher" class="text-danger"></span>
+                    <span asp-validation-for="Publisher" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="PublishDate" class="form-label fw-bold">Publish Date</label>
+                <div class="col-md-6">
+                    <label asp-for="PublishDate" class="form-label fw-bold">Ngày xuất bản</label>
                     <input asp-for="PublishDate" class="form-control" type="date" />
-                    <span asp-validation-for="PublishDate" class="text-danger"></span>
+                    <span asp-validation-for="PublishDate" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="CoverImageUrl" class="form-label fw-bold">Cover Image (Optional)</label>
-                    <input asp-for="CoverImageUrl" class="form-control" type="file" accept="image/*" />
-                    <small class="text-muted">Leave empty to keep the existing image.</small>
-                    <span asp-validation-for="CoverImageUrl" class="text-danger"></span>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Ảnh bìa (Tùy chọn)</label>
+                    <input asp-for="CoverImageUrl" class="form-control mb-2" type="file" accept="image/*" />
+                    <small class="text-muted d-block mb-3"><i class="bi bi-info-circle me-1"></i>Bỏ trống nếu muốn giữ nguyên ảnh hiện tại.</small>
+                    <span asp-validation-for="CoverImageUrl" class="text-danger small"></span>
 
                     @if(!string.IsNullOrEmpty(Model.ExistingCoverImageUrl))
                     {
-                        <div class="mt-2">
-                            <span>Current Image:</span><br />
-                            <img src="@Model.ExistingCoverImageUrl" alt="Cover" style="max-height: 100px; max-width: 150px; border-radius: 5px; box-shadow: 0 0 5px rgba(0,0,0,0.2);" />
+                        <div class="mt-2 p-2 border rounded bg-light d-inline-block">
+                            <span class="d-block small text-muted mb-1 text-center">Ảnh hiện tại</span>
+                            <img src="@Model.ExistingCoverImageUrl" alt="Ảnh bìa" class="rounded object-fit-cover shadow-sm" style="max-height: 120px; max-width: 150px;" />
                         </div>
                     }
                 </div>
 
-                <div class="col-md-12 mb-3">
-                    <label class="form-label fw-bold">Categories</label>
-                    <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
-                        @if(Model.AvailableCategories != null)
+                <div class="col-md-12">
+                    <label class="form-label fw-bold">Khu vực phân loại</label>
+                    <div class="border rounded p-3 bg-light shadow-sm" style="max-height: 200px; overflow-y: auto;">
+                        @if(Model.AvailableCategories != null && Model.AvailableCategories.Any())
                         {
-                            foreach (var cat in Model.AvailableCategories)
+                            <div class="row w-100 m-0">
+                            @foreach (var cat in Model.AvailableCategories)
                             {
                                 var isChecked = Model.CategoryIds != null && Model.CategoryIds.Contains(cat.CategoryId);
-                                <div class="form-check form-check-inline me-3 mb-2">
-                                    <input class="form-check-input" type="checkbox" name="CategoryIds" value="@cat.CategoryId" id="cat_@cat.CategoryId" @(isChecked ? "checked" : "")>
-                                    <label class="form-check-label" for="cat_@cat.CategoryId">
-                                        @cat.CategoryName
-                                    </label>
+                                <div class="col-md-4 col-sm-6 mb-2">
+                                    <div class="form-check custom-checkbox">
+                                        <input class="form-check-input" style="cursor: pointer;" type="checkbox" name="CategoryIds" value="@cat.CategoryId" id="cat_@cat.CategoryId" @(isChecked ? "checked" : "")>
+                                        <label class="form-check-label ps-1" for="cat_@cat.CategoryId" style="cursor: pointer;">
+                                            @cat.CategoryName
+                                        </label>
+                                    </div>
                                 </div>
                             }
+                            </div>
+                        }
+                        else 
+                        {
+                            <span class="text-muted"><i class="bi bi-info-circle me-1"></i>Chưa có danh mục nào trong hệ thống.</span>
                         }
                     </div>
-                    <span asp-validation-for="CategoryIds" class="text-danger"></span>
+                    <span asp-validation-for="CategoryIds" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-12 mb-3">
-                    <label asp-for="Description" class="form-label fw-bold">Description</label>
-                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
+                <div class="col-md-12">
+                    <label asp-for="Description" class="form-label fw-bold">Mô tả nội dung sách</label>
+                    <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
                 </div>
             </div>
 
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary px-4 me-2">Update Book</button>
-                <a asp-action="Index" class="btn btn-secondary px-4">Cancel</a>
+            <div class="mt-5 pt-3 border-top">
+                <button type="submit" class="btn text-white px-5 me-2 fw-bold hover-lift" style="background-color: #c5a059;">
+                    <i class="bi bi-cloud-arrow-up me-1"></i> Cập nhật Sách
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4 hover-lift">Hủy bỏ / Quay lại</a>
             </div>
         </form>
     </div>

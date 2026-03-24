@@ -1,63 +1,72 @@
 @model IEnumerable<Intelligence_Book_WEB.Models.BookViewModel>
 
 @{
-    ViewData["Title"] = "Book Management";
+    ViewData["Title"] = "Quản lý Sách";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="book-page">
-    <div class="edit-category-header" style="background: linear-gradient(135deg, #F79356 0%, #f57c00 100%); padding: 20px; color: white;">
-        <h1>Book Management</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4 rounded shadow-sm" style="background-color: #111827; border-left: 5px solid #c5a059; padding: 20px;">
+        <h2 class="text-white m-0 fw-bold"><i class="bi bi-journal-bookmark me-2" style="color: #c5a059;"></i> Quản lý Sách</h2>
     </div>
 
-    <div class="p-3">
-        <p>
-            <a asp-controller="BookPage" asp-action="Create" class="btn btn-primary" style="background-color: #F79356; border: none;">
-                <i class="bi bi-plus-circle"></i> Add New Book
+    <div class="bg-white p-4 shadow-sm rounded">
+        <div class="mb-3 text-end">
+            <a asp-controller="BookPage" asp-action="Create" class="btn text-white fw-bold hover-lift" style="background-color: #c5a059; border: none;">
+                <i class="bi bi-plus-circle me-1"></i> Thêm sách mới
             </a>
-        </p>
+        </div>
 
-        <table class="table table-hover mt-3">
-            <thead style="background-color: #ffe9d0;">
-                <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var book in Model)
+        <div class="table-responsive">
+            <table class="table table-hover align-middle border">
+                <thead style="background-color: #1f2937; color: #d1d5db;">
+                    <tr>
+                        <th class="py-3">Tên sách</th>
+                        <th class="py-3">Tác giả</th>
+                        <th class="py-3">Giá</th>
+                        <th class="py-3 text-center">Tồn kho</th>
+                        <th class="py-3 text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var book in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">@book.Title</td>
+                                <td>@(string.IsNullOrEmpty(book.AuthorName) ? "Đang cập nhật" : book.AuthorName)</td>
+                                <td class="text-danger fw-bold">@book.Price.ToString("N0") VNĐ</td>
+                                <td class="text-center">
+                                    <span class="badge @(book.StockQuantity > 10 ? "bg-success" : book.StockQuantity > 0 ? "bg-warning" : "bg-danger")">
+                                        @book.StockQuantity
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a asp-controller="BookPage" asp-action="Details" asp-route-id="@book.BookId" class="btn btn-sm btn-outline-info me-1" title="Chi tiết">
+                                        <i class="bi bi-info-circle"></i> Chi tiết
+                                    </a>
+                                    <a asp-controller="BookPage" asp-action="Edit" asp-route-id="@book.BookId" class="btn btn-sm btn-outline-warning me-1" title="Sửa">
+                                        <i class="bi bi-pencil"></i> Sửa
+                                    </a>
+                                    <form asp-controller="BookPage" asp-action="Delete" asp-route-id="@book.BookId" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa cuốn sách này không?');" title="Xóa">
+                                            <i class="bi bi-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td>@book.Title</td>
-                            <td>@book.AuthorName</td>
-                            <td>@book.Price.ToString("C")</td>
-                            <td>@book.StockQuantity</td>
-                            <td class="text-center">
-                                <a asp-controller="BookPage" asp-action="Details" asp-route-id="@book.BookId" class="btn btn-sm btn-outline-info">
-                                    <i class="bi bi-info-circle"></i> Info
-                                </a> |
-                                <form asp-controller="BookPage" asp-action="Delete" asp-route-id="@book.BookId" method="post" style="display:inline;">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?');">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </form>
-                            </td>
+                            <td colspan="5" class="text-center py-4 text-muted">Không tìm thấy cuốn sách nào trong kho.</td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="5" class="text-center">No books found</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

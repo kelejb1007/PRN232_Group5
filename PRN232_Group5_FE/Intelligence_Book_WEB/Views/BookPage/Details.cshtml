@@ -1,91 +1,125 @@
 @model Intelligence_Book_WEB.Models.BookViewModel
 
 @{
-    ViewData["Title"] = "Book Details";
+    ViewData["Title"] = "Chi tiết Sách";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="book-page">
-    <div class="edit-category-header" style="background: linear-gradient(135deg, #F79356 0%, #f57c00 100%); padding: 20px; color: white; margin-bottom: 20px;">
-        <h1>Book Details</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4 rounded shadow-sm" style="background-color: #111827; border-left: 5px solid #c5a059; padding: 20px;">
+        <h2 class="text-white m-0 fw-bold"><i class="bi bi-info-circle me-2" style="color: #c5a059;"></i> Chi tiết Sách</h2>
     </div>
 
-    <div class="container bg-white p-4 shadow rounded">
+    <div class="container bg-white p-4 shadow-sm rounded">
         <div class="row">
             <div class="col-md-4 text-center mb-4">
                 @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
                 {
-                    <img src="@Model.CoverImageUrl" alt="Book Cover" class="img-fluid rounded" style="max-height: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+                    <img src="@Model.CoverImageUrl" alt="Ảnh bìa sách" class="img-fluid rounded" style="max-height: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
                 }
                 else
                 {
-                    <div class="bg-light d-flex align-items-center justify-content-center rounded" style="height: 300px; width: 100%;">
-                        <span class="text-muted">No Image Available</span>
+                    <div class="bg-light d-flex align-items-center justify-content-center rounded border" style="height: 300px; width: 100%;">
+                        <span class="text-muted"><i class="bi bi-image text-secondary fs-1 d-block mb-2"></i>Chưa có ảnh bìa</span>
                     </div>
                 }
             </div>
+            
             <div class="col-md-8">
-                <h2 class="text-primary mb-3">@Model.Title</h2>
+                <h3 class="mb-3 fw-bold" style="color: #111827;">@Model.Title</h3>
                 
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <th style="width: 30%;">Author</th>
-                            <td>@(string.IsNullOrEmpty(Model.AuthorName) ? "N/A" : Model.AuthorName)</td>
-                        </tr>
-                        <tr>
-                            <th>Price</th>
-                            <td class="text-danger fw-bold">@Model.Price.ToString("C")</td>
-                        </tr>
-                        <tr>
-                            <th>Stock Quantity</th>
-                            <td>@Model.StockQuantity</td>
-                        </tr>
-                        <tr>
-                            <th>ISBN</th>
-                            <td>@(string.IsNullOrEmpty(Model.ISBN) ? "N/A" : Model.ISBN)</td>
-                        </tr>
-                        <tr>
-                            <th>Publisher</th>
-                            <td>@(string.IsNullOrEmpty(Model.Publisher) ? "N/A" : Model.Publisher)</td>
-                        </tr>
-                        <tr>
-                            <th>Publish Date</th>
-                            <td>@(Model.PublishDate.HasValue ? Model.PublishDate.Value.ToString("dd/MM/yyyy") : "N/A")</td>
-                        </tr>
-                        <tr>
-                            <th>Categories</th>
-                            <td>
-                                @if (Model.Categories != null && Model.Categories.Any())
-                                {
-                                    foreach (var cat in Model.Categories)
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <tbody>
+                            <tr>
+                                <th class="table-light" style="width: 30%;">Tác giả</th>
+                                <td>@(string.IsNullOrEmpty(Model.AuthorName) ? "Đang cập nhật" : Model.AuthorName)</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Giá bán</th>
+                                <td class="text-danger fw-bold fs-5">@Model.Price.ToString("N0") VNĐ</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Số lượng tồn kho</th>
+                                <td>
+                                    <span class="badge @(Model.StockQuantity > 10 ? "bg-success" : Model.StockQuantity > 0 ? "bg-warning text-dark" : "bg-danger") fs-6">
+                                        @Model.StockQuantity cuốn
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Mã ISBN</th>
+                                <td>@(string.IsNullOrEmpty(Model.ISBN) ? "Đang cập nhật" : Model.ISBN)</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Nhà xuất bản</th>
+                                <td>@(string.IsNullOrEmpty(Model.Publisher) ? "Đang cập nhật" : Model.Publisher)</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Ngày xuất bản</th>
+                                <td>@(Model.PublishDate.HasValue ? Model.PublishDate.Value.ToString("dd/MM/yyyy") : "Đang cập nhật")</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light">Thuộc danh mục</th>
+                                <td>
+                                    @if (Model.Categories != null && Model.Categories.Any())
                                     {
-                                        <span class="badge bg-secondary me-1">@cat.CategoryName</span>
+                                        foreach (var cat in Model.Categories)
+                                        {
+                                            <span class="badge border border-secondary text-dark me-1 bg-light">@cat.CategoryName</span>
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    <span class="text-muted">No Categories</span>
-                                }
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">Chưa phân loại</span>
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 
-                <div class="mt-4">
-                    <h4>Description</h4>
-                    <p class="text-muted" style="white-space: pre-wrap;">@(string.IsNullOrEmpty(Model.Description) ? "No description provided." : Model.Description)</p>
+                <div class="mt-4 p-3 border rounded bg-light">
+                    <h5 class="fw-bold"><i class="bi bi-card-text me-2 text-secondary"></i>Mô tả sách</h5>
+                    <div style="position: relative;">
+                        <!-- Nội dung mô tả với giới hạn max-height -->
+                        <div id="desc-content" class="text-secondary mt-2" style="white-space: pre-wrap; line-height: 1.6; max-height: 150px; overflow: hidden; transition: max-height 0.3s ease;">@(string.IsNullOrEmpty(Model.Description) ? "Chưa có nội dung giới thiệu cho cuốn sách này." : Model.Description)</div>
+                        
+                        <!-- Nút xem thêm chỉ hiện khi chữ đủ dài -->
+                        @if (!string.IsNullOrEmpty(Model.Description) && Model.Description.Length > 200)
+                        {
+                            <button id="btn-read-more" class="btn btn-sm btn-link p-0 mt-2 text-decoration-none fw-bold" style="color: #c5a059;" onclick="toggleDesc()">
+                                Xem thêm <i class="bi bi-chevron-down"></i>
+                            </button>
+                        }
+                    </div>
                 </div>
 
-                <div class="mt-4">
-                    <a asp-action="Edit" asp-route-id="@Model.BookId" class="btn btn-warning px-4 me-2">
-                        <i class="bi bi-pencil"></i> Edit Book
+                <div class="mt-4 pt-3 border-top">
+                    <a asp-action="Edit" asp-route-id="@Model.BookId" class="btn text-white px-4 me-2 fw-bold hover-lift" style="background-color: #c5a059;">
+                        <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
                     </a>
-                    <a asp-action="Index" class="btn btn-secondary px-4">
-                        <i class="bi bi-arrow-left"></i> Back to List
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4 hover-lift">
+                        <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function toggleDesc() {
+            var desc = document.getElementById("desc-content");
+            var btn = document.getElementById("btn-read-more");
+            if (desc.style.maxHeight === "150px") {
+                desc.style.maxHeight = "none";
+                btn.innerHTML = 'Thu gọn <i class="bi bi-chevron-up"></i>';
+            } else {
+                desc.style.maxHeight = "150px";
+                btn.innerHTML = 'Xem thêm <i class="bi bi-chevron-down"></i>';
+            }
+        }
+    </script>
+}
