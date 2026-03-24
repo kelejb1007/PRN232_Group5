@@ -1,4 +1,4 @@
-﻿using Intelligence_Book_WEB.Mapper;
+using Intelligence_Book_WEB.Mapper;
 using Intelligence_Book_WEB.Models;
 using Intelligence_Book_WEB.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -57,7 +57,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
 
             if (dto == null)
             {
-                TempData["Message"] = "Coupon not found!";
+                TempData["Message"] = "Không tìm thấy Coupon!";
                 return RedirectToAction(nameof(CouponList));
             }
 
@@ -81,14 +81,14 @@ namespace Intelligence_Book_WEB.Controllers.Admin
 
             if (dto == null)
             {
-                TempData["Message"] = "Coupon not found!";
+                TempData["Message"] = "Không tìm thấy Coupon!";
                 return RedirectToAction(nameof(CouponList));
             }
 
             // FE lock nếu expired
             if (dto.IsExpired)
             {
-                TempData["Message"] = "Expired coupon cannot be updated.";
+                TempData["Message"] = "Không thể cập nhật mã giảm giá đã hết hạn.";
                 return RedirectToAction(nameof(CouponDetails), new { id });
             }
 
@@ -126,7 +126,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
                     return View("~/Views/Admin/Coupon/CouponForm.cshtml", model);
                 }
 
-                TempData["Message"] = "Created successfully!";
+                TempData["Message"] = "Tạo mã thành công!";
                 return RedirectToAction(nameof(CouponList));
             }
 
@@ -147,7 +147,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
                 return View("~/Views/Admin/Coupon/CouponForm.cshtml", model);
             }
 
-            TempData["Message"] = "Updated successfully!";
+            TempData["Message"] = "Cập nhật thành công!";
             return RedirectToAction(nameof(CouponDetails), new { id = model.CouponId });
         }
 
@@ -162,11 +162,11 @@ namespace Intelligence_Book_WEB.Controllers.Admin
             if (!res.IsSuccessStatusCode)
             {
                 var err = await SafeReadApiMessage(res);
-                TempData["Message"] = err ?? "Delete failed!";
+                TempData["Message"] = err ?? "Xóa thất bại!";
                 return RedirectToAction(nameof(CouponDetails), new { id });
             }
 
-            TempData["Message"] = "Deleted (soft delete)!";
+            TempData["Message"] = "Xóa thành công!";
             return RedirectToAction(nameof(CouponList));
         }
 

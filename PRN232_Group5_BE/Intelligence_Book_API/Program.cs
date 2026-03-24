@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Mapper;
 using BLL.Services.Admin;
 using BLL.Services.Admin.Interfaces;
@@ -7,6 +7,7 @@ using DAL.Repositories.Admin;
 using DAL.Repositories.Admin.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Intelligence_Book_API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +18,23 @@ builder.Services.AddDbContext<Intelligence_Book_APIContext>(options =>
 // DI Repo + Service
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 // AutoMapper (scan profile)
-builder.Services.AddAutoMapper(cfg => cfg.AddProfile<CouponProfile>());
+builder.Services.AddAutoMapper(cfg => 
+{
+    cfg.AddProfile<CouponProfile>();
+    cfg.AddProfile<OrderProfile>();
+});
 
-builder.Services.AddControllers();
+// Register Background Services
+builder.Services.AddHostedService<OrderCompletionHostedService>();
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -43,6 +43,12 @@ namespace BLL.Services.Admin
         public async Task<CouponDto> CreateAsync(CouponCreateDto dto)
         {
             dto.Code = (dto.Code ?? "").Trim();
+            
+            // Xóa NULL bằng cách cài rỗng thành 2099
+            if (!dto.ExpiryDate.HasValue) 
+            {
+                dto.ExpiryDate = new DateTime(2099, 12, 31);
+            }
 
             // ✅ Validate BE (bắt buộc)
             if (string.IsNullOrWhiteSpace(dto.Code)) throw new ArgumentException("Code is required.");
@@ -64,6 +70,12 @@ namespace BLL.Services.Admin
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return false;
+
+            // Chống giá trị NULL cho ExpiryDate
+            if (!dto.ExpiryDate.HasValue) 
+            {
+                dto.ExpiryDate = new DateTime(2099, 12, 31);
+            }
 
             // Cho phép cập nhật lại ngày hết hạn mới để "hồi sinh" coupon
             // if (IsExpired(entity)) return false;

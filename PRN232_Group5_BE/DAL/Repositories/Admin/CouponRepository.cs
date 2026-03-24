@@ -1,4 +1,4 @@
-﻿using DAL.Data;
+using DAL.Data;
 using DAL.Models;
 using DAL.Repositories.Admin.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -37,8 +37,10 @@ namespace DAL.Repositories.Admin
 
             var total = await q.CountAsync();
 
+            var today = DateTime.Today;
             var items = await q
-                .OrderByDescending(x => x.CouponId)
+                .OrderByDescending(x => !x.ExpiryDate.HasValue || x.ExpiryDate.Value.Date >= today)
+                .ThenByDescending(x => x.CouponId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
