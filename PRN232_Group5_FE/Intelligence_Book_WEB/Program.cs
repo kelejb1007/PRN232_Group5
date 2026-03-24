@@ -6,6 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+//<<<<<<< HEAD
+//builder.Services.AddHttpClient("api", client =>
+//{
+//    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+//});
+//=======
+//>>>>>>> 25a8230ed3082f6f4f27000bda08913d808fb211
 
 var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
 builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
@@ -14,6 +21,11 @@ builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
 });
 builder.Services.AddHttpContextAccessor();
 
+
+builder.Services.AddHttpClient("api", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
 
 builder.Services.AddHttpClient("MyAPI", client =>
 {

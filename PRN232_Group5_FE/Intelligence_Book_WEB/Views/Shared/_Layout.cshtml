@@ -1,58 +1,196 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Intelligence_Book_WEB</title>
+    <title>@ViewData["Title"] - Intelligence Book</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Intelligence_Book_WEB.styles.css" asp-append-version="true" />
 </head>
 <body>
+
+    <!-- ===== NAVBAR ===== -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Intelligence_Book_WEB</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+            <div class="container">
+
+                <!-- LOGO -->
+                <a class="navbar-brand fw-bold fs-4"
+                   asp-controller="Home"
+                   asp-action="Index">
+                    📚 Intelligence Book
+                </a>
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Book" asp-action="Details" asp-route-id="1">Test Book Detail</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="/Search">
-                                Search
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+
+                    <!-- DANH MỤC -->
+                    <ul class="navbar-nav me-3">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle"
+                               href="#"
+                               data-bs-toggle="dropdown">
+                                Danh mục
                             </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">📘 Lập trình</a></li>
+                                <li><a class="dropdown-item" href="#">📕 Kinh tế</a></li>
+                                <li><a class="dropdown-item" href="#">📗 Kỹ năng</a></li>
+                                <li><a class="dropdown-item" href="#">📙 Tiểu thuyết</a></li>
+                            </ul>
                         </li>
                     </ul>
+
+                    <!-- SEARCH -->
+                    <form class="d-flex flex-grow-1 me-3">
+                        <input class="form-control me-2"
+                               type="search"
+                               placeholder="Tìm sách, tác giả..." />
+                        <button class="btn btn-warning">Tìm</button>
+                    </form>
+
+                    <!-- ICONS -->
+                    <ul class="navbar-nav align-items-center">
+
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="#">
+                                ❤️
+                            </a>
+                        </li>
+                        <li class="nav-item me-3 position-relative">
+                            <a class="nav-link position-relative"
+                               asp-controller="Cart"
+                               asp-action="Index">
+
+                                🛒
+
+                                <span id="cart-count"
+                                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    0
+                                </span>
+
+                            </a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle"
+                               href="#"
+                               data-bs-toggle="dropdown">
+                                👤 Tài khoản
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+
+                                <!-- CHƯA LOGIN -->
+                                <li id="nav-login">
+                                    <a class="dropdown-item" href="/Auth/Login">Đăng nhập</a>
+                                </li>
+                                <li id="nav-register">
+                                    <a class="dropdown-item" href="/Auth/Register">Đăng ký</a>
+                                </li>
+
+                                <!-- ĐÃ LOGIN -->
+                                <li id="nav-profile" style="display:none;">
+                                    <a class="dropdown-item" href="#">Hồ sơ</a>
+                                </li>
+                                <li id="nav-logout" style="display:none;">
+                                    <a class="dropdown-item" href="#" onclick="logout()">Đăng xuất</a>
+                                </li>
+
+                            </ul>
+                        </li>
+                    </ul>
+
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <!-- ===== BODY ===== -->
+    <div class="container mt-4">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Intelligence_Book_WEB - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <!-- ===== FOOTER ===== -->
+    <footer class="bg-dark text-white mt-5 pt-4 pb-3">
+        <div class="container text-center">
+            <p class="mb-1">© 2026 Intelligence Book Store</p>
+            <small>Website bán sách ASP.NET Core MVC</small>
         </div>
     </footer>
+
+    <!-- ===== SCRIPTS ===== -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
+<script>
+    const API_BASE = "https://localhost:7287/api";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        checkLogin();
+        loadCartCount();
+    });
+
+    async function checkLogin() {
+        try {
+            const res = await fetch(`${API_BASE}/auth/me`, {
+                credentials: "include"
+            });
+
+            const login = document.getElementById("nav-login");
+            const register = document.getElementById("nav-register");
+            const profile = document.getElementById("nav-profile");
+            const logoutBtn = document.getElementById("nav-logout");
+
+            if (res.ok) {
+                login.style.display = "none";
+                register.style.display = "none";
+                profile.style.display = "block";
+                logoutBtn.style.display = "block";
+            } else {
+                login.style.display = "block";
+                register.style.display = "block";
+                profile.style.display = "none";
+                logoutBtn.style.display = "none";
+            }
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function logout() {
+        window.location.href = "/Auth/Logout";
+    }
+
+    async function loadCartCount() {
+        try {
+            const res = await fetch(`${API_BASE}/cart`, {
+                credentials: "include"
+            });
+
+            if (res.status === 401) {
+                document.getElementById("cart-count").innerText = "0";
+                return;
+            }
+
+            const data = await res.json();
+            document.getElementById("cart-count").innerText = data.length;
+
+        } catch {}
+    }
+</script>
 </html>

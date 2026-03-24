@@ -13,7 +13,8 @@ namespace DAL.Mapper
 {
     public class MappingProfile : Profile
     {
-        public MappingProfile() {
+        public MappingProfile()
+        {
             //add cate map qua model
             CreateMap<CategoryCreateDto, Category>();
             //lấy model map qua viewDTO
@@ -34,5 +35,4 @@ namespace DAL.Mapper
             CreateMap<ReviewCreateDTO, Review>();
             CreateMap<ReviewUpdateDTO, Review>();
         }
-    }
 }

@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="container mt-5">
+    <h3 class="mb-4">Danh sách đơn hàng</h3>
+
+    <div id="order-list">
+        <div class="text-muted">Đang tải đơn hàng...</div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const API_BASE = "https://localhost:7287/api";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadOrders();
+        });
+
+        async function loadOrders() {
+            const container = document.getElementById("order-list");
+
+            try {
+                const res = await fetch(`${API_BASE}/cart/orders`, {
+                    credentials: "include" // 🔥 QUAN TRỌNG
+                });
+
+                if (res.status === 401) {
+                    window.location.href = "/Auth/Login";
+                    return;
+                }
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    container.innerHTML = `
+                        <div class="alert alert-danger">
+                            Lỗi load đơn hàng: ${text}
+                        </div>`;
+                    return;
+                }
+
+                const orders = await res.json();
+
+                if (!orders || orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="alert alert-info">
+                            Bạn chưa có đơn hàng nào.
+                        </div>`;
+                    return;
+                }
+
+                let html = `
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Ngày đặt</th>
+                                <th>Số lượng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Địa chỉ</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                orders.forEach(order => {
+                    html += `
+                        <tr>
+                            <td>#${order.orderId}</td>
+                            <td>${formatDate(order.orderDate)}</td>
+                            <td>${order.totalItems}</td>
+                            <td>${Number(order.totalAmount).toLocaleString("vi-VN")} VNĐ</td>
+                            <td>
+                                <span class="badge ${getStatusClass(order.status)}">
+                                    ${order.status}
+                                </span>
+                            </td>
+                            <td>${order.shippingAddress ?? ""}</td>
+                            <td>
+                                <a href="/Order/OrderDetail?orderId=${order.orderId}"
+                                   class="btn btn-sm btn-primary">
+                                    Xem
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        Không tải được đơn hàng
+                    </div>`;
+            }
+        }
+
+        function formatDate(dateString) {
+            const d = new Date(dateString);
+            return d.toLocaleString("vi-VN");
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case "Paid": return "bg-success";
+                case "Pending": return "bg-warning";
+                case "Failed": return "bg-danger";
+                default: return "bg-secondary";
+            }
+        }
+    </script>
+}
