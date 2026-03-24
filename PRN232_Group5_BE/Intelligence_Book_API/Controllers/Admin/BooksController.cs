@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Intelligence_Book_API.Controllers.Admin
 {
-    [Route("api/[controller]")]
+    [Route("api/Admin/[controller]")]
     [ApiController]
     public class BooksController : ControllerBase
     {

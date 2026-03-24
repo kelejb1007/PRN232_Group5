@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.Data;
 using DAL.Models;
+using DAL.Models;
 using BLL.Services.User.Interfaces;
+using AutoMapper;
+using DAL.DTOs.BookDTO;
 
 namespace Intelligence_Book_API.Controllers.User
 {
@@ -17,10 +20,12 @@ namespace Intelligence_Book_API.Controllers.User
     public class BooksController : ControllerBase
     {
         private readonly IBookService_Anh _service;
+        private readonly IMapper _mapper;
 
-        public BooksController(IBookService_Anh service)
+        public BooksController(IBookService_Anh service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -33,7 +38,7 @@ namespace Intelligence_Book_API.Controllers.User
             var books = await _service.GetBooks(
                 search, categoryId, minPrice, maxPrice);
 
-            return Ok(books);
+            return Ok(_mapper.Map<List<BookResponeDTO>>(books));
         }
 
         [HttpGet("{id}")]
@@ -44,7 +49,7 @@ namespace Intelligence_Book_API.Controllers.User
             if (book == null)
                 return NotFound();
 
-            return Ok(book);
+            return Ok(_mapper.Map<BookResponeDTO>(book));
         }
     }
 }

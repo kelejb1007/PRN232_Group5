@@ -12,11 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(Intelligence_Book_APIContext))]
-<<<<<<<< HEAD:PRN232_Group5_BE/DAL/Migrations/20260303120147_Init.Designer.cs
     [Migration("20260303120147_Init")]
-========
-    [Migration("20260303103026_Init")]
->>>>>>>> origin/Huynhanh_Updatefeature:PRN232_Group5_BE/DAL/Migrations/20260303103026_Init.Designer.cs
     partial class Init
     {
         /// <inheritdoc />

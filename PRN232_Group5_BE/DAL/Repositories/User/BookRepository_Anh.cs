@@ -41,7 +41,7 @@ namespace DAL.Repositories.User
 
             if (maxPrice.HasValue)
                 query = query.Where(b => b.Price <= maxPrice);
-
+            query = query.Where(b => b.IsRemove == false);
             return await query.ToListAsync();
         }
 
@@ -49,6 +49,7 @@ namespace DAL.Repositories.User
         {
             return await _context.Books
                 .Include(b => b.Categories)
+                .Include(b => b.Author)
                 .FirstOrDefaultAsync(b => b.BookId == id);
         }
     }
