@@ -17,7 +17,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
 
-            var response = await client.GetAsync("api/categories");
+            var response = await client.GetAsync("api/Admin/categories");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -43,7 +43,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
 
-            var response = await client.GetAsync($"api/categories/{id}");
+            var response = await client.GetAsync($"api/Admin/categories/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -77,7 +77,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
                 "application/json"
             );
 
-            var response = await client.PostAsync("api/categories", jsonContent);
+            var response = await client.PostAsync("api/Admin/categories", jsonContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -108,7 +108,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
             );
 
             var response = await client.PutAsync(
-                $"api/categories/{model.CategoryId}",
+                $"api/Admin/categories/{model.CategoryId}",
                 jsonContent);
 
             if (response.IsSuccessStatusCode)
@@ -129,7 +129,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
 
-            var response = await client.DeleteAsync($"api/categories/{id}");
+            var response = await client.DeleteAsync($"api/Admin/categories/{id}");
 
             if (response.IsSuccessStatusCode)
             {

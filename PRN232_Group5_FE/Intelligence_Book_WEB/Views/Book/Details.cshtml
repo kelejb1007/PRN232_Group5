@@ -173,8 +173,8 @@
                 <!-- Content Side -->
                 <div class="col-md-7 col-lg-8 product-info">
                     <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="/Search" class="text-decoration-none" style="color: var(--text-muted)"><i class="fas fa-chevron-left me-1"></i> Quay lại cửa hàng</a></li>
+                         <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="/Home/Index" class="text-decoration-none" style="color: var(--text-muted)"><i class="fas fa-chevron-left me-1"></i> Quay lại cửa hàng</a></li>
                         </ol>
                     </nav>
 
@@ -215,11 +215,11 @@
                         <button id="toggleDesc" class="read-more-btn">Xem thêm <i class="fas fa-chevron-down ms-1"></i></button>
                     </div>
 
-                    <div class="mt-4">
+                     <div class="mt-4">
                         @if (Model.Book.StockQuantity > 0) {
-                            <a href="/Cart/Add/@Model.Book.BookId" class="btn btn-buy me-3">
+                            <button onclick="addToCart(@Model.Book.BookId)" class="btn btn-buy me-3">
                                 <i class="bi bi-cart-plus me-2"></i> Thêm vào giỏ hàng
-                            </a>
+                            </button>
                         } else {
                             <button class="btn btn-secondary btn-lg disabled" disabled>Hết hàng</button>
                         }
@@ -321,6 +321,36 @@
 
 @section Scripts {
     <script>
+        const API_BASE = "https://localhost:7287/api";
+
+        async function addToCart(bookId) {
+            try {
+                const response = await fetch(`${API_BASE}/cart/add`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ bookId: bookId, quantity: 1 })
+                });
+
+                if (response.status === 401) {
+                    window.location.href = "/Auth/Login";
+                    return;
+                }
+
+                if (!response.ok) {
+                    alert("❌ Lỗi thêm vào giỏ hàng");
+                    return;
+                }
+
+                alert("✅ Đã thêm vào giỏ hàng!");
+                // (Tùy chọn) Reload count hoặc notify layout
+                if (typeof loadCartCount === "function") loadCartCount();
+
+            } catch (error) {
+                console.error("Cart Error:", error);
+            }
+        }
+
         $(function () {
             // Check if description needs "Read More"
             const desc = $('#descriptionText');

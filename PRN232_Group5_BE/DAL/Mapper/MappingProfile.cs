@@ -35,4 +35,5 @@ namespace DAL.Mapper
             CreateMap<ReviewCreateDTO, Review>();
             CreateMap<ReviewUpdateDTO, Review>();
         }
+    }
 }

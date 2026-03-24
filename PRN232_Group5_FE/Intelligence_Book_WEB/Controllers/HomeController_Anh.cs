@@ -23,27 +23,13 @@ namespace Intelligence_Book_WEB.Controllers
 
         [HttpGet("")] // Trang chủ mặc định: https://localhost:7117/
         [HttpGet("Index")] // https://localhost:7117/Home/Index
-        public IActionResult Index()
-        {
-            return View("~/Views/Home/Index.cshtml");
-        }
-
-        [HttpGet("Search")] // https://localhost:7117/Home/Search
-        public async Task<IActionResult> Search(string? search, decimal? minPrice, decimal? maxPrice, int? categoryId)
+        public async Task<IActionResult> Index(string? search, decimal? minPrice, decimal? maxPrice, int? categoryId)
         {
             var client = _factory.CreateClient("MyAPI");
-            var url = $"api/Books?search={search}&categoryId={categoryId}&minPrice={minPrice}&maxPrice={maxPrice}";
+            var books = new List<BookViewModel>();
+            bool isSearching = !string.IsNullOrEmpty(search) || minPrice.HasValue || maxPrice.HasValue || categoryId.HasValue;
 
-            var response = await client.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
-            {
-                return View("~/Views/User/Search.cshtml", new List<BookViewModel>());
-            }
-
-            var json = await response.Content.ReadAsStringAsync();
-            var books = JsonSerializer.Deserialize<List<BookViewModel>>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<BookViewModel>();
-
+            // 1. Luôn lấy Categories để hiển thị ở bộ lọc
             var cateResponse = await client.GetAsync("api/Categories");
             var categories = new List<CategoryViewModel>();
             if (cateResponse.IsSuccessStatusCode)
@@ -53,10 +39,27 @@ namespace Intelligence_Book_WEB.Controllers
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<CategoryViewModel>();
             }
 
+            // 2. Nếu có search params, lấy danh sách sách theo filter
+            if (isSearching)
+            {
+                var url = $"api/Books?search={search}&categoryId={categoryId}&minPrice={minPrice}&maxPrice={maxPrice}";
+                var response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    books = JsonSerializer.Deserialize<List<BookViewModel>>(json,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<BookViewModel>();
+                }
+            }
+
             ViewBag.Categories = categories;
             ViewBag.SelectedCategory = categoryId;
+            ViewBag.IsSearching = isSearching;
+            ViewBag.SearchTerm = search;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
 
-            return View("~/Views/User/Search.cshtml", books);
+            return View("~/Views/Home/Index.cshtml", books);
         }
 
         [HttpGet("Details/{id}")] // https://localhost:7117/Home/Details/5

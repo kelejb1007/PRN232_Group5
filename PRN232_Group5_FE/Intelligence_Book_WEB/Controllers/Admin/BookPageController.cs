@@ -17,7 +17,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         private async Task<List<CategoryViewModel>> GetCategoriesAsync()
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
-            var response = await client.GetAsync("api/categories");
+            var response = await client.GetAsync("api/Admin/categories");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -29,7 +29,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         public async Task<IActionResult> Index()
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
-            var response = await client.GetAsync("api/Books");
+            var response = await client.GetAsync("api/Admin/Books");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -47,7 +47,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         public async Task<IActionResult> Details(int id)
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
-            var response = await client.GetAsync($"api/Books/{id}");
+            var response = await client.GetAsync($"api/Admin/Books/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -106,7 +106,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
                 }
             }
 
-            var response = await client.PostAsync("api/Books", content);
+            var response = await client.PostAsync("api/Admin/Books", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -123,7 +123,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         public async Task<IActionResult> Edit(int id)
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
-            var response = await client.GetAsync($"api/Books/{id}");
+            var response = await client.GetAsync($"api/Admin/Books/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -191,7 +191,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
                 }
             }
 
-            var response = await client.PutAsync($"api/Books/{model.BookId}", content);
+            var response = await client.PutAsync($"api/Admin/Books/{model.BookId}", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -210,7 +210,7 @@ namespace Intelligence_Book_WEB.Controllers.Admin
         public async Task<IActionResult> Delete(int id)
         {
             var client = _httpClientFactory.CreateClient("MyAPI");
-            var response = await client.DeleteAsync($"api/Books/{id}");
+            var response = await client.DeleteAsync($"api/Admin/Books/{id}");
 
             if (response.IsSuccessStatusCode)
             {

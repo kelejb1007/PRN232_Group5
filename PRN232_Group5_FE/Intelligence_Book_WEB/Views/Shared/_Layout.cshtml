@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -40,21 +40,23 @@
                                data-bs-toggle="dropdown">
                                 Danh mục
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">📘 Lập trình</a></li>
-                                <li><a class="dropdown-item" href="#">📕 Kinh tế</a></li>
-                                <li><a class="dropdown-item" href="#">📗 Kỹ năng</a></li>
-                                <li><a class="dropdown-item" href="#">📙 Tiểu thuyết</a></li>
+                             <ul class="dropdown-menu">
+                                 @foreach (var cate in (ViewBag.Categories as List<Intelligence_Book_WEB.Models.CategoryViewModel>) ?? new List<Intelligence_Book_WEB.Models.CategoryViewModel>())
+                                 {
+                                     <li><a class="dropdown-item" href="/?categoryId=@cate.CategoryId">@cate.CategoryName</a></li>
+                                 }
                             </ul>
                         </li>
                     </ul>
 
                     <!-- SEARCH -->
-                    <form class="d-flex flex-grow-1 me-3">
+                     <form class="d-flex flex-grow-1 me-3" action="/" method="get">
                         <input class="form-control me-2"
                                type="search"
+                               name="search"
+                               value="@ViewBag.SearchTerm"
                                placeholder="Tìm sách, tác giả..." />
-                        <button class="btn btn-warning">Tìm</button>
+                        <button class="btn btn-warning" type="submit">Tìm</button>
                     </form>
 
                     <!-- ICONS -->
