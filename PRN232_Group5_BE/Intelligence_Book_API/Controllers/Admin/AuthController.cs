@@ -78,6 +78,16 @@ namespace Intelligence_Book_API.Controllers.Admin
                 Expires = expiresAtUtc
             });
         }
+        [HttpGet("me")]
+        [Authorize]
+        public IActionResult Me()
+        {
+            return Ok(new
+            {
+                username = User.Identity.Name,
+                role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+            });
+        }
 
     }
 }

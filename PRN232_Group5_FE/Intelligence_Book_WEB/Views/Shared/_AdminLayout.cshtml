@@ -1,4 +1,4 @@
-﻿@* new - updated to match old structure *@
+@* new - updated to match old structure *@
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,98 +13,51 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    <div class="sidebar">
-        <div class="logo">
-            <img src="~/img/logo.png" alt="logo" />
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo-section">
+            <h1 style="color:#F79356;">YUMMY</h1>
+            <p>Admin Dashboard - Book Management System</p>
         </div>
 
-        <div class="admin">
-            <img src="~/img/customer.png" alt="admin" />
-            <div id="dropdown-sidebar" class="dropdown">
-                <div>
-                    <p>
-                        <text>Admin</text>
-                        @* @{ *@
-                        @*     var username = Context.Session.GetString("StaffName"); *@
-                        @* } *@
-                        @* @if (!string.IsNullOrEmpty(username)) *@
-                        @* { *@
-                        @*     @username *@
-                        @* } *@
-                        @* else *@
-                        @* { *@
-                        @*     <text>Admin</text> *@
-                        @* } *@
-                    </p>
-                </div>
-
-                <div id="dropdown-menu-sidebar" class="dropdown-menu" style="border: none; box-shadow: none; width: auto">
-                    <div id="Logoutbutton" style="text-align: left">
-                        <a asp-controller="Auth" asp-action="Logout">Logout</a>
-                        <hr style="margin:0">
-                    </div>
-                </div>
+        <div class="user-info">
+            <i class="bi bi-person-circle" style="font-size: 2rem; color: #F79356;"></i>
+            <div class="user-details">
+                <span style="font-weight: bold;">Admin</span>
+                <span id="Logoutbutton">
+                    <a asp-controller="Auth" asp-action="Logout" style="font-size: 0.8rem; color: #666;">Logout <i class="bi bi-box-arrow-right"></i></a>
+                </span>
             </div>
         </div>
 
         <ul class="menu">
-            
             <li class="manageOption">
                 <a asp-controller="CategoryPage" asp-action="Index">
-                    <img alt="Category" src="~/img/productmanagement.png" />
+                    <i class="bi bi-tags"></i>
                     <span>Category Management</span>
                 </a>
             </li>
             <hr>
             <li class="manageOption">
                 <a asp-controller="ProductPage" asp-action="Index">
-                    <img alt="Product" src="~/img/productmanagement.png" />
+                    <i class="bi bi-book"></i>
                     <span>Book Management</span>
                 </a>
             </li>
-            @* <hr> *@
-            @* <li class="manageOption"> *@
-            @*     <a asp-controller="Staff" asp-action="Index"> *@
-            @*         <img alt="Staff" src="~/img/employee.png" /> *@
-            @*         <span>Staff Management</span> *@
-            @*     </a> *@
-            @* </li> *@
-            @* <hr> *@
-            @* <li class="manageOption"> *@
-            @*     <a asp-controller="Inventory" asp-action="Index"> *@
-            @*         <img alt="Inventory" src="~/img/supply-chain.png" /> *@
-            @*         <span>Inventory Management</span> *@
-            @*     </a> *@
-            @* </li> *@
-            @* <hr> *@
-            @* <li class="manageOption"> *@
-            @*     <a asp-controller="Promotion" asp-action="Index"> *@
-            @*         <img alt="Promotion" src="~/img/promotion.png" /> *@
-            @*         <span>Promotions and Discounts</span> *@
-            @*     </a> *@
-            @* </li> *@
-            @* <hr> *@
-            @* <li class="manageOption"> *@
-            @*     <a asp-controller="Account" asp-action="Index"> *@
-            @*         <img alt="Account" src="~/img/account.png" /> *@
-            @*         <span>Account Management</span> *@
-            @*     </a> *@
-            @* </li> *@
-            @* <hr> *@
-            @* <li class="manageOption"> *@
-            @*     <a asp-controller="Order" asp-action="Index"> *@
-            @*         <img alt="Order" src="~/img/track.png" /> *@
-            @*         <span>Order Management</span> *@
-            @*     </a> *@
-            @* </li> *@
+            <hr>
+            @* Có thể thêm các menu khác ở đây *@
         </ul>
-    </div>
+    </aside>
 
-    <div class="container">
-        <main role="main" class="p-0">
+    <!-- Main Content -->
+    <main class="main-content" style="flex: 1; padding: 20px;">
+        <div class="container-fluid">
             @RenderBody()
-        </main>
-    </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <partial name="_ToastNotification" />
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

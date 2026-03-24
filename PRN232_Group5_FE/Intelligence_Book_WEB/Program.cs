@@ -6,6 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+//<<<<<<< HEAD
+//builder.Services.AddHttpClient("api", client =>
+//{
+//    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+//});
+//=======
+//>>>>>>> 25a8230ed3082f6f4f27000bda08913d808fb211
 
 // Lấy base URL từ appsettings.json
 var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
@@ -35,6 +42,15 @@ builder.Services.AddHttpClient("MyAPI", client =>
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
+builder.Services.AddHttpClient("api", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
+
+builder.Services.AddHttpClient("MyAPI", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7287/");
+});
 // Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -45,7 +61,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -54,14 +69,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Cấu hình Route chuẩn cho nhiều Controller
 app.MapControllerRoute(
     name: "default",
+
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

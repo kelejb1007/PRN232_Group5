@@ -1,10 +1,11 @@
-﻿using DAL.Models.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DAL.Models.DAL.Models;
+using DAL.Models.Enums;
 
 namespace DAL.Models
 {
@@ -22,6 +23,7 @@ namespace DAL.Models
         public string? Phone { get; set; }
         public string? Address { get; set; }
 
+        public ICollection<DeliveryAddress> DeliveryAddresses { get; set; } = new List<DeliveryAddress>();
         // Sử dụng Enum cho Role
         public UserRole Role { get; set; } = UserRole.Customer;
         public bool IsActive { get; set; } = true;
