@@ -1,4 +1,4 @@
-﻿namespace Intelligence_Book_WEB.Models
+namespace Intelligence_Book_WEB.Models
 {
     public class CategoryViewModel
     {

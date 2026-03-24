@@ -1,7 +1,6 @@
 ﻿using BLL.Services.User.Interfaces;
 using DAL.DTOs;
 using DAL.Models;
-using DAL.Models.DAL.Models;
 using DAL.Models.Enums;
 using DAL.Repositories.User;
 using DAL.Repositories.User.Interfaces;
@@ -192,16 +191,14 @@ public class CartServiceH : ICartServiceH
         {
             OrderId = order.OrderId,
             OrderDate = order.OrderDate,
-            TotalAmount = order.TotalAmount,
             Status = order.Status.ToString(),
             ShippingAddress = order.ShippingAddress,
-            Items = order.OrderItems.Select(x => new OrderDetailItemDto
+            TotalAmount = order.TotalAmount,
+            Items = order.OrderItems.Select(i => new OrderDetailItemDto
             {
-                OrderItemId = x.OrderItemId,
-                BookId = x.BookId,
-                BookTitle = x.Book?.Title ?? "Không có tên sách",
-                Quantity = x.Quantity,
-                PriceAtPurchase = x.PriceAtPurchase
+                BookTitle = i.Book.Title,
+                Quantity = i.Quantity,
+                PriceAtPurchase = i.PriceAtPurchase
             }).ToList()
         };
     }

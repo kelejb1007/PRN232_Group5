@@ -1,77 +1,44 @@
-﻿using Intelligence_Book_WEB.Models;
+using Intelligence_Book_WEB.Services.User.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace Intelligence_Book_WEB.Controllers.User
 {
     public class OrderController : Controller
     {
-        private readonly HttpClient _client;
+        private readonly IOrderService _orderService;
+        private readonly IProfileService _profileService;
+        private const string AccessTokenCookie = "access_token";
 
-        public OrderController(IHttpClientFactory factory)
+        public OrderController(IOrderService orderService, IProfileService profileService)
         {
-            _client = factory.CreateClient();
+            _orderService = orderService;
+            _profileService = profileService;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> History()
         {
-            return View();
+            var token = Request.Cookies[AccessTokenCookie];
+            if (string.IsNullOrEmpty(token)) return RedirectToAction("Login", "Auth");
+
+            var profile = await _profileService.GetProfileAsync(token);
+            ViewBag.ProfileInfo = profile;
+            ViewBag.ActiveTab = "orders";
+            
+            var orders = await _orderService.GetOrderHistoryAsync(token);
+            return View("~/Views/User/Order/History.cshtml", orders);
         }
 
-        public async Task<IActionResult> OrderDetail(int orderId)
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
         {
-            try
-            {
-                if (orderId <= 0)
-                {
-                    ViewBag.Error = "Mã đơn hàng không hợp lệ";
-                    return View(new OrderDetailViewModel());
-                }
+            var token = Request.Cookies[AccessTokenCookie];
+            if (string.IsNullOrEmpty(token)) return RedirectToAction("Login", "Auth");
 
-                // ❌ KHÔNG gọi mark-paid ở đây nữa
-                // 👉 nên gọi ở callback thanh toán hoặc backend
+            var order = await _orderService.GetOrderDetailsAsync(token, id);
+            if (order == null) return NotFound();
 
-                // ✅ gọi API lấy chi tiết đơn hàng
-                var response = await _client.GetAsync(
-                    $"https://localhost:7287/api/order/{orderId}"
-                );
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    ViewBag.Error = $"API lỗi: {error}";
-                    return View(new OrderDetailViewModel());
-                }
-
-                var json = await response.Content.ReadAsStringAsync();
-
-                if (string.IsNullOrWhiteSpace(json))
-                {
-                    ViewBag.Error = "API trả về dữ liệu rỗng";
-                    return View(new OrderDetailViewModel());
-                }
-
-                var order = JsonSerializer.Deserialize<OrderDetailViewModel>(
-                    json,
-                    new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }
-                );
-
-                if (order == null)
-                {
-                    ViewBag.Error = "Không đọc được dữ liệu đơn hàng";
-                    return View(new OrderDetailViewModel());
-                }
-
-                return View(order);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = $"Lỗi hệ thống: {ex.Message}";
-                return View(new OrderDetailViewModel());
-            }
+            return View("~/Views/User/Order/Details.cshtml", order);
         }
     }
 }

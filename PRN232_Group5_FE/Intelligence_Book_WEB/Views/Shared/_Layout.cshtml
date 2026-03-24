@@ -85,25 +85,43 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle"
                                href="#"
-                               data-bs-toggle="dropdown">
-                                👤 Tài khoản
+                               data-bs-toggle="dropdown"
+                               id="nav-account-toggle">
+                                👤 <span id="nav-account-text">Tài khoản</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
 
                                 <!-- CHƯA LOGIN -->
-                                <li id="nav-login">
+                                <li id="nav-login" style="display: @(Context.Request.Cookies.ContainsKey("access_token") ? "none" : "block")">
                                     <a class="dropdown-item" href="/Auth/Login">Đăng nhập</a>
                                 </li>
-                                <li id="nav-register">
+                                <li id="nav-register" style="display: @(Context.Request.Cookies.ContainsKey("access_token") ? "none" : "block")">
                                     <a class="dropdown-item" href="/Auth/Register">Đăng ký</a>
                                 </li>
 
                                 <!-- ĐÃ LOGIN -->
-                                <li id="nav-profile" style="display:none;">
-                                    <a class="dropdown-item" href="#">Hồ sơ</a>
+                                <li id="nav-profile" style="display: @(Context.Request.Cookies.ContainsKey("access_token") ? "block" : "none")">
+                                    <a class="dropdown-item" href="/Profile">
+                                        <i class="bi bi-person me-2"></i>Hồ sơ của tôi
+                                    </a>
                                 </li>
-                                <li id="nav-logout" style="display:none;">
-                                    <a class="dropdown-item" href="#" onclick="logout()">Đăng xuất</a>
+                                <li id="nav-orders" style="display: @(Context.Request.Cookies.ContainsKey("access_token") ? "block" : "none")">
+                                    <a class="dropdown-item" href="/Order/History">
+                                        <i class="bi bi-box-seam me-2"></i>Lịch sử đơn hàng
+                                    </a>
+                                </li>
+                                <li id="nav-dashboard" style="display: none;">
+                                    <a class="dropdown-item text-primary fw-bold" href="/Dashboard">
+                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li id="nav-logout" style="display: @(Context.Request.Cookies.ContainsKey("access_token") ? "block" : "none")">
+                                    <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                                        </button>
+                                    </form>
                                 </li>
 
                             </ul>
@@ -135,64 +153,96 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        const API_BASE = "https://localhost:7287/api";
 
-</body>
-<script>
-    const API_BASE = "https://localhost:7287/api";
+        function getCookie(name) {
+            let value = `; ${document.cookie}`;
+            let parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        checkLogin();
-        loadCartCount();
-    });
+        function parseJwt(token) {
+            try {
+                var base64Url = token.split('.')[1];
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
 
-    async function checkLogin() {
-        try {
-            const res = await fetch(`${API_BASE}/auth/me`, {
-                credentials: "include"
-            });
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = getCookie("access_token");
 
             const login = document.getElementById("nav-login");
             const register = document.getElementById("nav-register");
             const profile = document.getElementById("nav-profile");
+            const orders = document.getElementById("nav-orders");
+            const dashboard = document.getElementById("nav-dashboard");
             const logoutBtn = document.getElementById("nav-logout");
+            const accountText = document.getElementById("nav-account-text");
 
-            if (res.ok) {
-                login.style.display = "none";
-                register.style.display = "none";
-                profile.style.display = "block";
-                logoutBtn.style.display = "block";
+            if (token) {
+                if (login) login.style.display = "none";
+                if (register) register.style.display = "none";
+                if (profile) profile.style.display = "block";
+                if (orders) orders.style.display = "block";
+                if (logoutBtn) logoutBtn.style.display = "block";
+
+                const payload = parseJwt(token);
+                if (payload) {
+                    // Check name (Replace "Tài khoản" with Name)
+                    const name = payload["unique_name"] ||
+                        payload["uniqueName"] ||
+                        payload["name"] ||
+                        payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] ||
+                        payload["sub"];
+
+                    console.log("User detected:", name);
+                    if (accountText && name) accountText.innerText = name;
+
+                    // Check role
+                    const role = payload["role"] || payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                    if (role === "Admin") {
+                        if (dashboard) dashboard.style.display = "block";
+                    }
+                }
             } else {
-                login.style.display = "block";
-                register.style.display = "block";
-                profile.style.display = "none";
-                logoutBtn.style.display = "none";
+                if (login) login.style.display = "block";
+                if (register) register.style.display = "block";
+                if (profile) profile.style.display = "none";
+                if (orders) orders.style.display = "none";
+                if (dashboard) dashboard.style.display = "none";
+                if (logoutBtn) logoutBtn.style.display = "none";
+                if (accountText) accountText.innerText = "Tài khoản";
             }
 
-        } catch (e) {
-            console.error(e);
+            loadCartCount();
+        });
+
+        async function loadCartCount() {
+            try {
+                const res = await fetch(`${API_BASE}/cart`, {
+                    credentials: "include"
+                });
+
+                if (res.status === 401) {
+                    document.getElementById("cart-count").innerText = "0";
+                    return;
+                }
+
+                const data = await res.json();
+                document.getElementById("cart-count").innerText = data.length || 0;
+
+            } catch { }
         }
-    }
+    </script>
 
-    async function logout() {
-        window.location.href = "/Auth/Logout";
-    }
+    @await RenderSectionAsync("Scripts", required: false)
 
-    async function loadCartCount() {
-        try {
-            const res = await fetch(`${API_BASE}/cart`, {
-                credentials: "include"
-            });
-
-            if (res.status === 401) {
-                document.getElementById("cart-count").innerText = "0";
-                return;
-            }
-
-            const data = await res.json();
-            document.getElementById("cart-count").innerText = data.length;
-
-        } catch {}
-    }
-</script>
+</body>
 </html>

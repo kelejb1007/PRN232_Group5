@@ -1,0 +1,268 @@
+@model Intelligence_Book_WEB.Models.Dashboard.DashboardSummaryDTO
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4 bg-light">
+    <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+        <div>
+            <h2 class="fw-bold mb-1">Tổng quan Dashboard</h2>
+            <p class="text-muted small mb-0">Phân tích và thống kê kinh doanh cho Intelligence Book</p>
+        </div>
+        <div class="text-end dropdown">
+            <button class="btn btn-white bg-white text-dark border shadow-sm px-3 py-2 rounded-3 hover-lift d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-calendar3 me-2 text-primary"></i> 
+                <span>@DateTime.Now.ToString("dd 'tháng' MM, yyyy")</span>
+                <i class="bi bi-chevron-down ms-2 small opacity-50"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2 animate-fade-in" style="min-width: 200px;">
+                <li><h6 class="dropdown-header text-muted small px-3">Lọc theo ngày</h6></li>
+                <li><a class="dropdown-item rounded-3 px-3 py-2 active d-flex align-items-center" href="#"><i class="bi bi-calendar-event me-2"></i> Hôm nay</a></li>
+                <li><a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center" href="#"><i class="bi bi-calendar-day me-2"></i> Hôm qua</a></li>
+                <li><hr class="dropdown-divider opacity-50 mx-2"></li>
+                <li><a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center text-primary" href="#"><i class="bi bi-calendar-plus me-2"></i> Tùy chỉnh phạm vi...</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row px-2">
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="bg-primary-subtle text-primary rounded-4 d-flex align-items-center justify-content-center me-3" style="width: 56px; height: 56px;">
+                        <i class="bi bi-currency-dollar fs-4"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small fw-bold mb-1">TỔNG DOANH THU</p>
+                        <h4 class="fw-bold mb-0">@Model.TotalRevenue.ToString("N0") đ</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="bg-success-subtle text-success rounded-4 d-flex align-items-center justify-content-center me-3" style="width: 56px; height: 56px;">
+                        <i class="bi bi-cart-check fs-4"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small fw-bold mb-1">TỔNG ĐƠN HÀNG</p>
+                        <h4 class="fw-bold mb-0">@Model.TotalOrders</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="bg-info-subtle text-info rounded-4 d-flex align-items-center justify-content-center me-3" style="width: 56px; height: 56px;">
+                        <i class="bi bi-people fs-4"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small fw-bold mb-1">KHÁCH HÀNG</p>
+                        <h4 class="fw-bold mb-0">@Model.TotalCustomers</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="bg-warning-subtle text-warning rounded-4 d-flex align-items-center justify-content-center me-3" style="width: 56px; height: 56px;">
+                        <i class="bi bi-book fs-4"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small fw-bold mb-1">TỔNG SỐ SÁCH</p>
+                        <h4 class="fw-bold mb-0">@Model.TotalBooks</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row px-2">
+        <!-- Revenue Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Xu hướng doanh thu (7 ngày qua)</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm rounded-3 border px-3 d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-clock-history me-2 text-muted"></i>
+                            <span class="small fw-bold">7 ngày qua</span>
+                            <i class="bi bi-chevron-down ms-2 extra-small opacity-50"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2 animate-fade-in" style="min-width: 180px;">
+                            <li><h6 class="dropdown-header text-muted small px-3">Phạm vi thống kê</h6></li>
+                            <li><a class="dropdown-item rounded-3 px-3 py-2 active d-flex align-items-center" href="#"><i class="bi bi-graph-up me-2"></i> 7 ngày qua</a></li>
+                            <li><a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center" href="#"><i class="bi bi-bar-chart me-2"></i> 30 ngày qua</a></li>
+                            <li><a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center" href="#"><i class="bi bi-calendar-check me-2"></i> Tháng này</a></li>
+                            <li><a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center" href="#"><i class="bi bi-pie-chart me-2"></i> Quý này</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <canvas id="revenueChart" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Stats -->
+        <div class="col-lg-4 mb-4">
+             <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0">Tăng trưởng thành viên</h5>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <canvas id="registrationChart" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row px-2">
+        <!-- Top Selling Products -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0">Sản phẩm bán chạy nhất</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0 px-4">
+                            <thead class="bg-light">
+                                <tr class="text-muted small">
+                                    <th class="ps-4">PRODUCT</th>
+                                    <th class="text-center">SOLD</th>
+                                    <th class="text-end pe-4">REVENUE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.TopSellingBooks)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <span class="fw-bold small text-truncate d-inline-block" style="max-width: 250px;">@item.BookTitle</span>
+                                        </td>
+                                        <td class="text-center small">@item.UnitsSold</td>
+                                        <td class="text-end pe-4 fw-bold small">@item.TotalRevenue.ToString("C0")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Alerts -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0 text-danger">Cảnh báo tồn kho thấp</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr class="text-muted small">
+                                    <th class="ps-4">PRODUCT</th>
+                                    <th class="text-center">STOCK</th>
+                                    <th class="text-end pe-4">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.LowStockBooks)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <span class="fw-bold small">@item.Title</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge @(item.StockQuantity == 0 ? "bg-danger" : "bg-warning") rounded-pill">@item.StockQuantity</span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <span class="small text-@(item.StockQuantity == 0 ? "danger" : "warning") fw-bold">
+                                                @(item.StockQuantity == 0 ? "Hết hàng" : "Sắp hết hàng")
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <script>
+        // Data from Model
+        const revenueLabels = @Json.Serialize(Model.RevenueByDay.Select(x => x.Label));
+        const revenueData = @Json.Serialize(Model.RevenueByDay.Select(x => x.Revenue));
+        
+        const regLabels = @Json.Serialize(Model.RegistrationsByDay.Select(x => x.Date));
+        const regData = @Json.Serialize(Model.RegistrationsByDay.Select(x => x.Count));
+
+        // Revenue Chart
+        const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctxRevenue, {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: revenueData,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#0d6efd',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Registration Chart
+        const ctxReg = document.getElementById('registrationChart').getContext('2d');
+        new Chart(ctxReg, {
+            type: 'bar',
+            data: {
+                labels: regLabels,
+                datasets: [{
+                    label: 'New Users',
+                    data: regData,
+                    backgroundColor: '#198754',
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+}

@@ -27,5 +27,22 @@ namespace DAL.Repositories.User
                 .Where(o => o.UserId == userId && o.Status == OrderStatus.Delivered)
                 .AnyAsync(o => o.OrderItems.Any(oi => oi.BookId == bookId));
         }
+        public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(int userId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Book)
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+        }
+
+        public async Task<Order?> GetOrderDetailsAsync(int orderId, int userId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Book)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId && o.UserId == userId);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿@{
+@{
     Layout = null; // Loại bỏ Layout chung
 }
 @model Models.UserAccount.AuthDTO.LoginRequestDTO
@@ -8,12 +8,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Intelligence Book Store</title>
+    <title>Đăng nhập | Intelligence Book</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1a2a3a;
+            --primary-color: rgba(25, 36, 50, 1);
             --accent-color: #c5a059;
         }
 
@@ -112,6 +112,7 @@
     </style>
 </head>
 <body>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <div class="login-container">
         <div class="login-image">
@@ -124,38 +125,70 @@
 
         <div class="login-form-section">
             <div class="form-wrapper">
-                <a href="/" class="brand-logo text-center">IB Store.</a>
-                <h2 class="fw-bold mb-2">Welcome Back</h2>
-                <p class="text-muted mb-4">Please enter your details to sign in.</p>
+                <a href="/" class="brand-logo text-center">Đăng Nhập</a>
+                <h2 class="fw-bold mb-2">Chào mừng trở lại</h2>
+                <p class="text-muted mb-4">Vui lòng nhập thông tin để đăng nhập.</p>
 
                 @if (ViewBag.Error != null)
                 {
                     <div class="alert alert-danger border-0 small">@ViewBag.Error</div>
                 }
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success border-0 small">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger border-0 small">@TempData["ErrorMessage"]</div>
+                }
 
                 <form asp-action="Login" method="post">
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">USERNAME</label>
-                        <input asp-for="UserName" type="text" class="form-control" placeholder="Enter your username" required>
+                        <label class="form-label small fw-bold">TÊN ĐĂNG NHẬP</label>
+                        <input asp-for="UserName" type="text" class="form-control" placeholder="Nhập tên đăng nhập" required>
+                        <span asp-validation-for="UserName" class="text-danger small mt-1 d-block"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">PASSWORD</label>
-                        <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" required>
+                        <label class="form-label small fw-bold">MẬT KHẨU</label>
+                        <div class="input-group">
+                            <input asp-for="Password" type="password" id="passwordInput" class="form-control" placeholder="••••••••" required style="border-right: none;">
+                            <button class="btn btn-outline-secondary bg-white text-muted" type="button" id="togglePassword" style="border-left: none; border-color: #ddd;">
+                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                </svg>
+                                <svg id="eyeSlashIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: none;">
+                                  <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z"/>
+                                  <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
                     </div>
                     <div class="d-flex justify-content-between mb-4">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="remember">
-                            <label class="form-check-label small" for="remember">Remember me</label>
+                            <label class="form-check-label small" for="remember">Ghi nhớ đăng nhập</label>
                         </div>
-                        <a href="#" class="small text-decoration-none text-muted">Forgot password?</a>
+                        <a asp-action="ForgotPassword" class="small text-decoration-none text-muted">Quên mật khẩu?</a>
                     </div>
-                    <button type="submit" class="btn btn-login mb-3">SIGN IN</button>
+                    <button type="submit" class="btn btn-login mb-3">ĐĂNG NHẬP</button>
+
+                    <div class="text-center my-3 text-muted">HOẶC</div>
+                    
+                    <div class="d-flex justify-content-center mb-3">
+                        <div id="g_id_onload"
+                             data-client_id="535904771522-gqunmn72kicnqgs6rd9ua7qevj988to2.apps.googleusercontent.com"
+                             data-callback="handleCredentialResponse">
+                        </div>
+                        <div class="g_id_signin" data-type="standard" data-theme="outline" data-size="large" data-width="300"></div>
+                    </div>
 
                     <div class="text-center mt-3">
                         <p class="small text-muted">
-                            Don't have an account?
-                            <a asp-action="Register" class="fw-bold text-decoration-none" style="color: var(--accent-color);">Sign up for free</a>
+                            Chưa có tài khoản?
+                            <a asp-action="Register" class="fw-bold text-decoration-none" style="color: var(--accent-color);">Đăng ký</a>
                         </p>
                     </div>
                 </form>
@@ -163,5 +196,44 @@
         </div>
     </div>
 
+    <script>
+        function handleCredentialResponse(response) {
+            fetch('/Auth/GoogleLogin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ idToken: response.credential })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    alert('Đăng nhập Google thất bại: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Đã xảy ra lỗi trong quá trình đăng nhập Google.');
+            });
+        }
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const eyeSlashIcon = document.getElementById('eyeSlashIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeSlashIcon.style.display = 'block';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeSlashIcon.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

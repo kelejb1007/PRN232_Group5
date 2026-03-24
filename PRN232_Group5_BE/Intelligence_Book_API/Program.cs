@@ -1,4 +1,6 @@
 using System.Text;
+using BLL.Services;
+using BLL.Services.Interfaces;
 using BLL.Services.Admin;
 using BLL.Services.Admin.Interfaces;
 using BLL.Services.User;
@@ -57,6 +59,7 @@ builder.Services.AddCors(options =>
 });
 
 // ================= DEPENDENCY INJECTION =================
+builder.Services.AddMemoryCache();
 
 // Admin
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -85,17 +88,20 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
-// Phải cấu hình CORS để cho phép Client MVC gọi tới.
-//builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
-//    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
-
-builder.Services.AddScoped<IOrderRepositoryH, OrderRepositoryH>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
+// Legacy/Other
+builder.Services.AddScoped<ICartRepositoryH, CartRepositoryH>();
+builder.Services.AddScoped<ICartServiceH, CartServiceH>();
+builder.Services.AddScoped<IOrderRepositoryH, OrderRepositoryH>();
 builder.Services.AddScoped<IBookRepositoryH, BookRepositoryH>();
 builder.Services.AddScoped<IBookServiceH, BookServiceH>();
 
@@ -106,11 +112,8 @@ builder.Services.AddScoped<PayOSService>();
 
 // ================= JWT =================
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-
-if (string.IsNullOrEmpty(jwtSettings["Key"]))
-    throw new Exception("JWT Key is missing in appsettings.json");
-
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+var keyString = jwtSettings["Key"] ?? throw new InvalidOperationException("Jwt:Key is missing");
+var key = Encoding.UTF8.GetBytes(keyString);
 
 builder.Services.AddAuthentication(options =>
 {

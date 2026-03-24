@@ -1,37 +1,56 @@
-﻿using Intelligence_Book_WEB.Services;
+using Intelligence_Book_WEB.Services;
 using Intelligence_Book_WEB.Services.Interfaces;
+using Intelligence_Book_WEB.Services.User;
+using Intelligence_Book_WEB.Services.User.Interfaces;
+using Intelligence_Book_WEB.Services.Admin;
+using Intelligence_Book_WEB.Services.Admin.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ================= SERVICES =================
 builder.Services.AddControllersWithViews();
-//<<<<<<< HEAD
 //builder.Services.AddHttpClient("api", client =>
 //{
 //    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
 //});
-//=======
-//>>>>>>> 25a8230ed3082f6f4f27000bda08913d808fb211
 
-var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? throw new InvalidOperationException("ApiSettings:BaseUrl is missing");
 builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+builder.Services.AddHttpClient<IProfileService, ProfileService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+builder.Services.AddHttpClient<IAddressService, AddressService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+builder.Services.AddHttpClient<IOrderService, OrderService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+builder.Services.AddHttpClient<IDashboardService, DashboardService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 builder.Services.AddHttpContextAccessor();
 
-
+// ✅ HttpClient chính cho toàn app
 builder.Services.AddHttpClient("api", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+    client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// ⚠ giữ lại nhưng note rõ (tránh dùng nhầm)
 builder.Services.AddHttpClient("MyAPI", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7287/");
 });
 
+// ================= PIPELINE =================
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

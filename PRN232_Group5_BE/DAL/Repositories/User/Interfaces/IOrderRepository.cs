@@ -10,6 +10,7 @@ namespace DAL.Repositories.User.Interfaces
     public interface IOrderRepository
     {
         Task<bool> HasUserPurchasedBookAsync(int userId, int bookId);
-        // Có thể thêm các method khác liên quan đến Order của User tại đây
+        Task<IEnumerable<Order>> GetOrdersByUserIdAsync(int userId);
+        Task<Order?> GetOrderDetailsAsync(int orderId, int userId);
     }
 }

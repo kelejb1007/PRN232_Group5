@@ -1,70 +1,296 @@
-@* new - updated to match old structure *@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - YUMMY Admin</title>
+    <title>@ViewData["Title"] - Admin Intelligence Book</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/Admin_layout.css" asp-append-version="true" />
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-bg: #111827;
+            --sidebar-hover: #1f2937;
+            --sidebar-active: #c5a059;
+            --content-bg: #f9fafb;
+        }
 
-    @RenderSection("Styles", required: false)
+        body {
+            background-color: var(--content-bg);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        #admin-sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--sidebar-bg);
+            color: #d1d5db;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        #admin-sidebar .sidebar-header {
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        #admin-sidebar .nav-link {
+            color: #d1d5db;
+            padding: 0.85rem 1.5rem;
+            margin: 0.2rem 0.75rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            height: 48px;
+            transition: all 0.2s;
+        }
+
+        #admin-sidebar .nav-link i {
+            font-size: 1.25rem;
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+        }
+
+        #admin-sidebar .nav-link:hover {
+            background-color: var(--sidebar-hover);
+            color: white;
+            padding-left: 1.75rem;
+        }
+
+        #admin-sidebar .nav-link.active {
+            background-color: var(--sidebar-active);
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Main Content Styling */
+        #admin-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            flex: 1;
+            width: calc(100% - var(--sidebar-width));
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Top Header inside Content */
+        .admin-header {
+            height: 64px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .user-pill {
+            background: #f3f4f6;
+            padding: 6px 16px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        /* Wrapper for layout */
+        .admin-wrapper {
+            display: flex;
+        }
+
+        /* Premium UI Effects */
+        .hover-lift {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.2s ease-out;
+        }
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .extra-small {
+            font-size: 0.7rem;
+        }
+
+        .dropdown-item {
+            transition: all 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+            padding-left: 1.25rem;
+        }
+        .dropdown-item.active {
+            background-color: var(--sidebar-active);
+            color: white;
+        }
+
+        @@media (max-width: 768px) {
+            #admin-sidebar {
+                left: calc(-1 * var(--sidebar-width));
+            }
+            #admin-sidebar.show {
+                left: 0;
+            }
+            #admin-content {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="logo-section">
-            <h1 style="color:#F79356;">YUMMY</h1>
-            <p>Admin Dashboard - Book Management System</p>
-        </div>
 
-        <div class="user-info">
-            <i class="bi bi-person-circle" style="font-size: 2rem; color: #F79356;"></i>
-            <div class="user-details">
-                <span style="font-weight: bold;">Admin</span>
-                <span id="Logoutbutton">
-                    <a asp-controller="Auth" asp-action="Logout" style="font-size: 0.8rem; color: #666;">Logout <i class="bi bi-box-arrow-right"></i></a>
-                </span>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside id="admin-sidebar">
+            <div class="sidebar-header">
+                <a class="text-white text-decoration-none d-flex align-items-center fw-bold fs-5" href="/">
+                    <i class="bi bi-book-half text-gold me-2 fs-3"></i>
+                    <span>ADMIN PANEL</span>
+                </a>
             </div>
-        </div>
 
-        <ul class="menu">
-            <li class="manageOption">
-                <a asp-controller="CategoryPage" asp-action="Index">
-                    <i class="bi bi-tags"></i>
-                    <span>Category Management</span>
+            <!-- Moved Profile to Sidebar - Higher position -->
+            <div class="px-4 pt-1 pb-3 border-bottom border-white border-opacity-10">
+                <div class="d-flex align-items-center">
+                    <div class="bg-gold rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px;">
+                        <i class="bi bi-person-fill text-dark fs-4"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-white small fw-bold mb-0 text-truncate" id="admin-name-display">Administrator</p>
+                        <span class="text-muted" style="font-size: 0.75rem;">Quản trị viên</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="mt-3 flex-grow-1">
+                <a href="/Dashboard" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                    <i class="bi bi-speedometer2"></i> Dashboard
                 </a>
-            </li>
-            <hr>
-            <li class="manageOption">
-                <a asp-controller="ProductPage" asp-action="Index">
-                    <i class="bi bi-book"></i>
-                    <span>Book Management</span>
+                <a href="/CategoryPage" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "CategoryPage" ? "active" : "")">
+                    <i class="bi bi-grid-3x3-gap"></i> Danh mục
                 </a>
-            </li>
-            <hr>
-            @* Có thể thêm các menu khác ở đây *@
-        </ul>
-    </aside>
+                <a href="#" class="nav-link">
+                    <i class="bi bi-journal-bookmark"></i> Quản lý Sách
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="bi bi-receipt"></i> Đơn hàng
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="bi bi-people"></i> Khách hàng
+                </a>
+                
+                <hr class="mx-3 my-4 opacity-10">
 
-    <!-- Main Content -->
-    <main class="main-content" style="flex: 1; padding: 20px;">
-        <div class="container-fluid">
-            @RenderBody()
-        </div>
-    </main>
+                <a href="/" class="nav-link text-info">
+                    <i class="bi bi-house-door"></i> Trang chủ
+                </a>
+            </nav>
 
-    <!-- Toast Notification -->
-    <partial name="_ToastNotification" />
+            <div class="p-3">
+                <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" id="logoutForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="/Auth/Login" />
+                    <button type="submit" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center py-2" style="border-radius: 8px;">
+                        <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="admin-content" class="flex-grow-1">
+            <!-- Mobile Toggle only -->
+            <div class="d-md-none p-3 bg-white border-bottom">
+                <button class="btn btn-light border" type="button" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i> Menu Admin
+                </button>
+            </div>
+
+            <div class="container-fluid p-0">
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="p-4 pb-0">
+                        <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm mb-0" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                }
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="p-4 pb-0">
+                        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm mb-0" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                }
+                @RenderBody()
+            </div>
+        </main>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('admin-sidebar').classList.toggle('show');
+        }
 
+        // Parse name from cookie like in _Layout
+        function getCookie(name) {
+            let value = `; ${document.cookie}`;
+            let parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function parseJwt(token) {
+            try {
+                var base64Url = token.split('.')[1];
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) { return null; }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = getCookie("access_token");
+            if (token) {
+                const payload = parseJwt(token);
+                if (payload) {
+                    const name = payload["unique_name"] || payload["uniqueName"] || payload["name"] || payload["sub"];
+                    const display = document.getElementById('admin-name-display');
+                    if (display && name) display.innerText = name;
+                }
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-@* <partial name="_PopupNotification" /> *@
-@* <script src="~/js/sidebar.js"></script> *@
 </html>

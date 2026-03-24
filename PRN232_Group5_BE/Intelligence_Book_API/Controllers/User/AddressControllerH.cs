@@ -5,11 +5,11 @@ namespace Intelligence_Book_API.Controllers.User
 {
     [Route("api/address")]
     [ApiController]
-    public class AddressController : ControllerBase
+    public class AddressControllerH : ControllerBase
     {
         private readonly IAddressRepository _repo;
 
-        public AddressController(IAddressRepository repo)
+        public AddressControllerH(IAddressRepository repo)
         {
             _repo = repo;
         }

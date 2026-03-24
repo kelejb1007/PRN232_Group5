@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DAL.Models;
-using DAL.Models.DAL.Models;
+using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Data
@@ -63,6 +63,12 @@ namespace DAL.Data
                 .HasOne(oi => oi.Order)
                 .WithMany(o => o.OrderItems)
                 .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DeliveryAddress>()
+                .HasOne(d => d.UserAccount)
+                .WithMany(u => u.DeliveryAddresses)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Cấu hình thêm cho bảng Review (Ràng buộc Rating)
