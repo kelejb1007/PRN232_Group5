@@ -267,9 +267,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Phần trăm giảm (1-100%)</label>
-                            <input id="DiscountPercent" type="number" name="DiscountPercent" value="@Model.DiscountPercent" min="1" max="100" step="1" required @(isEdit ? "readonly" : "") />
-                            <div class="hint">Giá trị từ 1 đến 100.</div>
+                            <label>Phần trăm giảm (1-50%)</label>
+                            <input id="DiscountPercent" type="number" name="DiscountPercent" value="@Model.DiscountPercent" min="1" max="50" step="1" required @(isEdit ? "readonly" : "") />
+                            <div class="hint">Giá trị từ 1 đến 50.</div>
                         </div>
 
                         <div class="form-group">
@@ -381,7 +381,7 @@
         });
     }
 
-    clampInt(discountEl, 1, 100);
+    clampInt(discountEl, 1, 50);
     clampInt(qtyEl, 0, 10000);
 
     form.addEventListener("submit", function (e) {
@@ -415,10 +415,10 @@
             return;
         }
 
-        // Discount 1-100
-        if (!Number.isInteger(discount) || discount < 1 || discount > 100) {
+        // Discount 1-50
+        if (!Number.isInteger(discount) || discount < 1 || discount > 50) {
             e.preventDefault();
-            showError("Phần trăm giảm giá phải nằm trong khoảng từ 1 tới 100.");
+            showError("Phần trăm giảm giá phải nằm trong khoảng từ 1 tới 50.");
             mark(discountEl);
             return;
         }

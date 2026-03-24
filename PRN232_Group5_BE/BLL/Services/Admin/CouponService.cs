@@ -53,7 +53,7 @@ namespace BLL.Services.Admin
             // ✅ Validate BE (bắt buộc)
             if (string.IsNullOrWhiteSpace(dto.Code)) throw new ArgumentException("Code is required.");
             if (dto.Code.Length > 50) throw new ArgumentException("Code max length is 50.");
-            if (dto.DiscountPercent < 1 || dto.DiscountPercent > 100) throw new ArgumentException("Discount must be 1..100.");
+            if (dto.DiscountPercent < 1 || dto.DiscountPercent > 50) throw new ArgumentException("Discount must be 1..50.");
             if (dto.quantity < 0 || dto.quantity > 10000) throw new ArgumentException("Quantity must be 0..10000.");
             if (dto.ExpiryDate.HasValue && dto.ExpiryDate.Value.Date < DateTime.Today) throw new ArgumentException("ExpiryDate cannot be in the past.");
 
