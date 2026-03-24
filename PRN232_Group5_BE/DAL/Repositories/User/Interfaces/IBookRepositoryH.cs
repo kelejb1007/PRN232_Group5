@@ -10,5 +10,9 @@ namespace DAL.Repositories.User.Interfaces
     public interface IBookRepositoryH
     {
         Task<List<Book>> GetAllAsync();
+        Task<List<Book>> GetBestSellerAsync();
+
+        Task<Book?> GetByIdAsync(int id);
+
     }
 }
