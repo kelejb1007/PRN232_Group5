@@ -149,6 +149,7 @@
                 {
                     <div class="alert alert-danger border-0 small">@ViewBag.Error</div>
                 }
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
                 <form asp-action="Register" method="post">
                     @Html.AntiForgeryToken()
@@ -399,5 +400,8 @@
             }
         });
     </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

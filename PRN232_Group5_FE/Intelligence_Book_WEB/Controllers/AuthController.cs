@@ -28,7 +28,7 @@ namespace Intelligence_Book_WEB.Controllers
             var result = await _authService.LoginAsync(request);
             if (result == null)
             {
-                ModelState.AddModelError(string.Empty, "Tên đăng nhập hoặc mật khẩu không đúng.");
+                ViewBag.Error = "Tên đăng nhập hoặc mật khẩu không đúng.";
                 return View(request);
             }
 
@@ -56,7 +56,7 @@ namespace Intelligence_Book_WEB.Controllers
             var success = await _authService.RegisterAsync(request);
             if (!success)
             {
-                ModelState.AddModelError(string.Empty, "Đăng ký thất bại. Tên đăng nhập hoặc Email có thể đã tồn tại.");
+                ViewBag.Error = "Đăng ký thất bại. Tên đăng nhập hoặc Email có thể đã tồn tại.";
                 return View(request);
             }
 
