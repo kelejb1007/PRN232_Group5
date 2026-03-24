@@ -2,300 +2,130 @@
 @{
     var isEdit = Model.CouponId != 0;
     ViewData["Title"] = isEdit ? "Cập nhật Coupon" : "Thêm Coupon";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <style>
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: #f8fafc;
-        margin: 0;
-        padding: 0;
-        color: #0f172a;
-    }
-
-    /* Layout */
-    .admin-layout {
-        display: flex;
-        min-height: calc(100vh - 60px);
-        margin-left: calc(50% - 50vw);
-        margin-right: calc(50% - 50vw);
-    }
-
-    /* Left Sidebar (20%) */
-    .sidebar-left {
-        width: 20%;
-        background: #ffffff;
-        border-right: 1px solid #e2e8f0;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .sidebar-placeholder {
-        border: 2px dashed #cbd5e1;
-        border-radius: 12px;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        flex-direction: column;
-        color: #64748b;
-        background: #f8fafc;
-    }
-
-    /* Main Content (80%) */
-    .main-wrapper {
-        width: 80%;
-        display: flex;
-        flex-direction: column;
-        background: #f1f5f9;
-    }
-
-    /* Red Topbar (80%) */
-    .top-navbar {
-        background: #ffffff;
-        height: 70px;
-        display: flex;
-        align-items: center;
-        padding: 0 32px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .top-navbar h1 {
-        color: #dc2626;
-        font-size: 22px;
-        font-weight: 800;
-        margin: 0;
-        letter-spacing: 0.5px;
-    }
-
-    /* Content Area */
-    .content-area {
-        padding: 32px;
-        flex: 1;
-        overflow-y: auto;
-    }
-
-    .card {
+    .form-card {
         background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-        padding: 32px;
-        max-width: 800px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        padding: 40px;
+        max-width: 700px;
         margin: 0 auto;
     }
-
-    .top-action {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 32px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .title-sub {
-        font-size: 20px;
-        font-weight: 800;
-        margin: 0;
-        color: #1e293b;
-    }
-
-    .btn {
-        padding: 12px 24px;
+    .form-label { font-weight: 700; color: #374151; margin-bottom: 8px; font-size: 0.9rem; }
+    .form-control {
         border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 15px;
-        transition: all 0.2s ease;
-    }
-
-    .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    }
-
-    .btn-orange { background: #f97316; color: #fff; }
-    .btn-orange:hover { background: #ea580c; }
-
-    .btn-dark { background: #0f172a; color: #fff; }
-    .btn-dark:hover { background: #1e293b; }
-
-    .btn-outline { background: #fff; border: 1px solid #cbd5e1; color: #475569; padding: 11px 23px; }
-    .btn-outline:hover { background: #f8fafc; border-color: #94a3b8; }
-
-    .grid-form {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .form-group.full {
-        grid-column: 1 / -1;
-    }
-
-    label {
-        font-weight: 700;
-        color: #334155;
-        font-size: 14px;
-    }
-
-    input {
-        padding: 12px 16px;
-        border: 1px solid #cbd5e1;
-        border-radius: 10px;
-        font-size: 15px;
+        padding: 12px 15px;
+        border: 1px solid #d1d5db;
         transition: all 0.2s;
-        outline: none;
-        color: #0f172a;
-        background: #fff;
     }
-    input:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    .form-control:focus {
+        border-color: #c5a059;
+        box-shadow: 0 0 0 0.2rem rgba(197,160,89,0.25);
     }
-    input[readonly], input:disabled {
-        background: #f1f5f9;
-        color: #64748b;
-        cursor: not-allowed;
-    }
-
-    .error-box {
-        margin-bottom: 24px;
-        padding: 14px 20px;
-        border-radius: 12px;
-        background: #fef2f2;
-        color: #991b1b;
-        font-weight: 600;
-        border: 1px solid #fecaca;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .hint {
-        font-size: 13px;
-        color: #64748b;
-    }
-
-    .field-error {
-        border-color: #ef4444 !important;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
-    }
-
-    .action-group {
-        margin-top: 32px;
-        padding-top: 24px;
-        border-top: 1px solid #e2e8f0;
-        display: flex;
-        justify-content: flex-end;
+    .btn-gold { background-color: #c5a059; border: none; color: #fff; font-weight: 600; padding: 12px 25px; border-radius: 10px; }
+    .btn-gold:hover { background-color: #b08d48; color: #fff; }
+    .section-header {
+        background-color: #111827;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        border-left: 5px solid #c5a059;
+        margin-bottom: 30px;
     }
 </style>
 
-<div class="admin-layout">
-    <!-- Left Sidebar (20%) -->
-    <div class="sidebar-left">
-        <div class="sidebar-placeholder">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px; opacity: 0.5;">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="9" y1="3" x2="9" y2="21"></line>
-            </svg>
-            <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px 0; color: #475569;">Admin Sidebar</h3>
-            <span style="font-size: 13px;">(Cột dành cho tính năng khác)</span>
-        </div>
+<div class="coupon-form p-3 animate-fade-in">
+    <div class="mb-4">
+        <a href="/Admin/Coupon/CouponList" class="btn btn-outline-secondary btn-sm px-3 hover-lift">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
     </div>
 
-    <!-- Main Content (80%) -->
-    <div class="main-wrapper">
-        <!-- Top Navbar (80%) -->
-        <div class="top-navbar">
-            <h1>Quản Lý Coupon</h1>
+    <div class="form-card shadow-lg">
+        <div class="section-header">
+            <h4 class="m-0 fw-bold"><i class="bi bi-pencil-square me-2"></i> @(isEdit ? "Cập nhật mã giảm giá" : "Tạo mã giảm giá mới")</h4>
         </div>
 
-        <!-- Scrollable Content -->
-        <div class="content-area">
-            <div class="card">
-                <div class="top-action">
-                    <h2 class="title-sub">@(isEdit ? "Cập nhật Coupon" : "Thêm Coupon Mới")</h2>
-                    <a class="btn btn-outline" href="/Admin/Coupon/CouponList" style="padding: 8px 16px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                        Trở Về
-                    </a>
-                </div>
-
-                @if (ViewBag.Error != null)
-                {
-                    <div class="error-box">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                        @ViewBag.Error
-                    </div>
-                }
-
-                <div id="clientError" class="error-box" style="display:none;"></div>
-
-                <form id="couponForm" method="post" action="/Admin/Coupon/CouponSave" novalidate>
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="CouponId" value="@Model.CouponId" />
-
-                    <div class="grid-form">
-                        <div class="form-group full">
-                            <label>Mã Coupon (Code)</label>
-                            <div style="display:flex; gap:12px; align-items:center;">
-                                <input id="Code" name="Code" value="@Model.Code" maxlength="50" required readonly style="flex:1; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 18px; font-weight: 700; letter-spacing: 2px; color: #0f172a;" />
-                                @if (!isEdit)
-                                {
-                                    <button id="btnRandom" type="button" class="btn btn-dark" style="white-space:nowrap;">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
-                                        Tạo Tự Động
-                                    </button>
-                                }
-                            </div>
-                            <div class="hint">Mã tự động sinh. Định dạng: Chữ in hoa và số.</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Phần trăm giảm (1-50%)</label>
-                            <input id="DiscountPercent" type="number" name="DiscountPercent" value="@Model.DiscountPercent" min="1" max="50" step="1" required @(isEdit ? "readonly" : "") />
-                            <div class="hint">Giá trị từ 1 đến 50.</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Ngày hết hạn</label>
-                            <input id="ExpiryDate" type="date" name="ExpiryDate" value="@(Model.ExpiryDate?.ToString("yyyy-MM-dd") ?? "")" />
-                            <div class="hint">Để trống nếu mã giảm giá dùng vĩnh viễn.</div>
-                        </div>
-
-                        <div class="form-group full">
-                            <label>Số lượng khả dụng</label>
-                            <input id="quantity" type="number" name="quantity" value="@Model.quantity" min="0" max="10000" step="1" required />
-                            <div class="hint">Từ 0 đến 10.000 (Đặt bằng 0 để khóa sử dụng).</div>
-                        </div>
-                    </div>
-
-                    <div class="action-group">
-                        <button class="btn btn-orange" type="submit">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                            @(isEdit ? "Lưu Thay Đổi" : "Tạo Mã Giảm Giá")
-                        </button>
-                    </div>
-                </form>
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger border-0 shadow-sm mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
             </div>
-        </div>
+        }
+
+        <form id="couponForm" method="post" action="/Admin/Coupon/CouponSave">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="CouponId" value="@Model.CouponId" />
+
+            <div class="mb-4">
+                <label class="form-label">Mã Coupon (Code)</label>
+                <div class="input-group">
+                    <input id="Code" name="Code" value="@Model.Code" class="form-control fw-bold text-uppercase" 
+                           style="letter-spacing: 2px;" readonly required />
+                    @if (!isEdit)
+                    {
+                        <button class="btn btn-dark" type="button" id="btnRandom">
+                            <i class="bi bi-shuffle me-1"></i> Ngẫu nhiên
+                        </button>
+                    }
+                </div>
+                <small class="text-muted">Mã được sinh tự động để đảm bảo tính duy nhất.</small>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Phần trăm giảm (%)</label>
+                    <input id="DiscountPercent" type="number" name="DiscountPercent" value="@Model.DiscountPercent" 
+                           class="form-control" min="1" max="50" required @(isEdit ? "readonly" : "") />
+                    <small class="text-muted">Từ 1% đến 50%.</small>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Số lượng</label>
+                    <input id="quantity" type="number" name="quantity" value="@Model.quantity" 
+                           class="form-control" min="0" required />
+                    <small class="text-muted">Số lượt sử dụng tối đa.</small>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Ngày hết hạn</label>
+                <input id="ExpiryDate" type="date" name="ExpiryDate" 
+                       value="@(Model.ExpiryDate?.ToString("yyyy-MM-dd") ?? "")" class="form-control" />
+                <small class="text-muted">Để trống nếu mã không bao giờ hết hạn.</small>
+            </div>
+
+            <div class="mt-4 pt-3 border-top text-end">
+                <button type="submit" class="btn btn-gold px-5 shadow-sm hover-lift">
+                    <i class="bi bi-check-circle me-1"></i> @(isEdit ? "Lưu thay đổi" : "Tạo Coupon")
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+    (function() {
+        const btnRandom = document.getElementById('btnRandom');
+        const codeInput = document.getElementById('Code');
+        
+        if (btnRandom) {
+            function generateCode() {
+                const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                let code = "CP";
+                for (let i = 0; i < 8; i++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return code;
+            }
+            
+            btnRandom.onclick = () => { codeInput.value = generateCode(); };
+            if (!codeInput.value) codeInput.value = generateCode();
+        }
+    })();
+</script>
 
 <script>
 (function () {

@@ -2,6 +2,7 @@ using Intelligence_Book_WEB.Mapper;
 using Intelligence_Book_WEB.Models;
 using Intelligence_Book_WEB.Models.Dto;
 using Intelligence_Book_WEB.Models.Enums;
+using Intelligence_Book_WEB.Services.User.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,12 @@ using System.Threading.Tasks;
 namespace Intelligence_Book_WEB.Controllers.Admin
 {
     [Route("Admin/Order")]
-    public class OrderController : Controller
+    public class OrderController : BaseAdminController
     {
         private readonly IHttpClientFactory _http;
 
-        public OrderController(IHttpClientFactory http)
+        public OrderController(IHttpClientFactory http, IProfileService profileService) 
+            : base(profileService)
         {
             _http = http;
         }

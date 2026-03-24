@@ -1,17 +1,19 @@
 using Intelligence_Book_WEB.Mapper;
 using Intelligence_Book_WEB.Models;
 using Intelligence_Book_WEB.Models.Dto;
+using Intelligence_Book_WEB.Services.User.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Json;
 
 namespace Intelligence_Book_WEB.Controllers.Admin
 {
     [Route("Admin/Coupon")]
-    public class CouponController : Controller
+    public class CouponController : BaseAdminController
     {
         private readonly IHttpClientFactory _http;
 
-        public CouponController(IHttpClientFactory http)
+        public CouponController(IHttpClientFactory http, IProfileService profileService) 
+            : base(profileService)
         {
             _http = http;
         }

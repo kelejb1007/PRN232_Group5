@@ -1,412 +1,144 @@
 @model Intelligence_Book_WEB.Models.Dto.PagedResultVm<Intelligence_Book_WEB.Models.Dto.CouponVm>
 @{
-    ViewData["Title"] = "Danh Sách Coupon";
+    ViewData["Title"] = "Quản lý Coupon";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     string search = (ViewBag.Search as string) ?? "";
     int pageSize = Model.PageSize > 0 ? Model.PageSize : 5;
 }
 
 <style>
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: #f8fafc;
-        margin: 0;
-        padding: 0;
-        color: #0f172a;
-    }
-
-    /* Layout */
-    .admin-layout {
-        display: flex;
-        min-height: calc(100vh - 60px);
-        margin-left: calc(50% - 50vw);
-        margin-right: calc(50% - 50vw);
-    }
-
-    /* Left Sidebar (20%) */
-    .sidebar-left {
-        width: 20%;
-        background: #ffffff;
-        border-right: 1px solid #e2e8f0;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .sidebar-placeholder {
-        border: 2px dashed #cbd5e1;
-        border-radius: 12px;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        flex-direction: column;
-        color: #64748b;
-        background: #f8fafc;
-    }
-
-    /* Main Content (80%) */
-    .main-wrapper {
-        width: 80%;
-        display: flex;
-        flex-direction: column;
-        background: #f1f5f9;
-    }
-
-    /* Red Topbar (80%) */
-    .top-navbar {
-        background: #ffffff;
-        height: 70px;
-        display: flex;
-        align-items: center;
-        padding: 0 32px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .top-navbar h1 {
-        color: #dc2626;
-        font-size: 22px;
-        font-weight: 800;
-        margin: 0;
-        letter-spacing: 0.5px;
-    }
-
-    /* Content Area */
-    .content-area {
-        padding: 32px;
-        flex: 1;
-        overflow-y: auto;
-    }
-
-    .card {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-        padding: 24px;
-    }
-
-    .top-action {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-
-    .title-sub {
-        font-size: 20px;
-        font-weight: 800;
-        margin: 0;
-        color: #1e293b;
-    }
-
-    .btn {
-        padding: 10px 18px;
+    .coupon-search-panel {
+        background-color: #1f2937;
         border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 14px;
-        transition: all 0.2s ease;
-    }
-
-    .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    }
-
-    .btn-red {
-        background: #dc2626;
-        color: #fff;
-    }
-    .btn-red:hover { background: #b91c1c; }
-
-    .btn-dark {
-        background: #0f172a;
-        color: #fff;
-    }
-    .btn-dark:hover { background: #1e293b; }
-
-    .filter-box {
-        background: #f8fafc;
-        padding: 16px;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-        margin-bottom: 24px;
-    }
-
-    .input-text {
-        padding: 10px 16px;
-        border: 1px solid #cbd5e1;
-        border-radius: 10px;
-        min-width: 300px;
-        font-size: 14px;
-        transition: border-color 0.2s;
-        outline: none;
-    }
-    .input-text:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    /* Table */
-    .table-container {
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        overflow: hidden;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        margin: 0;
-    }
-
-    th, td {
-        padding: 14px 16px;
-        text-align: left;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    th {
-        background: #f1f5f9;
-        font-weight: 700;
-        color: #475569;
-        text-transform: uppercase;
-        font-size: 12px;
-        letter-spacing: 0.5px;
-    }
-
-    tr:last-child td {
-        border-bottom: none;
-    }
-
-    tr:hover {
-        background: #f8fafc;
-        cursor: pointer;
-    }
-
-    tr.row-expired {
-        opacity: 0.6;
-        background: #fafafa;
-    }
-
-    tr.row-expired:hover {
-        background: #f1f5f9;
-        opacity: 0.8;
-    }
-
-    .code-text {
-        font-weight: 700;
-        color: #0f172a;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-
-    /* Badges */
-    .badge {
-        padding: 4px 10px;
-        border-radius: 9999px;
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-    .badge::before { content: ""; display: block; width: 6px; height: 6px; border-radius: 50%; }
-
-    .ok { color: #16a34a; background: #dcfce7; }
-    .ok::before { background: #16a34a; }
-
-    .bad { color: #dc2626; background: #fee2e2; }
-    .bad::before { background: #dc2626; }
-
-    .neutral { color: #475569; background: #f1f5f9; }
-    .neutral::before { background: #475569; }
-
-    /* Paging */
-    .paging {
-        margin-top: 24px;
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-    }
-
-    .paging a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 36px;
-        height: 36px;
-        padding: 0 12px;
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        text-decoration: none;
-        color: #475569;
-        font-weight: 600;
-        font-size: 14px;
-        transition: all 0.2s;
-    }
-
-    .paging a:hover {
-        border-color: #cbd5e1;
-        background: #f8fafc;
-    }
-
-    .paging a.active {
-        background: #dc2626;
-        color: #fff;
-        border-color: #dc2626;
-    }
-
-    /* Toast */
-    .toast {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
         padding: 14px 20px;
-        border-radius: 12px;
-        color: white;
-        font-weight: 600;
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        animation: slideUp 0.3s ease forwards;
+        margin-bottom: 20px;
     }
-    .toast.hide { animation: fadeOut 0.5s ease forwards; }
-    .toast-success { background: #10b981; }
-
-    @@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @@keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+    .coupon-search-panel label { color: #d1d5db; font-size: 0.82rem; margin-bottom: 4px; display: block; }
+    .coupon-search-panel .form-control {
+        background-color: #111827;
+        color: #f9fafb;
+        border-color: #374151;
+        font-size: 0.875rem;
+    }
+    .coupon-search-panel .form-control::placeholder { color: #6b7280; }
+    .coupon-search-panel .form-control:focus {
+        border-color: #c5a059;
+        box-shadow: 0 0 0 0.15rem rgba(197,160,89,0.3);
+    }
+    .btn-gold { background-color: #c5a059; border: none; color: #fff; font-weight: 600; }
+    .btn-gold:hover { background-color: #b08d48; color: #fff; }
+    
+    .badge-status { padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .status-available { background-color: #dcfce7; color: #16a34a; }
+    .status-expired { background-color: #fee2e2; color: #dc2626; }
+    .status-unlimited { background-color: #f1f5f9; color: #475569; }
 </style>
 
-<div class="admin-layout">
-    <!-- Left Sidebar (20%) -->
-    <div class="sidebar-left">
-        <div class="sidebar-placeholder">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px; opacity: 0.5;">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="9" y1="3" x2="9" y2="21"></line>
-            </svg>
-            <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px 0; color: #475569;">Admin Sidebar</h3>
-            <span style="font-size: 13px;">(Cột dành cho tính năng khác)</span>
-        </div>
+<div class="coupon-page animate-fade-in p-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 rounded shadow-sm"
+         style="background-color: #111827; border-left: 5px solid #c5a059; padding: 20px;">
+        <h2 class="text-white m-0 fw-bold">
+            <i class="bi bi-ticket-perforated me-2" style="color: #c5a059;"></i> Quản lý Coupon
+        </h2>
     </div>
 
-    <!-- Main Content (80%) -->
-    <div class="main-wrapper">
-        <!-- Top Navbar (80%) -->
-        <div class="top-navbar">
-            <h1>Quản Lý Coupon</h1>
-        </div>
-
-        <!-- Scrollable Content -->
-        <div class="content-area">
-            <div class="card">
-                <div class="top-action">
-                    <h2 class="title-sub">Danh sách Coupon</h2>
-                    <a class="btn btn-red" href="/Admin/Coupon/CouponCreate">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        Thêm Coupon Mới
-                    </a>
-                </div>
-
-                <form class="filter-box" method="get" action="/Admin/Coupon/CouponList">
-                    <input class="input-text" name="search" value="@search" placeholder="Tìm theo mã code, phần trăm giảm..." />
-                    <input type="hidden" name="pageSize" value="@pageSize" />
-                    <button class="btn btn-dark" type="submit">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        Tìm Kiếm
-                    </button>
-                </form>
-
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 28%;">Mã Coupon</th>
-                                <th style="width: 15%; text-align: center;">Giảm Giá</th>
-                                <th style="width: 22%; text-align: center;">Ngày Hết Hạn</th>
-                                <th style="width: 18%; text-align: center;">Trạng Thái</th>
-                                <th style="width: 17%; text-align: center;">Số Lượng Còn</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.Items == null || Model.Items.Count == 0)
-                            {
-                                <tr>
-                                    <td colspan="5" style="text-align:center; padding: 32px; color:#64748b; font-style:italic;">
-                                        Không tìm thấy mã giảm giá nào phù hợp.
-                                    </td>
-                                </tr>
-                            }
-                            else
-                            {
-                                foreach (var c in Model.Items)
-                                {
-                                    var neverExpire = !c.ExpiryDate.HasValue || c.ExpiryDate.Value.Year >= 2099;
-                                    var isExpired = !neverExpire && c.ExpiryDate.Value.Date < DateTime.Today;
-
-                                    <tr class="@(isExpired ? "row-expired" : "")" onclick="location.href='/Admin/Coupon/CouponDetails?id=@c.CouponId'">
-                                        <td>
-                                            <span class="code-text">@c.Code</span>
-                                        </td>
-                                        <td style="text-align:center; font-weight:600; color:#dc2626;">
-                                            @c.DiscountPercent%
-                                        </td>
-                                        <td style="text-align:center; color:#475569;">
-                                            @(neverExpire ? "—" : c.ExpiryDate?.ToString("dd-MM-yyyy"))
-                                        </td>
-                                        <td style="text-align:center;">
-                                            @if (neverExpire)
-                                            {
-                                                <span class="badge neutral">Không giới hạn</span>
-                                            }
-                                            else if (isExpired)
-                                            {
-                                                <span class="badge bad">Đã hết hạn</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge ok">Khả dụng</span>
-                                            }
-                                        </td>
-                                        <td style="text-align:center; font-weight: 600;">
-                                            @c.quantity
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                @if (Model.TotalPages > 1)
+    <!-- Search Bar -->
+    <form method="get" action="/Admin/Coupon/CouponList" class="coupon-search-panel">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label><i class="bi bi-search me-1" style="color:#c5a059;"></i> Tìm kiếm mã giảm giá</label>
+                <input type="text" name="search" class="form-control form-control-sm"
+                       placeholder="Nhập mã code hoặc mức giảm..."
+                       value="@search" />
+                <input type="hidden" name="pageSize" value="@pageSize" />
+            </div>
+            <div class="col-auto d-flex gap-2">
+                <button type="submit" class="btn btn-gold btn-sm px-4 hover-lift">
+                    <i class="bi bi-search me-1"></i> Tìm
+                </button>
+                @if (!string.IsNullOrEmpty(search))
                 {
-                    <div class="paging">
-                        @for (int i = 1; i <= Model.TotalPages; i++)
-                        {
-                            var activeClass = i == Model.Page ? "active" : "";
-                            <a class="@activeClass" href="/Admin/Coupon/CouponList?page=@i&pageSize=@pageSize&search=@Uri.EscapeDataString(search)">
-                                @i
-                            </a>
-                        }
-                    </div>
+                    <a href="/Admin/Coupon/CouponList" class="btn btn-sm btn-outline-secondary px-3 hover-lift"
+                       style="color:#d1d5db; border-color:#4b5563;">
+                        <i class="bi bi-x-circle me-1"></i> Xóa
+                    </a>
                 }
             </div>
         </div>
+    </form>
+
+    <!-- Coupon Table -->
+    <div class="bg-white p-4 shadow-sm rounded">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <span class="text-muted small">
+                Tìm thấy <strong>@Model.TotalItems</strong> mã giảm giá
+            </span>
+            <a href="/Admin/Coupon/CouponCreate" class="btn text-white fw-bold hover-lift" style="background-color: #c5a059; border: none;">
+                <i class="bi bi-plus-circle me-1"></i> Thêm Coupon mới
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle border">
+                <thead style="background-color: #1f2937; color: #d1d5db;">
+                    <tr>
+                        <th class="py-3">Mã Code</th>
+                        <th class="py-3 text-center">Giảm Giá</th>
+                        <th class="py-3 text-center">Ngày Hết Hạn</th>
+                        <th class="py-3 text-center">Trạng Thái</th>
+                        <th class="py-3 text-center">Số Lượng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        foreach (var c in Model.Items)
+                        {
+                            var neverExpire = !c.ExpiryDate.HasValue || c.ExpiryDate.Value.Year >= 2099;
+                            var isExpired = !neverExpire && c.ExpiryDate.Value.Date < DateTime.Today;
+                            <tr onclick="location.href='/Admin/Coupon/CouponDetails?id=@c.CouponId'" style="cursor: pointer;">
+                                <td class="fw-bold fs-5 text-uppercase" style="font-family: monospace;">@c.Code</td>
+                                <td class="text-center fw-bold text-danger">@c.DiscountPercent%</td>
+                                <td class="text-center text-muted">
+                                    @(neverExpire ? "—" : c.ExpiryDate?.ToString("dd/MM/yyyy"))
+                                </td>
+                                <td class="text-center">
+                                    @if (neverExpire) { <span class="badge-status status-unlimited">Vô thời hạn</span> }
+                                    else if (isExpired) { <span class="badge-status status-expired">Hết hạn</span> }
+                                    else { <span class="badge-status status-available">Sử dụng được</span> }
+                                </td>
+                                <td class="text-center fw-bold">@c.quantity</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-search fs-2 d-block mb-2 opacity-50"></i>
+                                Không tìm thấy mã giảm giá nào.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.Page ? "active" : "")">
+                            <a class="page-link" href="/Admin/Coupon/CouponList?page=@i&pageSize=@pageSize&search=@Uri.EscapeDataString(search)"
+                               style="@(i == Model.Page ? "background-color: #c5a059; border-color: #c5a059;" : "color: #1f2937;")">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
     </div>
 </div>
 

@@ -5,28 +5,22 @@ using System.Security.Claims;
 
 namespace Intelligence_Book_WEB.Controllers.Admin
 {
-    public class DashboardController : Controller
+    public class DashboardController : BaseAdminController
     {
         private readonly IDashboardService _dashboardService;
-        private readonly IProfileService _profileService;
         private const string AccessTokenCookie = "access_token";
 
         public DashboardController(IDashboardService dashboardService, IProfileService profileService)
+            : base(profileService)
         {
             _dashboardService = dashboardService;
-            _profileService = profileService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             var token = Request.Cookies[AccessTokenCookie];
-            if (string.IsNullOrEmpty(token)) return RedirectToAction("Login", "Auth");
-
-            var profile = await _profileService.GetProfileAsync(token);
-            if (profile == null || profile.Role != "Admin") return RedirectToAction("Index", "Home");
-
-            ViewBag.ProfileInfo = profile;
+            // Session and Role checks are handled by BaseAdminController
 
             try
             {

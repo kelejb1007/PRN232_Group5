@@ -193,11 +193,14 @@
                 <a href="/CategoryPage" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "CategoryPage" ? "active" : "")">
                     <i class="bi bi-grid-3x3-gap"></i> Danh mục
                 </a>
-                <a href="/BookPage" class="nav-link">
+                <a href="/BookPage" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "BookPage" ? "active" : "")">
                     <i class="bi bi-journal-bookmark"></i> Quản lý Sách
                 </a>
-                <a href="#" class="nav-link">
-                    <i class="bi bi-receipt"></i> Đơn hàng
+                <a href="/Admin/Coupon/CouponList" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Coupon" ? "active" : "")">
+                    <i class="bi bi-ticket-perforated"></i> Quản lý Coupon
+                </a>
+                <a href="/Admin/Order/OrderList" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Order" ? "active" : "")">
+                    <i class="bi bi-receipt"></i> Quản lý Đơn hàng
                 </a>
                 <a href="#" class="nav-link">
                     <i class="bi bi-people"></i> Khách hàng
