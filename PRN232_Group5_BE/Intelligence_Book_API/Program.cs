@@ -1,16 +1,18 @@
-﻿using BLL.Services.Admin;
+using BLL.Services;
+using BLL.Services.Interfaces;
+using BLL.Services.User;
+using BLL.Services.User.Interfaces;
+using BLL.Services.Admin;
 using BLL.Services.Admin.Interfaces;
 using DAL.Data;
+using DAL.Repositories.User;
+using DAL.Repositories.User.Interfaces;
 using DAL.Repositories.Admin;
 using DAL.Repositories.Admin.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using DAL.Data;
-using DAL.Repositories.Admin;
-using DAL.Repositories.Admin.Interfaces;
-using BLL.Services.Admin.Interfaces;
-using BLL.Services.Admin;
+
 using DAL.Mapper;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -30,8 +32,17 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 // Phải cấu hình CORS để cho phép Client MVC gọi tới.
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
@@ -42,7 +53,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+var keyString = jwtSettings["Key"] ?? throw new InvalidOperationException("Jwt:Key is missing");
+var key = Encoding.UTF8.GetBytes(keyString);
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
